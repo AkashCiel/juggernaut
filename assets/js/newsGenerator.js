@@ -242,17 +242,10 @@ class NewsGenerator {
         `;
     }
 
-    // Display the full HTML report
+    // Display the full HTML report using an iframe for isolation
     displayFullReport(report) {
         const reportContainer = document.getElementById('reportContainer');
         if (!reportContainer) return;
-
-        // Extract <body>...</body> content
-        let bodyContent = report.htmlContent;
-        const bodyMatch = bodyContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-        if (bodyMatch) {
-            bodyContent = bodyMatch[1];
-        }
 
         // Create or update the full report section
         let fullReportSection = document.getElementById('fullReportSection');
@@ -268,7 +261,7 @@ class NewsGenerator {
             reportContainer.appendChild(fullReportSection);
         }
 
-        // Add report header and extracted body content in a scrollable box
+        // Add header and iframe
         fullReportSection.innerHTML = `
             <div style="margin-bottom: 20px;">
                 <h3 style="color: #667eea; margin-bottom: 10px;">📄 Full Generated Report</h3>
@@ -276,15 +269,19 @@ class NewsGenerator {
                     This is the complete HTML report that was generated and can be shared or downloaded.
                 </p>
             </div>
-            <div style="background: white; border-radius: 10px; padding: 20px; max-height: 600px; overflow-y: auto; border: 1px solid #e0e0e0;">
-                ${bodyContent}
-            </div>
+            <iframe id="fullReportIframe" style="width: 100%; height: 600px; border-radius: 10px; border: 1px solid #e0e0e0; background: white;"></iframe>
         `;
 
-        // Optionally, scroll to the report preview
-        // fullReportSection.scrollIntoView({ behavior: 'smooth' });
+        // Write the full HTML content into the iframe
+        const iframe = document.getElementById('fullReportIframe');
+        if (iframe) {
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            doc.open();
+            doc.write(report.htmlContent);
+            doc.close();
+        }
 
-        console.log('✅ Full report displayed in UI:', bodyContent);
+        console.log('✅ Full report displayed in iframe preview.');
     }
 
     // Utility function to escape HTML
