@@ -10,7 +10,8 @@ class NewsAPIs {
         this.corsProxies = [
             'https://api.allorigins.win/raw?url=',
             'https://corsproxy.io/?',
-            'https://cors-anywhere.herokuapp.com/'
+            'https://cors-anywhere.herokuapp.com/',
+            'https://thingproxy.freeboard.io/fetch/'
         ];
         
         // Leading AI research companies to filter for
@@ -78,37 +79,65 @@ class NewsAPIs {
                 const query = this.buildNewsQuery(topic);
                 const apiUrl = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&sortBy=publishedAt&language=en&pageSize=10&apiKey=${this.apiKeys.newsApi}`;
                 
-                // Try CORS proxies in order
+                // Try direct API call first if running from web server
                 let response = null;
                 let lastError = null;
                 
-                for (const proxy of this.corsProxies) {
+                if (window.location.protocol !== 'file:') {
                     try {
-                        const proxiedUrl = proxy + encodeURIComponent(apiUrl);
-                        console.log(`🔄 Trying proxy: ${proxy.split('?')[0]}...`);
-                        
-                        response = await fetch(proxiedUrl, {
+                        console.log('🔄 Trying direct API call...');
+                        response = await fetch(apiUrl, {
                             method: 'GET',
                             headers: {
                                 'Content-Type': 'application/json',
-                            }
+                            },
+                            signal: AbortSignal.timeout(10000)
                         });
                         
                         if (response.ok) {
-                            console.log(`✅ Success with proxy: ${proxy.split('?')[0]}`);
-                            break;
+                            console.log('✅ Success with direct API call');
                         } else {
-                            throw new Error(`Proxy responded with ${response.status}`);
+                            throw new Error(`Direct API responded with ${response.status}`);
                         }
                     } catch (error) {
-                        console.warn(`⚠️ Proxy ${proxy.split('?')[0]} failed:`, error.message);
+                        console.warn('⚠️ Direct API call failed:', error.message);
                         lastError = error;
-                        continue;
+                    }
+                }
+                
+                // If direct call failed or running from file://, try CORS proxies
+                if (!response || !response.ok) {
+                    for (const proxy of this.corsProxies) {
+                        try {
+                            const proxiedUrl = proxy + encodeURIComponent(apiUrl);
+                            console.log(`🔄 Trying proxy: ${proxy.split('?')[0]}...`);
+                            
+                            response = await fetch(proxiedUrl, {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                signal: AbortSignal.timeout(10000) // 10 second timeout
+                            });
+                            
+                            if (response.ok) {
+                                console.log(`✅ Success with proxy: ${proxy.split('?')[0]}`);
+                                break;
+                            } else {
+                                throw new Error(`Proxy responded with ${response.status}`);
+                            }
+                        } catch (error) {
+                            console.warn(`⚠️ Proxy ${proxy.split('?')[0]} failed:`, error.message);
+                            lastError = error;
+                            continue;
+                        }
                     }
                 }
                 
                 if (!response || !response.ok) {
-                    throw new Error(`All CORS proxies failed. Last error: ${lastError?.message}`);
+                    console.warn('⚠️ All CORS proxies failed, falling back to mock data');
+                    console.warn('Last error:', lastError?.message);
+                    return [];
                 }
                 
                 const data = await response.json();
