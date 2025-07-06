@@ -324,7 +324,7 @@ class GitHubUploader {
 
         // Extract <body>...</body> content
         let bodyContent = report.htmlContent;
-        const bodyMatch = bodyContent.match(/<body[^>]*>([\\s\\S]*?)<\\/body>/i);
+        const bodyMatch = bodyContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
         if (bodyMatch) {
             bodyContent = bodyMatch[1];
         }
