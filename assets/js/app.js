@@ -17,6 +17,8 @@ class AINewsAgent {
         window.uiManager = this.uiManager;
         
         console.log('✅ All managers created successfully');
+        console.log('🔍 ReportGenerator instance:', this.reportGenerator);
+        console.log('🔍 window.reportGenerator:', window.reportGenerator);
     }
 
     async init() {
@@ -97,6 +99,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Check if required classes exist
         const requiredClasses = ['SettingsManager', 'TopicsManager', 'SchedulerManager', 'NewsGenerator', 'ReportGenerator', 'UIManager'];
         const missingClasses = requiredClasses.filter(className => !window[className]);
+        
+        console.log('🔍 Checking available classes:', Object.keys(window).filter(key => key.endsWith('Manager') || key.endsWith('Generator') || key === 'UIManager'));
         
         if (missingClasses.length > 0) {
             console.error('❌ Missing classes:', missingClasses);
