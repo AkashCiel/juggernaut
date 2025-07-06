@@ -69,7 +69,16 @@ class NewsAPIs {
             // Fetch for each topic
             for (const topic of topics.slice(0, 5)) { // Limit to 5 topics to stay within API limits
                 const query = this.buildNewsQuery(topic);
-                const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&sortBy=publishedAt&language=en&pageSize=10&apiKey=${this.apiKeys.newsApi}`;
+                const newsApiUrl = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&sortBy=publishedAt&language=en&pageSize=10&apiKey=${this.apiKeys.newsApi}`;
+                
+                // Use CORS proxy for local development
+                const proxyUrl = 'https://api.allorigins.win/raw?url=';
+                const useProxy = window.location.protocol === 'file:';
+                const url = useProxy ? `${proxyUrl}${encodeURIComponent(newsApiUrl)}` : newsApiUrl;
+                
+                if (useProxy) {
+                    console.log('🌐 Using CORS proxy for NewsAPI request');
+                }
                 
                 const response = await fetch(url);
                 
@@ -130,7 +139,16 @@ class NewsAPIs {
             // Fetch for each topic
             for (const topic of topics.slice(0, 3)) { // Limit topics for ArXiv
                 const query = this.buildArxivQuery(topic);
-                const url = `https://export.arxiv.org/api/query?search_query=${encodeURIComponent(query)}&start=0&max_results=5&sortBy=submittedDate&sortOrder=descending`;
+                const arxivUrl = `https://export.arxiv.org/api/query?search_query=${encodeURIComponent(query)}&start=0&max_results=5&sortBy=submittedDate&sortOrder=descending`;
+                
+                // Use CORS proxy for local development
+                const proxyUrl = 'https://api.allorigins.win/raw?url=';
+                const useProxy = window.location.protocol === 'file:';
+                const url = useProxy ? `${proxyUrl}${encodeURIComponent(arxivUrl)}` : arxivUrl;
+                
+                if (useProxy) {
+                    console.log('🌐 Using CORS proxy for ArXiv request');
+                }
                 
                 const response = await fetch(url);
                 
