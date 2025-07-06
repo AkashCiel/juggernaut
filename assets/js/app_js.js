@@ -59,12 +59,8 @@ class AINewsAgent {
             }
         });
 
-        // Schedule options
-        document.querySelectorAll('.schedule-option').forEach(option => {
-            option.addEventListener('click', (e) => {
-                this.schedulerManager.setSchedule(e.target.dataset.schedule);
-            });
-        });
+        // Schedule options - now handled by onclick in HTML
+        // No need for additional event listeners since we're using onclick
 
         // File import handler
         document.getElementById('importFile').addEventListener('change', () => {
