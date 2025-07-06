@@ -5,6 +5,7 @@ class AINewsAgent {
         this.topicsManager = new TopicsManager(this.settingsManager);
         this.schedulerManager = new SchedulerManager(this.settingsManager);
         this.newsGenerator = new NewsGenerator(this.settingsManager);
+        this.reportGenerator = new ReportGenerator();
         this.uiManager = new UIManager();
         
         // Make managers globally available for onclick handlers
@@ -12,6 +13,7 @@ class AINewsAgent {
         window.topicsManager = this.topicsManager;
         window.schedulerManager = this.schedulerManager;
         window.newsGenerator = this.newsGenerator;
+        window.reportGenerator = this.reportGenerator;
         window.uiManager = this.uiManager;
         
         console.log('✅ All managers created successfully');
@@ -37,6 +39,9 @@ class AINewsAgent {
             
             this.newsGenerator.init();
             console.log('✅ News generator initialized');
+            
+            this.reportGenerator.init();
+            console.log('✅ Report generator initialized');
             
             this.uiManager.init();
             console.log('✅ UI manager initialized');
@@ -90,7 +95,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await new Promise(resolve => setTimeout(resolve, 100));
         
         // Check if required classes exist
-        const requiredClasses = ['SettingsManager', 'TopicsManager', 'SchedulerManager', 'NewsGenerator', 'UIManager'];
+        const requiredClasses = ['SettingsManager', 'TopicsManager', 'SchedulerManager', 'NewsGenerator', 'ReportGenerator', 'UIManager'];
         const missingClasses = requiredClasses.filter(className => !window[className]);
         
         if (missingClasses.length > 0) {
