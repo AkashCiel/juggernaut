@@ -2,7 +2,7 @@
 class NewsAPIs {
     constructor() {
         this.apiKeys = {
-            newsApi: 'YOUR_NEWSAPI_KEY_HERE', // Get from newsapi.org
+            newsApi: '13899fe8453b4899a359ce9e1545696e', // Get from newsapi.org
             githubToken: 'YOUR_GITHUB_TOKEN_HERE' // For uploading reports
         };
         
