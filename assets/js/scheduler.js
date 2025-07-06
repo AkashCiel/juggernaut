@@ -88,10 +88,38 @@ class SchedulerManager {
             window.uiManager.showStatusMessage('Scheduled report generation triggered!', 'info');
         }
         
-        // Delay to show the message, then generate report
-        setTimeout(() => {
+        // Delay to show the message, then generate report with auto-sharing
+        setTimeout(async () => {
             if (window.newsGenerator) {
-                window.newsGenerator.generateReport();
+                try {
+                    // Generate the regular report
+                    await window.newsGenerator.generateReport();
+                    
+                    // If auto-sharing is enabled, trigger WhatsApp sharing
+                    if (window.settingsManager.getAutoShare()) {
+                        console.log('🤖 Triggering automated WhatsApp sharing...');
+                        
+                        // Get current news data for sharing
+                        const activeTopics = window.settingsManager.getTopics();
+                        const lastReport = window.reportGenerator.getLastReport();
+                        
+                        if (lastReport) {
+                            // Auto-share the generated report
+                            await window.whatsappSharer.autoShareReport(
+                                lastReport.newsItems, 
+                                activeTopics, 
+                                new Date()
+                            );
+                        }
+                    } else {
+                        console.log('📱 Auto-sharing disabled, report generated only');
+                    }
+                } catch (error) {
+                    console.error('❌ Error in scheduled run:', error);
+                    if (window.uiManager) {
+                        window.uiManager.showStatusMessage('Error in scheduled report generation', 'error');
+                    }
+                }
             }
         }, 1000);
     }

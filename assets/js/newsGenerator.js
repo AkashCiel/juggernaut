@@ -51,6 +51,15 @@ class NewsGenerator {
             // Display the report
             this.displayReport(newsItems);
             
+            // Generate shareable report
+            const reportDate = document.getElementById('reportDate').textContent;
+            await window.reportGenerator.generateShareableReport(newsItems, activeTopics, new Date());
+            
+            // Show share buttons
+            if (window.showShareButtons) {
+                window.showShareButtons();
+            }
+            
             // Update last run time
             this.settingsManager.setLastRun();
             
@@ -176,7 +185,7 @@ class NewsGenerator {
         }
 
         // Group news by type
-        const newsArticles = newsItems.filter(item => item.type === 'news' || item.type === 'mock');
+        const newsArticles = newsItems.filter(item => item.type === 'news');
         const researchPapers = newsItems.filter(item => item.type === 'research');
 
         let html = '';
@@ -205,12 +214,7 @@ class NewsGenerator {
     }
 
     createNewsItemHTML(item) {
-        let typeIcon = '📰'; // default
-        if (item.type === 'research') {
-            typeIcon = '🔬';
-        } else if (item.type === 'mock') {
-            typeIcon = '🧪';
-        }
+        const typeIcon = item.type === 'research' ? '🔬' : '📰';
         const urlLink = item.url ? `<a href="${item.url}" target="_blank" style="color: #667eea; text-decoration: none;">Read full article →</a>` : '';
         
         return `

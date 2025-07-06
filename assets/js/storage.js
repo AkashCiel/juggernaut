@@ -4,7 +4,9 @@ class SettingsManager {
         this.settings = {
             topics: [],
             schedule: 'daily',
-            lastRun: null
+            lastRun: null,
+            whatsappNumbers: ['+31647388314'], // Your default number
+            autoShare: true // Enable auto-sharing by default - truly autonomous!
         };
     }
 
@@ -33,6 +35,18 @@ class SettingsManager {
             if (savedLastRun) {
                 this.settings.lastRun = new Date(savedLastRun);
             }
+
+            // Load WhatsApp numbers
+            const savedWhatsAppNumbers = localStorage.getItem('aiNewsWhatsAppNumbers');
+            if (savedWhatsAppNumbers) {
+                this.settings.whatsappNumbers = JSON.parse(savedWhatsAppNumbers);
+            }
+
+            // Load auto-share setting
+            const savedAutoShare = localStorage.getItem('aiNewsAutoShare');
+            if (savedAutoShare !== null) {
+                this.settings.autoShare = JSON.parse(savedAutoShare);
+            }
             
             console.log('Settings loaded:', this.settings);
         } catch (error) {
@@ -45,6 +59,8 @@ class SettingsManager {
         try {
             localStorage.setItem('aiNewsTopics', JSON.stringify(this.settings.topics));
             localStorage.setItem('aiNewsSchedule', this.settings.schedule);
+            localStorage.setItem('aiNewsWhatsAppNumbers', JSON.stringify(this.settings.whatsappNumbers));
+            localStorage.setItem('aiNewsAutoShare', JSON.stringify(this.settings.autoShare));
             if (this.settings.lastRun) {
                 localStorage.setItem('aiNewsLastRun', this.settings.lastRun.toISOString());
             }
@@ -54,6 +70,7 @@ class SettingsManager {
         }
     }
 
+    // Topics methods (unchanged)
     getTopics() {
         return this.settings.topics;
     }
@@ -77,6 +94,7 @@ class SettingsManager {
         this.saveSettings();
     }
 
+    // Schedule methods (unchanged)
     getSchedule() {
         return this.settings.schedule;
     }
@@ -95,11 +113,66 @@ class SettingsManager {
         this.saveSettings();
     }
 
+    // WhatsApp methods (new)
+    getWhatsAppNumbers() {
+        return this.settings.whatsappNumbers;
+    }
+
+    setWhatsAppNumbers(numbers) {
+        this.settings.whatsappNumbers = numbers;
+        this.saveSettings();
+    }
+
+    addWhatsAppNumber(number) {
+        // Validate and format phone number
+        const formattedNumber = this.formatPhoneNumber(number);
+        if (formattedNumber && !this.settings.whatsappNumbers.includes(formattedNumber)) {
+            this.settings.whatsappNumbers.push(formattedNumber);
+            this.saveSettings();
+            return true;
+        }
+        return false;
+    }
+
+    removeWhatsAppNumber(number) {
+        this.settings.whatsappNumbers = this.settings.whatsappNumbers.filter(n => n !== number);
+        this.saveSettings();
+    }
+
+    getAutoShare() {
+        return this.settings.autoShare;
+    }
+
+    setAutoShare(enabled) {
+        this.settings.autoShare = enabled;
+        this.saveSettings();
+    }
+
+    // Phone number formatting helper
+    formatPhoneNumber(number) {
+        // Remove all non-digit characters except +
+        let cleaned = number.replace(/[^\d+]/g, '');
+        
+        // Ensure it starts with +
+        if (!cleaned.startsWith('+')) {
+            cleaned = '+' + cleaned;
+        }
+        
+        // Basic validation (should be at least 10 digits after +)
+        const digits = cleaned.substring(1);
+        if (digits.length >= 10 && digits.length <= 15) {
+            return cleaned;
+        }
+        
+        return null; // Invalid number
+    }
+
+    // Export/Import methods (enhanced)
     exportSettings() {
         const exportData = {
             ...this.settings,
             exportDate: new Date().toISOString(),
-            version: '1.0'
+            version: '2.0' // Updated version
         };
         
         const dataStr = JSON.stringify(exportData, null, 2);
@@ -140,6 +213,14 @@ class SettingsManager {
                 
                 if (importedSettings.lastRun) {
                     this.settings.lastRun = new Date(importedSettings.lastRun);
+                }
+
+                if (importedSettings.whatsappNumbers && Array.isArray(importedSettings.whatsappNumbers)) {
+                    this.settings.whatsappNumbers = importedSettings.whatsappNumbers;
+                }
+
+                if (importedSettings.autoShare !== undefined) {
+                    this.settings.autoShare = importedSettings.autoShare;
                 }
                 
                 this.saveSettings();

@@ -58,6 +58,7 @@ class NewsAPIs {
 
     // Fetch news articles from NewsAPI.org with CORS proxy
     async fetchNewsArticles(topics) {
+        console.log('🔍 fetchNewsArticles called - NEW VERSION');
         const cacheKey = `news_${topics.join('_')}`;
         
         // Check cache first
