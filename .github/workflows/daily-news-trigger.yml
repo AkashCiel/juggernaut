@@ -1,0 +1,33 @@
+name: AI News Agent Trigger
+
+on:
+  # Automated trigger - daily at 9 AM UTC (adjust timezone as needed)
+  schedule:
+    - cron: '0 15 * * *'  # 3 PM UTC = 4 PM Amsterdam (winter)
+  
+  # Manual trigger - adds a "Run workflow" button in GitHub Actions
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual trigger'
+        required: false
+        default: 'Manual news update'
+
+jobs:
+  trigger-news-agent:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Trigger AI News Agent
+        run: |
+          echo "Triggering AI news agent at $(date)"
+          curl -s -L "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
+          echo "✅ News agent triggered successfully"
+      
+      - name: Log trigger details
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "🤖 Automated daily trigger executed"
+          else
+            echo "👤 Manual trigger: ${{ github.event.inputs.reason }}"
+          fi
