@@ -2,7 +2,7 @@
 
 A daily AI research news monitoring tool.
 
-**[🚀 Launch the App](https://yourusername.github.io/ai-news-agent)**
+**[🚀 Launch the App](https://akashciel.github.io/juggernaut/)**
 
 ## Features
 - Customizable AI research topics
