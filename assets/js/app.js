@@ -1,6 +1,13 @@
 // Main Application Entry Point
 class AINewsAgent {
     constructor() {
+        // Check if all required classes are available
+        if (!window.SettingsManager || !window.TopicsManager || !window.SchedulerManager || 
+            !window.NewsGenerator || !window.UIManager) {
+            console.error('Required classes not loaded yet');
+            return;
+        }
+
         this.settingsManager = new window.SettingsManager();
         this.topicsManager = new window.TopicsManager(this.settingsManager);
         this.schedulerManager = new window.SchedulerManager(this.settingsManager);
@@ -56,9 +63,6 @@ class AINewsAgent {
             });
         }
 
-        // Schedule options - now handled by onclick in HTML
-        // No need for additional event listeners since we're using onclick
-
         // File import handler
         const importFile = document.getElementById('importFile');
         if (importFile) {
@@ -69,8 +73,23 @@ class AINewsAgent {
     }
 }
 
-// Initialize the application when DOM is loaded
-document.addEventListener('DOMContentLoaded', async () => {
-    const app = new AINewsAgent();
-    await app.init();
+// Wait for all scripts to load, then initialize
+function initializeApp() {
+    // Check if all required classes are available
+    if (window.SettingsManager && window.TopicsManager && window.SchedulerManager && 
+        window.NewsGenerator && window.UIManager && window.AINewsData) {
+        
+        const app = new AINewsAgent();
+        if (app.settingsManager) { // Check if construction was successful
+            app.init();
+        }
+    } else {
+        console.log('Waiting for classes to load...');
+        setTimeout(initializeApp, 100); // Try again in 100ms
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(initializeApp, 50); // Small delay to ensure scripts are loaded
 });
