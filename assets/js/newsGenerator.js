@@ -176,7 +176,7 @@ class NewsGenerator {
         }
 
         // Group news by type
-        const newsArticles = newsItems.filter(item => item.type === 'news');
+        const newsArticles = newsItems.filter(item => item.type === 'news' || item.type === 'mock');
         const researchPapers = newsItems.filter(item => item.type === 'research');
 
         let html = '';
@@ -205,7 +205,12 @@ class NewsGenerator {
     }
 
     createNewsItemHTML(item) {
-        const typeIcon = item.type === 'research' ? '🔬' : '📰';
+        let typeIcon = '📰'; // default
+        if (item.type === 'research') {
+            typeIcon = '🔬';
+        } else if (item.type === 'mock') {
+            typeIcon = '🧪';
+        }
         const urlLink = item.url ? `<a href="${item.url}" target="_blank" style="color: #667eea; text-decoration: none;">Read full article →</a>` : '';
         
         return `

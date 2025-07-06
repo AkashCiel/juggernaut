@@ -46,84 +46,96 @@ window.AINewsData = {
                 summary: "THIS IS A MOCK: Researchers at Stanford announce a new architecture that reduces computational requirements by 40% while maintaining performance on benchmark tasks.",
                 source: "Stanford AI Lab",
                 topic: "large language models",
-                time: "2 hours ago"
+                time: "2 hours ago",
+                type: "mock"
             },
             {
                 title: "THIS IS A MOCK: New Computer Vision Model Achieves Human-Level Object Recognition",
                 summary: "THIS IS A MOCK: A team from MIT has developed a computer vision system that matches human accuracy in complex object recognition tasks across diverse environments.",
                 source: "MIT CSAIL",
                 topic: "computer vision",
-                time: "4 hours ago"
+                time: "4 hours ago",
+                type: "mock"
             },
             {
                 title: "THIS IS A MOCK: Reinforcement Learning Breakthrough in Robotics Control",
                 summary: "THIS IS A MOCK: DeepMind's latest RL algorithm enables robots to learn complex manipulation tasks 10x faster than previous methods.",
                 source: "DeepMind",
                 topic: "reinforcement learning",
-                time: "6 hours ago"
+                time: "6 hours ago",
+                type: "mock"
             },
             {
                 title: "THIS IS A MOCK: AI Safety Research Proposes New Alignment Framework",
                 summary: "THIS IS A MOCK: Anthropic researchers introduce a novel approach to AI alignment that addresses key challenges in maintaining AI system safety at scale.",
                 source: "Anthropic",
                 topic: "AI safety",
-                time: "8 hours ago"
+                time: "8 hours ago",
+                type: "mock"
             },
             {
                 title: "THIS IS A MOCK: Transformer Architecture Innovation Improves Long-Context Understanding",
                 summary: "THIS IS A MOCK: New research extends transformer models to process sequences 5x longer than previous architectures while maintaining computational efficiency.",
                 source: "Google Research",
                 topic: "transformers",
-                time: "12 hours ago"
+                time: "12 hours ago",
+                type: "mock"
             },
             {
                 title: "THIS IS A MOCK: Diffusion Models Show Promise in Scientific Simulation",
                 summary: "THIS IS A MOCK: Scientists demonstrate how diffusion models can accelerate physics simulations, potentially revolutionizing materials science research.",
                 source: "Nature AI",
                 topic: "diffusion models",
-                time: "1 day ago"
+                time: "1 day ago",
+                type: "mock"
             },
             {
                 title: "THIS IS A MOCK: Neural Network Pruning Technique Reduces Model Size by 80%",
                 summary: "THIS IS A MOCK: Researchers develop a new pruning method that dramatically reduces neural network size without significant performance loss.",
                 source: "Carnegie Mellon",
                 topic: "neural networks",
-                time: "1 day ago"
+                time: "1 day ago",
+                type: "mock"
             },
             {
                 title: "THIS IS A MOCK: Natural Language Processing Advances in Multilingual Understanding",
                 summary: "THIS IS A MOCK: New model achieves state-of-the-art performance across 100+ languages with minimal training data per language.",
                 source: "Facebook AI",
                 topic: "natural language processing",
-                time: "2 days ago"
+                time: "2 days ago",
+                type: "mock"
             },
             {
                 title: "THIS IS A MOCK: Deep Learning Framework Optimizes Edge Device Deployment",
                 summary: "THIS IS A MOCK: New framework enables complex deep learning models to run efficiently on mobile and IoT devices.",
                 source: "NVIDIA Research",
                 topic: "deep learning",
-                time: "2 days ago"
+                time: "2 days ago",
+                type: "mock"
             },
             {
                 title: "THIS IS A MOCK: Robotics AI Achieves Dexterous Manipulation Milestone",
                 summary: "THIS IS A MOCK: Robot hand system demonstrates human-like dexterity in complex object manipulation tasks using advanced AI control.",
                 source: "Boston Dynamics",
                 topic: "robotics AI",
-                time: "3 days ago"
+                time: "3 days ago",
+                type: "mock"
             },
             {
                 title: "THIS IS A MOCK: Machine Learning Model Predicts Protein Folding with 95% Accuracy",
                 summary: "THIS IS A MOCK: Breakthrough in computational biology uses ML to predict protein structures, accelerating drug discovery research.",
                 source: "DeepMind",
                 topic: "machine learning",
-                time: "3 days ago"
+                time: "3 days ago",
+                type: "mock"
             },
             {
                 title: "THIS IS A MOCK: AGI Research Milestone: Multi-Modal Reasoning System",
                 summary: "THIS IS A MOCK: Research team develops AI system capable of reasoning across text, images, and audio simultaneously with human-like performance.",
                 source: "OpenAI",
                 topic: "artificial general intelligence",
-                time: "4 days ago"
+                time: "4 days ago",
+                type: "mock"
             }
         ];
     },
