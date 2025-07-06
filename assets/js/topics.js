@@ -1,5 +1,5 @@
 // Topics Management
-window.TopicsManager = class TopicsManager {
+class TopicsManager {
     constructor(settingsManager) {
         this.settingsManager = settingsManager;
     }
@@ -78,7 +78,10 @@ window.TopicsManager = class TopicsManager {
         };
         return text.replace(/[&<>"']/g, (m) => map[m]);
     }
-};// Topics Management
+}
+
+// Make available globally
+window.TopicsManager = TopicsManager;// Topics Management
 export class TopicsManager {
     constructor(settingsManager) {
         this.settingsManager = settingsManager;

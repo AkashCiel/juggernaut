@@ -1,5 +1,5 @@
 // News Generation Logic
-window.NewsGenerator = class NewsGenerator {
+class NewsGenerator {
     constructor(settingsManager) {
         this.settingsManager = settingsManager;
         this.isGenerating = false;
@@ -153,4 +153,7 @@ window.NewsGenerator = class NewsGenerator {
         };
         return text.replace(/[&<>"']/g, (m) => map[m]);
     }
-};
+}
+
+// Make available globally
+window.NewsGenerator = NewsGenerator;;

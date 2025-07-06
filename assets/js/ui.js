@@ -1,5 +1,5 @@
 // UI Management and Interactions
-window.UIManager = class UIManager {
+class UIManager {
     constructor() {
         this.statusTimeout = null;
     }
@@ -131,4 +131,7 @@ window.UIManager = class UIManager {
             });
         }
     }
-};
+}
+
+// Make available globally
+window.UIManager = UIManager;

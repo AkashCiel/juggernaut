@@ -39,7 +39,9 @@ class AINewsAgent {
             console.log('🤖 AI News Agent initialized successfully');
         } catch (error) {
             console.error('Failed to initialize AI News Agent:', error);
-            this.uiManager.showStatusMessage('Failed to initialize application', 'error');
+            if (this.uiManager) {
+                this.uiManager.showStatusMessage('Failed to initialize application', 'error');
+            }
         }
     }
 

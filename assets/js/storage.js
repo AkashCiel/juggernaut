@@ -1,5 +1,5 @@
 // Settings and Storage Management
-window.SettingsManager = class SettingsManager {
+class SettingsManager {
     constructor() {
         this.settings = {
             topics: [],
@@ -167,4 +167,7 @@ window.SettingsManager = class SettingsManager {
         reader.readAsText(file);
         fileInput.value = '';
     }
-};
+}
+
+// Make available globally
+window.SettingsManager = SettingsManager;;
