@@ -274,32 +274,6 @@ ${pagesUrl}
             day: 'numeric'
         });
     }
-}
-
-// Make global functions available for onclick handlers
-window.closeManualShareModal = function() {
-    window.whatsappSharer.closeManualShareModal();
-};
-
-window.sendManualWhatsApp = function() {
-    window.whatsappSharer.sendManualWhatsApp();
-};
-
-// Make available globally
-window.WhatsAppSharer = WhatsAppSharer;
-            window.uiManager.showStatusMessage('✅ Report downloaded!', 'success');
-        }
-    }
-
-    // Format date for display
-    formatDate(date) {
-        return new Date(date).toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    }
 
     // Create shareable link preview
     createLinkPreview(report, uploadResult) {
@@ -331,6 +305,15 @@ window.WhatsAppSharer = WhatsAppSharer;
         localStorage.setItem('aiNewsLastShared', stats.lastShared);
     }
 }
+
+// Make global functions available for onclick handlers
+window.closeManualShareModal = function() {
+    window.whatsappSharer.closeManualShareModal();
+};
+
+window.sendManualWhatsApp = function() {
+    window.whatsappSharer.sendManualWhatsApp();
+};
 
 // Make available globally
 window.WhatsAppSharer = WhatsAppSharer;
