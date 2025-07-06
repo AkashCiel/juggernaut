@@ -2,8 +2,8 @@
 class NewsAPIs {
     constructor() {
         this.apiKeys = {
-            newsApi: '13899fe8453b4899a359ce9e1545696e', // Get from newsapi.org
-            githubToken: 'YOUR_GITHUB_TOKEN_HERE' // For uploading reports
+            newsApi: null, // Will be set via setApiKeys
+            githubToken: null // For uploading reports
         };
         
         // CORS proxy options (fallback chain)
@@ -67,8 +67,8 @@ class NewsAPIs {
             return this.cache.get(cacheKey).data;
         }
 
-        if (!this.apiKeys.newsApi || this.apiKeys.newsApi === 'YOUR_NEWSAPI_KEY_HERE') {
-            console.warn('⚠️ NewsAPI key not set, using mock data');
+        if (!this.apiKeys.newsApi || this.apiKeys.newsApi === 'YOUR_NEWSAPI_KEY_HERE' || this.apiKeys.newsApi === '13899fe8453b4899a359ce9e1545696e') {
+            console.warn('⚠️ NewsAPI key not set or invalid, using mock data');
             return [];
         }
 
@@ -80,33 +80,32 @@ class NewsAPIs {
                 const query = this.buildNewsQuery(topic);
                 const apiUrl = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&sortBy=publishedAt&language=en&pageSize=10&apiKey=${this.apiKeys.newsApi}`;
                 
-                // Try direct API call first if running from web server
+                // Always try CORS proxies for GitHub Pages and other hosted sites
                 let response = null;
                 let lastError = null;
                 
-                if (window.location.protocol !== 'file:') {
-                    try {
-                        console.log('🔄 Trying direct API call...');
-                        response = await fetch(apiUrl, {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            signal: AbortSignal.timeout(10000)
-                        });
-                        
-                        if (response.ok) {
-                            console.log('✅ Success with direct API call');
-                        } else {
-                            throw new Error(`Direct API responded with ${response.status}`);
-                        }
-                    } catch (error) {
-                        console.warn('⚠️ Direct API call failed:', error.message);
-                        lastError = error;
+                // Try direct API call first (may work for some domains)
+                try {
+                    console.log('🔄 Trying direct API call...');
+                    response = await fetch(apiUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        signal: AbortSignal.timeout(10000)
+                    });
+                    
+                    if (response.ok) {
+                        console.log('✅ Success with direct API call');
+                    } else {
+                        throw new Error(`Direct API responded with ${response.status}`);
                     }
+                } catch (error) {
+                    console.warn('⚠️ Direct API call failed:', error.message);
+                    lastError = error;
                 }
                 
-                // If direct call failed or running from file://, try CORS proxies
+                // If direct call failed, try CORS proxies
                 if (!response || !response.ok) {
                     for (const proxy of this.corsProxies) {
                         try {
