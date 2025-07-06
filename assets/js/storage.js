@@ -170,4 +170,4 @@ class SettingsManager {
 }
 
 // Make available globally
-window.SettingsManager = SettingsManager;;
+window.SettingsManager = SettingsManager;
