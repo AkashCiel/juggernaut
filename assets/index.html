@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Research News Agent</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/animations.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <h1>🤖 AI Research News Agent</h1>
+            <p>Stay updated with the latest developments in artificial intelligence research</p>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="controls">
+            <div class="control-group">
+                <h3>📊 Research Topics</h3>
+                <div class="topics-grid" id="topicsGrid">
+                    <!-- Topics will be populated here -->
+                </div>
+                <div class="input-group">
+                    <input type="text" id="newTopicInput" placeholder="Add a new topic (e.g., 'large language models')">
+                    <button class="btn btn-secondary" onclick="window.topicsManager.addTopic()">Add Topic</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>⏰ Schedule</h3>
+                <div class="schedule-options" id="scheduleOptions">
+                    <div class="schedule-option active" data-schedule="daily">Daily</div>
+                    <div class="schedule-option" data-schedule="weekly">Weekly</div>
+                    <div class="schedule-option" data-schedule="manual">Manual</div>
+                </div>
+                <div style="margin-top: 15px;">
+                    <button class="btn btn-primary" onclick="window.newsGenerator.generateReport()">Generate Report Now</button>
+                    <button class="btn btn-secondary" onclick="window.settingsManager.exportSettings()" style="margin-left: 10px;">Export Settings</button>
+                </div>
+                <div style="margin-top: 10px;">
+                    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="window.settingsManager.importSettings()">
+                    <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">Import Settings</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Messages -->
+        <div id="statusMessage"></div>
+
+        <!-- Report Container -->
+        <div class="report-container" id="reportContainer" style="display: none;">
+            <div class="report-header">
+                <div class="report-title">AI Research News Report</div>
+                <div class="report-date" id="reportDate"></div>
+            </div>
+            <div id="newsContent">
+                <!-- News items will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Modules -->
+    <script type="module" src="assets/js/app.js"></script>
+</body>
+</html>
