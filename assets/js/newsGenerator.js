@@ -53,7 +53,10 @@ class NewsGenerator {
             
             // Generate shareable report
             const reportDate = document.getElementById('reportDate').textContent;
-            await window.reportGenerator.generateShareableReport(newsItems, activeTopics, new Date());
+            const generatedReport = await window.reportGenerator.generateShareableReport(newsItems, activeTopics, new Date());
+            
+            // Display the full HTML report
+            this.displayFullReport(generatedReport);
             
             // Show share buttons
             if (window.showShareButtons) {
@@ -108,6 +111,12 @@ class NewsGenerator {
                     <br><small>Checking NewsAPI, ArXiv, and other sources</small>
                 </div>
             `;
+            
+            // Clear any existing full report section
+            const fullReportSection = document.getElementById('fullReportSection');
+            if (fullReportSection) {
+                fullReportSection.remove();
+            }
         }
     }
 
@@ -231,6 +240,42 @@ class NewsGenerator {
                 ${urlLink ? `<div style="margin-top: 10px; font-size: 0.9em;">${urlLink}</div>` : ''}
             </div>
         `;
+    }
+
+    // Display the full HTML report
+    displayFullReport(report) {
+        const reportContainer = document.getElementById('reportContainer');
+        if (!reportContainer) return;
+        
+        // Create a new section for the full report
+        let fullReportSection = document.getElementById('fullReportSection');
+        if (!fullReportSection) {
+            fullReportSection = document.createElement('div');
+            fullReportSection.id = 'fullReportSection';
+            fullReportSection.style.cssText = `
+                margin-top: 30px;
+                padding: 20px;
+                background: #f8f9fa;
+                border-radius: 15px;
+                border: 2px solid #667eea;
+            `;
+            reportContainer.appendChild(fullReportSection);
+        }
+        
+        // Add report header
+        fullReportSection.innerHTML = `
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: #667eea; margin-bottom: 10px;">📄 Full Generated Report</h3>
+                <p style="color: #666; font-size: 0.9em;">
+                    This is the complete HTML report that was generated and can be shared or downloaded.
+                </p>
+            </div>
+            <div style="background: white; border-radius: 10px; padding: 20px; max-height: 600px; overflow-y: auto; border: 1px solid #e0e0e0;">
+                ${report.htmlContent}
+            </div>
+        `;
+        
+        console.log('✅ Full report displayed in UI');
     }
 
     // Utility function to escape HTML
