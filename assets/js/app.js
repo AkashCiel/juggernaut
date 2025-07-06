@@ -21,6 +21,8 @@ class AINewsAgent {
         window.uiManager = this.uiManager;
         
         console.log('✅ All managers created successfully');
+        console.log('🔍 WhatsAppSharer instance:', this.whatsappSharer);
+        console.log('🔍 window.whatsappSharer:', window.whatsappSharer);
     }
 
     async init() {
@@ -107,6 +109,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Check if required classes exist
         const requiredClasses = ['SettingsManager', 'TopicsManager', 'SchedulerManager', 'NewsGenerator', 'ReportGenerator', 'WhatsAppSharer', 'GitHubUploader', 'UIManager'];
         const missingClasses = requiredClasses.filter(className => !window[className]);
+        
+        console.log('🔍 Available classes:', Object.keys(window).filter(key => 
+            key.endsWith('Manager') || key.endsWith('Generator') || key.endsWith('Sharer') || key.endsWith('Uploader') || key === 'UIManager'
+        ));
         
         if (missingClasses.length > 0) {
             console.error('❌ Missing classes:', missingClasses);
