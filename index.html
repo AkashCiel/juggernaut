@@ -56,6 +56,17 @@
             <div class="report-header">
                 <div class="report-title">AI Research News Report</div>
                 <div class="report-date" id="reportDate"></div>
+                <div class="report-actions" style="margin-top: 15px;">
+                    <button class="btn btn-primary" onclick="window.whatsappSharer.showManualShareModal()" id="shareBtn" style="display: none;">
+                        📱 Send to WhatsApp
+                    </button>
+                    <button class="btn btn-secondary" onclick="downloadCurrentReport()" id="downloadBtn" style="display: none; margin-left: 10px;">
+                        💾 Download Report
+                    </button>
+                    <button class="btn btn-secondary" onclick="viewReportsArchive()" style="margin-left: 10px;">
+                        📚 View Archive
+                    </button>
+                </div>
             </div>
             <div id="newsContent">
                 <!-- News items will be populated here -->
@@ -65,24 +76,53 @@
 
     <!-- API Key Modal -->
     <div id="apiKeyModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%;">
-            <h3 style="margin-bottom: 20px; color: #333;">🔑 API Keys Configuration</h3>
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 15px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+            <h3 style="margin-bottom: 20px; color: #333;">🔑 Settings Configuration</h3>
             
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; margin-bottom: 5px; font-weight: 600;">NewsAPI Key:</label>
-                <input type="password" id="newsApiKey" placeholder="Get free key from newsapi.org" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
-                <small style="color: #666;">Free tier: 1000 requests/day</small>
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #667eea; margin-bottom: 10px;">📡 API Keys</h4>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">NewsAPI Key:</label>
+                    <input type="password" id="newsApiKey" placeholder="Get free key from newsapi.org" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                    <small style="color: #666;">Free tier: 1000 requests/day</small>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">GitHub Token:</label>
+                    <input type="password" id="githubToken" placeholder="GitHub Personal Access Token" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                    <small style="color: #666;">For uploading and hosting reports</small>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                <h4 style="color: #667eea; margin-bottom: 15px;">📱 WhatsApp Sharing</h4>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <input type="checkbox" id="autoShareEnabled" style="transform: scale(1.2);">
+                        <span style="font-weight: 600;">Enable Automated Daily Sharing</span>
+                    </label>
+                    <small style="color: #666;">Automatically send reports to configured WhatsApp numbers</small>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">WhatsApp Numbers:</label>
+                    <div id="whatsappNumbersList" style="margin-bottom: 10px;">
+                        <!-- Numbers will be populated here -->
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <input type="tel" id="newWhatsAppNumber" placeholder="+31647388314" style="flex: 1; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                        <button class="btn btn-secondary" onclick="addWhatsAppNumber()">Add</button>
+                    </div>
+                    <small style="color: #666;">Include country code (e.g., +31 for Netherlands)</small>
+                </div>
             </div>
             
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; margin-bottom: 5px; font-weight: 600;">GitHub Token (for report sharing):</label>
-                <input type="password" id="githubToken" placeholder="GitHub Personal Access Token" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
-                <small style="color: #666;">Optional: For sharing reports</small>
-            </div>
-            
-            <div style="margin-top: 20px; text-align: right;">
+            <div style="margin-top: 25px; text-align: right;">
                 <button class="btn btn-secondary" onclick="closeApiKeyModal()" style="margin-right: 10px;">Cancel</button>
-                <button class="btn btn-primary" onclick="saveApiKeys()">Save Keys</button>
+                <button class="btn btn-primary" onclick="saveAllSettings()">Save Settings</button>
             </div>
         </div>
     </div>
@@ -95,6 +135,9 @@
     <script src="assets/js/scheduler.js"></script>
     <script src="assets/js/newsAPIs.js"></script>
     <script src="assets/js/newsGenerator.js"></script>
+    <script src="assets/js/reportGenerator.js"></script>
+    <script src="assets/js/githubUploader.js"></script>
+    <script src="assets/js/whatsappSharer.js"></script>
     <script src="assets/js/app.js"></script>
     
     <script>
@@ -103,18 +146,67 @@
             const modal = document.getElementById('apiKeyModal');
             const savedKeys = window.AINewsData.getApiKeys();
             
-            // Pre-fill existing keys
+            // Pre-fill existing API keys
             document.getElementById('newsApiKey').value = savedKeys.newsApi || '';
             document.getElementById('githubToken').value = savedKeys.githubToken || '';
             
+            // Load WhatsApp settings
+            loadWhatsAppSettings();
+            
             modal.style.display = 'block';
+        }
+        
+        function loadWhatsAppSettings() {
+            // Load auto-share setting
+            const autoShareEnabled = window.settingsManager.getAutoShare();
+            document.getElementById('autoShareEnabled').checked = autoShareEnabled;
+            
+            // Load WhatsApp numbers
+            updateWhatsAppNumbersList();
+        }
+        
+        function updateWhatsAppNumbersList() {
+            const numbersList = document.getElementById('whatsappNumbersList');
+            const numbers = window.settingsManager.getWhatsAppNumbers();
+            
+            numbersList.innerHTML = numbers.map(number => `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: white; border-radius: 8px; margin-bottom: 5px; border: 1px solid #e0e0e0;">
+                    <span style="font-family: monospace;">${number}</span>
+                    <button onclick="removeWhatsAppNumber('${number}')" style="background: #ff4757; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
+                </div>
+            `).join('');
+        }
+        
+        function addWhatsAppNumber() {
+            const input = document.getElementById('newWhatsAppNumber');
+            const number = input.value.trim();
+            
+            if (!number) {
+                alert('Please enter a WhatsApp number');
+                return;
+            }
+            
+            if (window.settingsManager.addWhatsAppNumber(number)) {
+                updateWhatsAppNumbersList();
+                input.value = '';
+            } else {
+                alert('Please enter a valid phone number with country code (e.g., +31647388314)');
+            }
+        }
+        
+        function removeWhatsAppNumber(number) {
+            if (confirm(`Remove ${number} from WhatsApp recipients?`)) {
+                window.settingsManager.removeWhatsAppNumber(number);
+                updateWhatsAppNumbersList();
+            }
         }
         
         function closeApiKeyModal() {
             document.getElementById('apiKeyModal').style.display = 'none';
         }
         
-        function saveApiKeys() {
+        function saveAllSettings() {
+            // Save API keys
             const newsApiKey = document.getElementById('newsApiKey').value.trim();
             const githubToken = document.getElementById('githubToken').value.trim();
             
@@ -122,27 +214,68 @@
             if (newsApiKey) keys.newsApi = newsApiKey;
             if (githubToken) keys.githubToken = githubToken;
             
-            // Save to data layer
+            // Save API keys
             window.AINewsData.saveApiKeys(keys);
             
-            // Update news generator
+            // Update news generator with API keys
             if (window.newsGenerator) {
                 window.newsGenerator.setApiKeys(keys);
             }
             
+            // Save auto-share setting
+            const autoShareEnabled = document.getElementById('autoShareEnabled').checked;
+            window.settingsManager.setAutoShare(autoShareEnabled);
+            
             closeApiKeyModal();
             
             if (window.uiManager) {
-                window.uiManager.showStatusMessage('API keys saved successfully!', 'success');
+                window.uiManager.showStatusMessage('Settings saved successfully!', 'success');
             }
         }
-        
+
         // Close modal when clicking outside
         document.addEventListener('click', function(e) {
             const modal = document.getElementById('apiKeyModal');
             if (e.target === modal) {
                 closeApiKeyModal();
             }
+        });
+
+        // Report sharing functions (updated)
+        function downloadCurrentReport() {
+            window.whatsappSharer.downloadReport();
+        }
+
+        function viewReportsArchive() {
+            const archiveUrl = window.githubUploader.getReportsArchiveUrl();
+            window.open(archiveUrl, '_blank');
+        }
+
+        // Show share buttons after report generation
+        function showShareButtons() {
+            const shareBtn = document.getElementById('shareBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            
+            if (shareBtn) shareBtn.style.display = 'inline-block';
+            if (downloadBtn) downloadBtn.style.display = 'inline-block';
+        }
+
+        // Hide share buttons
+        function hideShareButtons() {
+            const shareBtn = document.getElementById('shareBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            
+            if (shareBtn) shareBtn.style.display = 'none';
+            if (downloadBtn) downloadBtn.style.display = 'none';
+        }
+
+        // Handle Enter key in WhatsApp number input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('keypress', function(e) {
+                if (e.target.id === 'newWhatsAppNumber' && e.key === 'Enter') {
+                    addWhatsAppNumber();
+                }
+            });
         });
     </script>
 </body>
