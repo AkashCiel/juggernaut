@@ -1,18 +1,11 @@
 // Main Application Entry Point
 class AINewsAgent {
     constructor() {
-        // Check if all required classes are available
-        if (!window.SettingsManager || !window.TopicsManager || !window.SchedulerManager || 
-            !window.NewsGenerator || !window.UIManager) {
-            console.error('Required classes not loaded yet');
-            return;
-        }
-
-        this.settingsManager = new window.SettingsManager();
-        this.topicsManager = new window.TopicsManager(this.settingsManager);
-        this.schedulerManager = new window.SchedulerManager(this.settingsManager);
-        this.newsGenerator = new window.NewsGenerator(this.settingsManager);
-        this.uiManager = new window.UIManager();
+        this.settingsManager = new SettingsManager();
+        this.topicsManager = new TopicsManager(this.settingsManager);
+        this.schedulerManager = new SchedulerManager(this.settingsManager);
+        this.newsGenerator = new NewsGenerator(this.settingsManager);
+        this.uiManager = new UIManager();
         
         // Make managers globally available for onclick handlers
         window.settingsManager = this.settingsManager;
@@ -20,22 +13,37 @@ class AINewsAgent {
         window.schedulerManager = this.schedulerManager;
         window.newsGenerator = this.newsGenerator;
         window.uiManager = this.uiManager;
+        
+        console.log('✅ All managers created successfully');
     }
 
     async init() {
         try {
+            console.log('🚀 Starting initialization...');
+            
             // Load default topics
             const defaultTopics = await window.AINewsData.loadDefaultTopics();
+            console.log('✅ Default topics loaded:', defaultTopics.length);
             
             // Initialize all managers
             await this.settingsManager.init(defaultTopics);
+            console.log('✅ Settings manager initialized');
+            
             this.topicsManager.init();
+            console.log('✅ Topics manager initialized');
+            
             this.schedulerManager.init();
+            console.log('✅ Scheduler manager initialized');
+            
             this.newsGenerator.init();
+            console.log('✅ News generator initialized');
+            
             this.uiManager.init();
+            console.log('✅ UI manager initialized');
             
             // Set up event listeners
             this.setupEventListeners();
+            console.log('✅ Event listeners set up');
             
             // Check for scheduled runs
             this.schedulerManager.checkScheduledRun();
@@ -43,12 +51,10 @@ class AINewsAgent {
             // Show ready message
             this.uiManager.showStatusMessage('Ready to generate your AI research news report!', 'info');
             
-            console.log('🤖 AI News Agent initialized successfully');
+            console.log('🎉 AI News Agent initialized successfully');
         } catch (error) {
-            console.error('Failed to initialize AI News Agent:', error);
-            if (this.uiManager) {
-                this.uiManager.showStatusMessage('Failed to initialize application', 'error');
-            }
+            console.error('❌ Failed to initialize AI News Agent:', error);
+            alert('Failed to initialize application. Check console for details.');
         }
     }
 
@@ -61,6 +67,7 @@ class AINewsAgent {
                     this.topicsManager.addTopic();
                 }
             });
+            console.log('✅ Topic input listener added');
         }
 
         // File import handler
@@ -69,27 +76,37 @@ class AINewsAgent {
             importFile.addEventListener('change', () => {
                 this.settingsManager.importSettings();
             });
+            console.log('✅ File import listener added');
         }
     }
 }
 
-// Wait for all scripts to load, then initialize
-function initializeApp() {
-    // Check if all required classes are available
-    if (window.SettingsManager && window.TopicsManager && window.SchedulerManager && 
-        window.NewsGenerator && window.UIManager && window.AINewsData) {
+// Simple initialization - no retry mechanism
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('📄 DOM loaded, starting app initialization...');
+    
+    try {
+        // Small delay to ensure all scripts are loaded
+        await new Promise(resolve => setTimeout(resolve, 100));
         
-        const app = new AINewsAgent();
-        if (app.settingsManager) { // Check if construction was successful
-            app.init();
+        // Check if required classes exist
+        const requiredClasses = ['SettingsManager', 'TopicsManager', 'SchedulerManager', 'NewsGenerator', 'UIManager'];
+        const missingClasses = requiredClasses.filter(className => !window[className]);
+        
+        if (missingClasses.length > 0) {
+            console.error('❌ Missing classes:', missingClasses);
+            alert(`Missing required classes: ${missingClasses.join(', ')}`);
+            return;
         }
-    } else {
-        console.log('Waiting for classes to load...');
-        setTimeout(initializeApp, 100); // Try again in 100ms
+        
+        console.log('✅ All required classes are available');
+        
+        // Initialize the app
+        const app = new AINewsAgent();
+        await app.init();
+        
+    } catch (error) {
+        console.error('❌ App initialization failed:', error);
+        alert('Application failed to start. Check console for details.');
     }
-}
-
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(initializeApp, 50); // Small delay to ensure scripts are loaded
 });
