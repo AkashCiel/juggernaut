@@ -246,23 +246,29 @@ class NewsGenerator {
     displayFullReport(report) {
         const reportContainer = document.getElementById('reportContainer');
         if (!reportContainer) return;
-        
-        // Create a new section for the full report
+
+        // Extract <body>...</body> content
+        let bodyContent = report.htmlContent;
+        const bodyMatch = bodyContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+        if (bodyMatch) {
+            bodyContent = bodyMatch[1];
+        }
+
+        // Create or update the full report section
         let fullReportSection = document.getElementById('fullReportSection');
         if (!fullReportSection) {
             fullReportSection = document.createElement('div');
             fullReportSection.id = 'fullReportSection';
             fullReportSection.style.cssText = `
                 margin-top: 30px;
-                padding: 20px;
-                background: #f8f9fa;
-                border-radius: 15px;
-                border: 2px solid #667eea;
+                padding: 0;
+                background: none;
+                border: none;
             `;
             reportContainer.appendChild(fullReportSection);
         }
-        
-        // Add report header
+
+        // Add report header and extracted body content in a scrollable box
         fullReportSection.innerHTML = `
             <div style="margin-bottom: 20px;">
                 <h3 style="color: #667eea; margin-bottom: 10px;">📄 Full Generated Report</h3>
@@ -271,11 +277,14 @@ class NewsGenerator {
                 </p>
             </div>
             <div style="background: white; border-radius: 10px; padding: 20px; max-height: 600px; overflow-y: auto; border: 1px solid #e0e0e0;">
-                ${report.htmlContent}
+                ${bodyContent}
             </div>
         `;
-        
-        console.log('✅ Full report displayed in UI');
+
+        // Optionally, scroll to the report preview
+        // fullReportSection.scrollIntoView({ behavior: 'smooth' });
+
+        console.log('✅ Full report displayed in UI:', bodyContent);
     }
 
     // Utility function to escape HTML
