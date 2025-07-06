@@ -111,24 +111,12 @@ window.AINewsData = {
     // Future: Add functions for real API integration
     async fetchRealNewsData(topics, sources = []) {
         // Placeholder for real API integration
-        // This would integrate with:
-        // - ArXiv API for research papers
-        // - Google News API
-        // - Reddit API for discussions
-        // - Twitter API for trending topics
-        // - GitHub API for trending AI repositories
-        
         console.log('Real news fetching not implemented yet');
         return this.getMockNewsData();
     },
 
     async loadConfiguration() {
         // Placeholder for loading external configuration
-        // Could load from:
-        // - External JSON files
-        // - Environment variables
-        // - External APIs
-        
         return {
             apiKeys: {},
             sources: [],

@@ -38,11 +38,12 @@
                 </div>
                 <div style="margin-top: 15px;">
                     <button class="btn btn-primary" onclick="window.newsGenerator.generateReport()">Generate Report Now</button>
-                    <button class="btn btn-secondary" onclick="window.settingsManager.exportSettings()" style="margin-left: 10px;">Export Settings</button>
+                    <button class="btn btn-secondary" onclick="showApiKeyModal()" style="margin-left: 10px;">API Keys</button>
                 </div>
                 <div style="margin-top: 10px;">
+                    <button class="btn btn-secondary" onclick="window.settingsManager.exportSettings()">Export Settings</button>
                     <input type="file" id="importFile" accept=".json" style="display: none;" onchange="window.settingsManager.importSettings()">
-                    <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">Import Settings</button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()" style="margin-left: 10px;">Import Settings</button>
                 </div>
             </div>
         </div>
@@ -62,13 +63,87 @@
         </div>
     </div>
 
+    <!-- API Key Modal -->
+    <div id="apiKeyModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%;">
+            <h3 style="margin-bottom: 20px; color: #333;">🔑 API Keys Configuration</h3>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">NewsAPI Key:</label>
+                <input type="password" id="newsApiKey" placeholder="Get free key from newsapi.org" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                <small style="color: #666;">Free tier: 1000 requests/day</small>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">GitHub Token (for report sharing):</label>
+                <input type="password" id="githubToken" placeholder="GitHub Personal Access Token" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                <small style="color: #666;">Optional: For sharing reports</small>
+            </div>
+            
+            <div style="margin-top: 20px; text-align: right;">
+                <button class="btn btn-secondary" onclick="closeApiKeyModal()" style="margin-right: 10px;">Cancel</button>
+                <button class="btn btn-primary" onclick="saveApiKeys()">Save Keys</button>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript Files - Load in dependency order -->
     <script src="assets/js/data.js"></script>
     <script src="assets/js/ui.js"></script>
     <script src="assets/js/storage.js"></script>
     <script src="assets/js/topics.js"></script>
     <script src="assets/js/scheduler.js"></script>
+    <script src="assets/js/newsAPIs.js"></script>
     <script src="assets/js/newsGenerator.js"></script>
     <script src="assets/js/app.js"></script>
+    
+    <script>
+        // API Key Modal Functions
+        function showApiKeyModal() {
+            const modal = document.getElementById('apiKeyModal');
+            const savedKeys = window.AINewsData.getApiKeys();
+            
+            // Pre-fill existing keys
+            document.getElementById('newsApiKey').value = savedKeys.newsApi || '';
+            document.getElementById('githubToken').value = savedKeys.githubToken || '';
+            
+            modal.style.display = 'block';
+        }
+        
+        function closeApiKeyModal() {
+            document.getElementById('apiKeyModal').style.display = 'none';
+        }
+        
+        function saveApiKeys() {
+            const newsApiKey = document.getElementById('newsApiKey').value.trim();
+            const githubToken = document.getElementById('githubToken').value.trim();
+            
+            const keys = {};
+            if (newsApiKey) keys.newsApi = newsApiKey;
+            if (githubToken) keys.githubToken = githubToken;
+            
+            // Save to data layer
+            window.AINewsData.saveApiKeys(keys);
+            
+            // Update news generator
+            if (window.newsGenerator) {
+                window.newsGenerator.setApiKeys(keys);
+            }
+            
+            closeApiKeyModal();
+            
+            if (window.uiManager) {
+                window.uiManager.showStatusMessage('API keys saved successfully!', 'success');
+            }
+        }
+        
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('apiKeyModal');
+            if (e.target === modal) {
+                closeApiKeyModal();
+            }
+        });
+    </script>
 </body>
 </html>
