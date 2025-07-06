@@ -57,7 +57,7 @@
                 <div class="report-title">AI Research News Report</div>
                 <div class="report-date" id="reportDate"></div>
                 <div class="report-actions" style="margin-top: 15px;">
-                    <button class="btn btn-primary" onclick="window.whatsappSharer.showManualShareModal()" id="shareBtn" style="display: none;">
+                    <button class="btn btn-primary" onclick="showManualShareModal()" id="shareBtn" style="display: none;">
                         📱 Send to WhatsApp
                     </button>
                     <button class="btn btn-secondary" onclick="downloadCurrentReport()" id="downloadBtn" style="display: none; margin-left: 10px;">
@@ -243,7 +243,21 @@
 
         // Report sharing functions (updated)
         function downloadCurrentReport() {
-            window.whatsappSharer.downloadReport();
+            if (window.whatsappSharer && typeof window.whatsappSharer.downloadReport === 'function') {
+                window.whatsappSharer.downloadReport();
+            } else {
+                console.error('❌ whatsappSharer not available');
+                alert('WhatsApp sharer not ready. Please wait for the app to initialize.');
+            }
+        }
+
+        function showManualShareModal() {
+            if (window.whatsappSharer && typeof window.whatsappSharer.showManualShareModal === 'function') {
+                window.whatsappSharer.showManualShareModal();
+            } else {
+                console.error('❌ whatsappSharer not available');
+                alert('WhatsApp sharer not ready. Please wait for the app to initialize.');
+            }
         }
 
         function viewReportsArchive() {

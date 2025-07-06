@@ -53,7 +53,10 @@ class NewsGenerator {
             
             // Generate shareable report
             const reportDate = document.getElementById('reportDate').textContent;
-            await window.reportGenerator.generateShareableReport(newsItems, activeTopics, new Date());
+            const generatedReport = await window.reportGenerator.generateShareableReport(newsItems, activeTopics, new Date());
+            
+            // Display the full HTML report
+            this.displayFullReport(generatedReport);
             
             // Show share buttons
             if (window.showShareButtons) {
@@ -108,6 +111,12 @@ class NewsGenerator {
                     <br><small>Checking NewsAPI, ArXiv, and other sources</small>
                 </div>
             `;
+            
+            // Clear any existing full report section
+            const fullReportSection = document.getElementById('fullReportSection');
+            if (fullReportSection) {
+                fullReportSection.remove();
+            }
         }
     }
 
@@ -231,6 +240,48 @@ class NewsGenerator {
                 ${urlLink ? `<div style="margin-top: 10px; font-size: 0.9em;">${urlLink}</div>` : ''}
             </div>
         `;
+    }
+
+    // Display the full HTML report using an iframe for isolation
+    displayFullReport(report) {
+        const reportContainer = document.getElementById('reportContainer');
+        if (!reportContainer) return;
+
+        // Create or update the full report section
+        let fullReportSection = document.getElementById('fullReportSection');
+        if (!fullReportSection) {
+            fullReportSection = document.createElement('div');
+            fullReportSection.id = 'fullReportSection';
+            fullReportSection.style.cssText = `
+                margin-top: 30px;
+                padding: 0;
+                background: none;
+                border: none;
+            `;
+            reportContainer.appendChild(fullReportSection);
+        }
+
+        // Add header and iframe
+        fullReportSection.innerHTML = `
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: #667eea; margin-bottom: 10px;">📄 Full Generated Report</h3>
+                <p style="color: #666; font-size: 0.9em;">
+                    This is the complete HTML report that was generated and can be shared or downloaded.
+                </p>
+            </div>
+            <iframe id="fullReportIframe" style="width: 100%; height: 600px; border-radius: 10px; border: 1px solid #e0e0e0; background: white;"></iframe>
+        `;
+
+        // Write the full HTML content into the iframe
+        const iframe = document.getElementById('fullReportIframe');
+        if (iframe) {
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            doc.open();
+            doc.write(report.htmlContent);
+            doc.close();
+        }
+
+        console.log('✅ Full report displayed in iframe preview.');
     }
 
     // Utility function to escape HTML

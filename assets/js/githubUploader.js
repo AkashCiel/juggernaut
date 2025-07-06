@@ -316,6 +316,49 @@ class GitHubUploader {
     getReportsArchiveUrl() {
         return `${this.getGitHubPagesBaseUrl()}/${this.reportFolder}/`;
     }
+
+    // Display the full HTML report
+    displayFullReport(report) {
+        const reportContainer = document.getElementById('reportContainer');
+        if (!reportContainer) return;
+
+        // Extract <body>...</body> content
+        let bodyContent = report.htmlContent;
+        const bodyMatch = bodyContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+        if (bodyMatch) {
+            bodyContent = bodyMatch[1];
+        }
+
+        // Create a new section for the full report
+        let fullReportSection = document.getElementById('fullReportSection');
+        if (!fullReportSection) {
+            fullReportSection = document.createElement('div');
+            fullReportSection.id = 'fullReportSection';
+            fullReportSection.style.cssText = `
+                margin-top: 30px;
+                padding: 20px;
+                background: #f8f9fa;
+                border-radius: 15px;
+                border: 2px solid #667eea;
+            `;
+            reportContainer.appendChild(fullReportSection);
+        }
+
+        // Add report header and extracted body content
+        fullReportSection.innerHTML = `
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: #667eea; margin-bottom: 10px;">📄 Full Generated Report</h3>
+                <p style="color: #666; font-size: 0.9em;">
+                    This is the complete HTML report that was generated and can be shared or downloaded.
+                </p>
+            </div>
+            <div style="background: white; border-radius: 10px; padding: 20px; max-height: 600px; overflow-y: auto; border: 1px solid #e0e0e0;">
+                ${bodyContent}
+            </div>
+        `;
+
+        console.log('✅ Full report displayed in UI:', bodyContent);
+    }
 }
 
 // Make available globally

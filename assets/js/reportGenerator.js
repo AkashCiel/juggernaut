@@ -22,7 +22,7 @@ class ReportGenerator {
                 newsItems: newsItems,
                 metadata: {
                     totalItems: newsItems.length,
-                    newsArticles: newsItems.filter(item => item.type === 'news').length,
+                    newsArticles: newsItems.filter(item => item.type === 'news' || item.type === 'mock').length,
                     researchPapers: newsItems.filter(item => item.type === 'research').length,
                     generatedAt: new Date().toISOString()
                 }
@@ -51,8 +51,8 @@ class ReportGenerator {
     createReportHTML(reportData) {
         const { id, date, topics, newsItems, metadata } = reportData;
         
-        // Separate news by type
-        const newsArticles = newsItems.filter(item => item.type === 'news');
+        // Separate news by type (treat 'mock' as news)
+        const newsArticles = newsItems.filter(item => item.type === 'news' || item.type === 'mock');
         const researchPapers = newsItems.filter(item => item.type === 'research');
 
         return `<!DOCTYPE html>
