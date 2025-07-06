@@ -1,7 +1,5 @@
 // News Generation Logic
-import { getMockNewsData } from './data.js';
-
-export class NewsGenerator {
+window.NewsGenerator = class NewsGenerator {
     constructor(settingsManager) {
         this.settingsManager = settingsManager;
         this.isGenerating = false;
@@ -79,7 +77,7 @@ export class NewsGenerator {
 
     async generateNewsItems() {
         const activeTopics = this.settingsManager.getTopics();
-        const mockNewsData = await getMockNewsData();
+        const mockNewsData = await window.AINewsData.getMockNewsData();
         
         // Filter news items based on active topics
         const relevantNews = mockNewsData.filter(item => 
@@ -155,4 +153,4 @@ export class NewsGenerator {
         };
         return text.replace(/[&<>"']/g, (m) => map[m]);
     }
-}
+};

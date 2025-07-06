@@ -1,5 +1,5 @@
 // UI Management and Interactions
-export class UIManager {
+window.UIManager = class UIManager {
     constructor() {
         this.statusTimeout = null;
     }
@@ -131,4 +131,4 @@ export class UIManager {
             });
         }
     }
-}
+};

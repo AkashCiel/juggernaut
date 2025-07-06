@@ -1,18 +1,11 @@
 // Main Application Entry Point
-import { SettingsManager } from './storage.js';
-import { TopicsManager } from './topics.js';
-import { SchedulerManager } from './scheduler.js';
-import { NewsGenerator } from './newsGenerator.js';
-import { UIManager } from './ui.js';
-import { loadDefaultTopics } from './data.js';
-
 class AINewsAgent {
     constructor() {
-        this.settingsManager = new SettingsManager();
-        this.topicsManager = new TopicsManager(this.settingsManager);
-        this.schedulerManager = new SchedulerManager(this.settingsManager);
-        this.newsGenerator = new NewsGenerator(this.settingsManager);
-        this.uiManager = new UIManager();
+        this.settingsManager = new window.SettingsManager();
+        this.topicsManager = new window.TopicsManager(this.settingsManager);
+        this.schedulerManager = new window.SchedulerManager(this.settingsManager);
+        this.newsGenerator = new window.NewsGenerator(this.settingsManager);
+        this.uiManager = new window.UIManager();
         
         // Make managers globally available for onclick handlers
         window.settingsManager = this.settingsManager;
@@ -25,7 +18,7 @@ class AINewsAgent {
     async init() {
         try {
             // Load default topics
-            const defaultTopics = await loadDefaultTopics();
+            const defaultTopics = await window.AINewsData.loadDefaultTopics();
             
             // Initialize all managers
             await this.settingsManager.init(defaultTopics);
@@ -53,19 +46,24 @@ class AINewsAgent {
     setupEventListeners() {
         // Topic input enter key
         const topicInput = document.getElementById('newTopicInput');
-        topicInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                this.topicsManager.addTopic();
-            }
-        });
+        if (topicInput) {
+            topicInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.topicsManager.addTopic();
+                }
+            });
+        }
 
         // Schedule options - now handled by onclick in HTML
         // No need for additional event listeners since we're using onclick
 
         // File import handler
-        document.getElementById('importFile').addEventListener('change', () => {
-            this.settingsManager.importSettings();
-        });
+        const importFile = document.getElementById('importFile');
+        if (importFile) {
+            importFile.addEventListener('change', () => {
+                this.settingsManager.importSettings();
+            });
+        }
     }
 }
 

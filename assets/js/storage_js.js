@@ -1,5 +1,5 @@
 // Settings and Storage Management
-export class SettingsManager {
+window.SettingsManager = class SettingsManager {
     constructor() {
         this.settings = {
             topics: [],
@@ -167,4 +167,4 @@ export class SettingsManager {
         reader.readAsText(file);
         fileInput.value = '';
     }
-}
+};

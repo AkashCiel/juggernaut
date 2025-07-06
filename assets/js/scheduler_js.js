@@ -1,5 +1,5 @@
 // Scheduling Management
-export class SchedulerManager {
+window.SchedulerManager = class SchedulerManager {
     constructor(settingsManager) {
         this.settingsManager = settingsManager;
     }
@@ -110,4 +110,4 @@ export class SchedulerManager {
         
         return nextRun;
     }
-}
+};
