@@ -1,5 +1,25 @@
 // Data Management and Mock Data
 window.AINewsData = {
+    // API Keys management
+    getApiKeys() {
+        try {
+            const saved = localStorage.getItem('aiNewsApiKeys');
+            return saved ? JSON.parse(saved) : {};
+        } catch (error) {
+            console.error('Error loading API keys:', error);
+            return {};
+        }
+    },
+
+    saveApiKeys(keys) {
+        try {
+            localStorage.setItem('aiNewsApiKeys', JSON.stringify(keys));
+            console.log('✅ API keys saved successfully');
+        } catch (error) {
+            console.error('Error saving API keys:', error);
+        }
+    },
+
     async loadDefaultTopics() {
         // Default AI research topics
         return [
