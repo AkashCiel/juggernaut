@@ -1,10 +1,17 @@
-// News APIs Integration
+// News APIs Integration - CORS Fixed Version
 class NewsAPIs {
     constructor() {
         this.apiKeys = {
             newsApi: '13899fe8453b4899a359ce9e1545696e', // Get from newsapi.org
             githubToken: 'YOUR_GITHUB_TOKEN_HERE' // For uploading reports
         };
+        
+        // CORS proxy options (fallback chain)
+        this.corsProxies = [
+            'https://api.allorigins.win/raw?url=',
+            'https://corsproxy.io/?',
+            'https://cors-anywhere.herokuapp.com/'
+        ];
         
         // Leading AI research companies to filter for
         this.aiCompanies = [
@@ -48,7 +55,7 @@ class NewsAPIs {
         }
     }
 
-    // Fetch news articles from NewsAPI.org
+    // Fetch news articles from NewsAPI.org with CORS proxy
     async fetchNewsArticles(topics) {
         const cacheKey = `news_${topics.join('_')}`;
         
@@ -69,21 +76,39 @@ class NewsAPIs {
             // Fetch for each topic
             for (const topic of topics.slice(0, 5)) { // Limit to 5 topics to stay within API limits
                 const query = this.buildNewsQuery(topic);
-                const newsApiUrl = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&sortBy=publishedAt&language=en&pageSize=10&apiKey=${this.apiKeys.newsApi}`;
+                const apiUrl = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&sortBy=publishedAt&language=en&pageSize=10&apiKey=${this.apiKeys.newsApi}`;
                 
-                // Use CORS proxy for local development
-                const proxyUrl = 'https://api.allorigins.win/raw?url=';
-                const useProxy = window.location.protocol === 'file:';
-                const url = useProxy ? `${proxyUrl}${encodeURIComponent(newsApiUrl)}` : newsApiUrl;
+                // Try CORS proxies in order
+                let response = null;
+                let lastError = null;
                 
-                if (useProxy) {
-                    console.log('🌐 Using CORS proxy for NewsAPI request');
+                for (const proxy of this.corsProxies) {
+                    try {
+                        const proxiedUrl = proxy + encodeURIComponent(apiUrl);
+                        console.log(`🔄 Trying proxy: ${proxy.split('?')[0]}...`);
+                        
+                        response = await fetch(proxiedUrl, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            console.log(`✅ Success with proxy: ${proxy.split('?')[0]}`);
+                            break;
+                        } else {
+                            throw new Error(`Proxy responded with ${response.status}`);
+                        }
+                    } catch (error) {
+                        console.warn(`⚠️ Proxy ${proxy.split('?')[0]} failed:`, error.message);
+                        lastError = error;
+                        continue;
+                    }
                 }
                 
-                const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error(`NewsAPI error: ${response.status}`);
+                if (!response || !response.ok) {
+                    throw new Error(`All CORS proxies failed. Last error: ${lastError?.message}`);
                 }
                 
                 const data = await response.json();
@@ -123,7 +148,7 @@ class NewsAPIs {
         }
     }
 
-    // Fetch research papers from ArXiv
+    // Fetch research papers from ArXiv (ArXiv allows CORS, so no proxy needed)
     async fetchResearchPapers(topics) {
         const cacheKey = `arxiv_${topics.join('_')}`;
         
@@ -139,16 +164,7 @@ class NewsAPIs {
             // Fetch for each topic
             for (const topic of topics.slice(0, 3)) { // Limit topics for ArXiv
                 const query = this.buildArxivQuery(topic);
-                const arxivUrl = `https://export.arxiv.org/api/query?search_query=${encodeURIComponent(query)}&start=0&max_results=5&sortBy=submittedDate&sortOrder=descending`;
-                
-                // Use CORS proxy for local development
-                const proxyUrl = 'https://api.allorigins.win/raw?url=';
-                const useProxy = window.location.protocol === 'file:';
-                const url = useProxy ? `${proxyUrl}${encodeURIComponent(arxivUrl)}` : arxivUrl;
-                
-                if (useProxy) {
-                    console.log('🌐 Using CORS proxy for ArXiv request');
-                }
+                const url = `https://export.arxiv.org/api/query?search_query=${encodeURIComponent(query)}&start=0&max_results=5&sortBy=submittedDate&sortOrder=descending`;
                 
                 const response = await fetch(url);
                 
