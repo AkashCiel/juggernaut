@@ -53,15 +53,7 @@ class NewsGenerator {
             
             // Generate shareable report
             const reportDate = document.getElementById('reportDate').textContent;
-            console.log('🔍 About to call reportGenerator.generateShareableReport');
-            console.log('🔍 window.reportGenerator:', window.reportGenerator);
-            console.log('🔍 typeof window.reportGenerator:', typeof window.reportGenerator);
-            if (window.reportGenerator && typeof window.reportGenerator.generateShareableReport === 'function') {
-                await window.reportGenerator.generateShareableReport(newsItems, activeTopics, new Date());
-            } else {
-                console.error('❌ reportGenerator is not available or generateShareableReport is not a function');
-                console.error('❌ Available methods:', window.reportGenerator ? Object.getOwnPropertyNames(window.reportGenerator) : 'undefined');
-            }
+            await window.reportGenerator.generateShareableReport(newsItems, activeTopics, new Date());
             
             // Show share buttons
             if (window.showShareButtons) {
