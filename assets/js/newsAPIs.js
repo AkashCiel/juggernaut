@@ -29,7 +29,10 @@ class NewsAPIs {
     // Set API keys (called from settings)
     setApiKeys(keys) {
         this.apiKeys = { ...this.apiKeys, ...keys };
-        console.log('✅ API keys updated');
+        console.log('✅ API keys updated:', {
+            newsApi: this.apiKeys.newsApi ? 'SET' : 'NOT SET',
+            githubToken: this.apiKeys.githubToken ? 'SET' : 'NOT SET'
+        });
     }
 
     // Main function to fetch all news
@@ -67,7 +70,12 @@ class NewsAPIs {
             return this.cache.get(cacheKey).data;
         }
 
-        if (!this.apiKeys.newsApi || this.apiKeys.newsApi === 'YOUR_NEWSAPI_KEY_HERE' || this.apiKeys.newsApi === '13899fe8453b4899a359ce9e1545696e') {
+        console.log('🔍 Checking NewsAPI key:', {
+            hasKey: !!this.apiKeys.newsApi,
+            keyValue: this.apiKeys.newsApi ? this.apiKeys.newsApi.substring(0, 10) + '...' : 'NOT SET',
+        });
+        
+        if (!this.apiKeys.newsApi) {
             console.warn('⚠️ NewsAPI key not set or invalid, using mock data');
             return [];
         }
