@@ -114,6 +114,25 @@ class SchedulerManager {
                     } else {
                         console.log('📱 Auto-sharing disabled, report generated only');
                     }
+                    
+                    // If auto-email is enabled, trigger email sending
+                    if (window.emailSender && window.emailSender.getAutoEmail()) {
+                        console.log('📧 Triggering automated email sending...');
+                        
+                        const activeTopics = window.settingsManager.getTopics();
+                        const lastReport = window.reportGenerator.getLastReport();
+                        
+                        if (lastReport) {
+                            // Auto-send the generated report via email
+                            await window.emailSender.autoSendReport(
+                                lastReport, 
+                                activeTopics, 
+                                new Date()
+                            );
+                        }
+                    } else {
+                        console.log('📧 Auto-email disabled, email sending skipped');
+                    }
                 } catch (error) {
                     console.error('❌ Error in scheduled run:', error);
                     if (window.uiManager) {

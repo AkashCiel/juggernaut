@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/components.css">
     <link rel="stylesheet" href="assets/css/animations.css">
+    <!-- Mailgun API compatibility -->
+    <script>
+        // Polyfill for FormData if needed
+        if (typeof FormData === 'undefined') {
+            console.warn('FormData not available, email functionality may not work');
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -60,6 +67,9 @@
                     <button class="btn btn-primary" onclick="showManualShareModal()" id="shareBtn" style="display: none;">
                         📱 Send to WhatsApp
                     </button>
+                    <button class="btn btn-primary" onclick="showManualEmailModal()" id="emailBtn" style="display: none; margin-left: 10px;">
+                        📧 Email Report
+                    </button>
                     <button class="btn btn-secondary" onclick="downloadCurrentReport()" id="downloadBtn" style="display: none; margin-left: 10px;">
                         💾 Download Report
                     </button>
@@ -95,7 +105,7 @@
                 </div>
             </div>
 
-            <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                            <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
                 <h4 style="color: #667eea; margin-bottom: 15px;">📱 WhatsApp Sharing</h4>
                 
                 <div style="margin-bottom: 15px;">
@@ -119,6 +129,43 @@
                     <small style="color: #666;">Include country code (e.g., +31 for Netherlands)</small>
                 </div>
             </div>
+
+            <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                <h4 style="color: #667eea; margin-bottom: 15px;">📧 Email Sharing</h4>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <input type="checkbox" id="autoEmailEnabled" style="transform: scale(1.2);">
+                        <span style="font-weight: 600;">Enable Automated Email Sharing</span>
+                    </label>
+                    <small style="color: #666;">Automatically send reports to configured email addresses</small>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Mailgun API Key:</label>
+                    <input type="password" id="mailgunApiKey" placeholder="Get from mailgun.com" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                    <small style="color: #666;">Required for sending emails</small>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Mailgun Domain:</label>
+                    <input type="text" id="mailgunDomain" placeholder="your-domain.com" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                    <small style="color: #666;">Your verified Mailgun domain</small>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Email Recipients:</label>
+                    <div id="emailRecipientsList" style="margin-bottom: 10px;">
+                        <!-- Email addresses will be populated here -->
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <input type="email" id="newEmailRecipient" placeholder="recipient@example.com" style="flex: 1; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                        <button class="btn btn-secondary" onclick="addEmailRecipient()">Add</button>
+                    </div>
+                    <small style="color: #666;">Add email addresses to receive reports</small>
+                </div>
+            </div>
             
             <div style="margin-top: 25px; text-align: right;">
                 <button class="btn btn-secondary" onclick="closeApiKeyModal()" style="margin-right: 10px;">Cancel</button>
@@ -138,6 +185,7 @@
     <script src="assets/js/reportGenerator.js"></script>
     <script src="assets/js/githubUploader.js"></script>
     <script src="assets/js/whatsappSharer.js"></script>
+    <script src="assets/js/emailSender.js"></script>
     <script src="assets/js/app.js"></script>
     
     <script>
@@ -153,6 +201,9 @@
             // Load WhatsApp settings
             loadWhatsAppSettings();
             
+            // Load email settings
+            loadEmailSettings();
+            
             modal.style.display = 'block';
         }
         
@@ -163,6 +214,20 @@
             
             // Load WhatsApp numbers
             updateWhatsAppNumbersList();
+        }
+        
+        function loadEmailSettings() {
+            // Load auto-email setting
+            const autoEmailEnabled = window.settingsManager.getAutoEmail();
+            document.getElementById('autoEmailEnabled').checked = autoEmailEnabled;
+            
+            // Load email configuration
+            const emailConfig = window.settingsManager.getEmailConfig();
+            document.getElementById('mailgunApiKey').value = emailConfig.apiKey || '';
+            document.getElementById('mailgunDomain').value = emailConfig.domain || '';
+            
+            // Load email recipients
+            updateEmailRecipientsList();
         }
         
         function updateWhatsAppNumbersList() {
@@ -201,6 +266,43 @@
             }
         }
         
+        function updateEmailRecipientsList() {
+            const recipientsList = document.getElementById('emailRecipientsList');
+            const recipients = window.settingsManager.getEmailRecipients();
+            
+            recipientsList.innerHTML = recipients.map(email => `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: white; border-radius: 8px; margin-bottom: 5px; border: 1px solid #e0e0e0;">
+                    <span style="font-family: monospace;">${email}</span>
+                    <button onclick="removeEmailRecipient('${email}')" style="background: #ff4757; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
+                </div>
+            `).join('');
+        }
+        
+        function addEmailRecipient() {
+            const input = document.getElementById('newEmailRecipient');
+            const email = input.value.trim();
+            
+            if (!email) {
+                alert('Please enter an email address');
+                return;
+            }
+            
+            try {
+                window.settingsManager.addEmailRecipient(email);
+                updateEmailRecipientsList();
+                input.value = '';
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+        
+        function removeEmailRecipient(email) {
+            if (confirm(`Remove ${email} from email recipients?`)) {
+                window.settingsManager.removeEmailRecipient(email);
+                updateEmailRecipientsList();
+            }
+        }
+        
         function closeApiKeyModal() {
             document.getElementById('apiKeyModal').style.display = 'none';
         }
@@ -225,6 +327,21 @@
             // Save auto-share setting
             const autoShareEnabled = document.getElementById('autoShareEnabled').checked;
             window.settingsManager.setAutoShare(autoShareEnabled);
+            
+            // Save email settings
+            const mailgunApiKey = document.getElementById('mailgunApiKey').value.trim();
+            const mailgunDomain = document.getElementById('mailgunDomain').value.trim();
+            const autoEmailEnabled = document.getElementById('autoEmailEnabled').checked;
+            
+            if (mailgunApiKey && mailgunDomain) {
+                const emailConfig = {
+                    apiKey: mailgunApiKey,
+                    domain: mailgunDomain
+                };
+                window.settingsManager.setEmailConfig(emailConfig);
+            }
+            
+            window.settingsManager.setAutoEmail(autoEmailEnabled);
             
             closeApiKeyModal();
             
@@ -259,6 +376,15 @@
                 alert('WhatsApp sharer not ready. Please wait for the app to initialize.');
             }
         }
+        
+        function showManualEmailModal() {
+            if (window.emailSender && typeof window.emailSender.showManualEmailModal === 'function') {
+                window.emailSender.showManualEmailModal();
+            } else {
+                console.error('❌ emailSender not available');
+                alert('Email sender not ready. Please wait for the app to initialize.');
+            }
+        }
 
         function viewReportsArchive() {
             const archiveUrl = window.githubUploader.getReportsArchiveUrl();
@@ -268,18 +394,22 @@
         // Show share buttons after report generation
         function showShareButtons() {
             const shareBtn = document.getElementById('shareBtn');
+            const emailBtn = document.getElementById('emailBtn');
             const downloadBtn = document.getElementById('downloadBtn');
             
             if (shareBtn) shareBtn.style.display = 'inline-block';
+            if (emailBtn) emailBtn.style.display = 'inline-block';
             if (downloadBtn) downloadBtn.style.display = 'inline-block';
         }
 
         // Hide share buttons
         function hideShareButtons() {
             const shareBtn = document.getElementById('shareBtn');
+            const emailBtn = document.getElementById('emailBtn');
             const downloadBtn = document.getElementById('downloadBtn');
             
             if (shareBtn) shareBtn.style.display = 'none';
+            if (emailBtn) emailBtn.style.display = 'none';
             if (downloadBtn) downloadBtn.style.display = 'none';
         }
 
