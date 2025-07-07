@@ -124,14 +124,48 @@ class NewsGenerator {
 
     async generateNewsItems(activeTopics) {
         try {
-            console.log('🌐 Fetching news from real sources...');
+            console.log('�� Fetching news from enabled sources...');
             
-            // Try to fetch from real APIs
-            const realNews = await this.newsAPIs.fetchAllNews(activeTopics);
+            const newsEnabled = this.settingsManager.getEnableNewsSearch();
+            const researchEnabled = this.settingsManager.getEnableResearchSearch();
             
-            if (realNews && realNews.length > 0) {
-                console.log(`✅ Successfully fetched ${realNews.length} real news items`);
-                return realNews.slice(0, 20); // Limit to top 20 items
+            console.log('🔍 Search settings:', { newsEnabled, researchEnabled });
+            
+            let allNews = [];
+            
+            // Fetch news articles if enabled
+            if (newsEnabled) {
+                try {
+                    const newsArticles = await this.newsAPIs.fetchNewsArticles(activeTopics);
+                    if (newsArticles && newsArticles.length > 0) {
+                        console.log(`✅ Successfully fetched ${newsArticles.length} news articles`);
+                        allNews.push(...newsArticles);
+                    }
+                } catch (error) {
+                    console.error('❌ Error fetching news articles:', error);
+                }
+            } else {
+                console.log('📰 News search disabled, skipping news articles');
+            }
+            
+            // Fetch research papers if enabled
+            if (researchEnabled) {
+                try {
+                    const researchPapers = await this.newsAPIs.fetchResearchPapers(activeTopics);
+                    if (researchPapers && researchPapers.length > 0) {
+                        console.log(`✅ Successfully fetched ${researchPapers.length} research papers`);
+                        allNews.push(...researchPapers);
+                    }
+                } catch (error) {
+                    console.error('❌ Error fetching research papers:', error);
+                }
+            } else {
+                console.log('🔬 Research search disabled, skipping research papers');
+            }
+            
+            if (allNews.length > 0) {
+                console.log(`✅ Successfully fetched ${allNews.length} total items`);
+                return allNews.slice(0, 20); // Limit to top 20 items
             } else {
                 console.log('⚠️ No real news found, using mock data');
                 return await this.getMockFilteredNews(activeTopics);
