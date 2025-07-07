@@ -103,6 +103,12 @@
                     <input type="password" id="githubToken" placeholder="GitHub Personal Access Token" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
                     <small style="color: #666;">For uploading and hosting reports</small>
                 </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">OpenAI API Key:</label>
+                    <input type="password" id="openaiApiKey" placeholder="sk-..." style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                    <small style="color: #666;">For AI-powered report summaries (optional)</small>
+                </div>
             </div>
 
             <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
@@ -201,6 +207,7 @@
     <script src="assets/js/topics.js"></script>
     <script src="assets/js/scheduler.js"></script>
     <script src="assets/js/newsAPIs.js"></script>
+    <script src="assets/js/summaryGenerator.js"></script>
     <script src="assets/js/newsGenerator.js"></script>
     <script src="assets/js/reportGenerator.js"></script>
     <script src="assets/js/githubUploader.js"></script>
@@ -217,6 +224,7 @@
             // Pre-fill existing API keys
             document.getElementById('newsApiKey').value = savedKeys.newsApi || '';
             document.getElementById('githubToken').value = savedKeys.githubToken || '';
+            document.getElementById('openaiApiKey').value = savedKeys.openaiApi || '';
             
             // Load WhatsApp settings
             loadWhatsAppSettings();
@@ -343,10 +351,12 @@
             // Save API keys
             const newsApiKey = document.getElementById('newsApiKey').value.trim();
             const githubToken = document.getElementById('githubToken').value.trim();
+            const openaiApiKey = document.getElementById('openaiApiKey').value.trim();
             
             const keys = {};
             if (newsApiKey) keys.newsApi = newsApiKey;
             if (githubToken) keys.githubToken = githubToken;
+            if (openaiApiKey) keys.openaiApi = openaiApiKey;
             
             // Save API keys
             window.AINewsData.saveApiKeys(keys);

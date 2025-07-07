@@ -9,6 +9,7 @@ class AINewsAgent {
         this.whatsappSharer = new WhatsAppSharer();
         this.githubUploader = new GitHubUploader();
         this.emailSender = new EmailSender();
+        this.summaryGenerator = new SummaryGenerator();
         this.uiManager = new UIManager();
         
         // Make managers globally available for onclick handlers
@@ -20,6 +21,7 @@ class AINewsAgent {
         window.whatsappSharer = this.whatsappSharer;
         window.githubUploader = this.githubUploader;
         window.emailSender = this.emailSender;
+        window.summaryGenerator = this.summaryGenerator;
         window.uiManager = this.uiManager;
         
         console.log('✅ All managers created successfully');
@@ -59,6 +61,9 @@ class AINewsAgent {
             
             this.emailSender.init();
             console.log('✅ Email sender initialized');
+            
+            this.summaryGenerator.init();
+            console.log('✅ Summary generator initialized');
             
             this.uiManager.init();
             console.log('✅ UI manager initialized');

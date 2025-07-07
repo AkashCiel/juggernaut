@@ -8,7 +8,8 @@ class SettingsManager {
             whatsappNumbers: ['+31647388314'], // Your default number
             autoShare: true, // Enable auto-sharing by default - truly autonomous!
             enableNewsSearch: true, // Enable news search by default
-            enableResearchSearch: true // Enable research search by default
+            enableResearchSearch: true, // Enable research search by default
+            openaiApiKey: '' // OpenAI API key for summary generation
         };
     }
 
@@ -80,8 +81,14 @@ class SettingsManager {
             if (savedEnableResearchSearch !== null) {
                 this.settings.enableResearchSearch = JSON.parse(savedEnableResearchSearch);
             }
+
+            // Load OpenAI API key
+            const savedOpenaiApiKey = localStorage.getItem('aiNewsOpenaiApiKey');
+            if (savedOpenaiApiKey !== null) {
+                this.settings.openaiApiKey = savedOpenaiApiKey;
+            }
             
-            console.log('Settings loaded:', this.settings);
+            console.log('Settings loaded successfully');
         } catch (error) {
             console.warn('Could not load saved settings, using defaults:', error);
             this.settings.topics = [...defaultTopics];
@@ -112,6 +119,11 @@ class SettingsManager {
             // Save search options
             localStorage.setItem('aiNewsEnableNewsSearch', JSON.stringify(this.settings.enableNewsSearch));
             localStorage.setItem('aiNewsEnableResearchSearch', JSON.stringify(this.settings.enableResearchSearch));
+            
+            // Save OpenAI API key
+            if (this.settings.openaiApiKey) {
+                localStorage.setItem('aiNewsOpenaiApiKey', this.settings.openaiApiKey);
+            }
             
             console.log('Settings saved successfully');
         } catch (error) {
@@ -279,6 +291,16 @@ class SettingsManager {
 
     setEnableResearchSearch(enabled) {
         this.settings.enableResearchSearch = enabled;
+        this.saveSettings();
+    }
+
+    // OpenAI API key methods
+    getOpenaiApiKey() {
+        return this.settings.openaiApiKey;
+    }
+
+    setOpenaiApiKey(key) {
+        this.settings.openaiApiKey = key;
         this.saveSettings();
     }
 
