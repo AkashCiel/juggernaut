@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Functionality Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+        .info { background: #d1ecf1; border-color: #bee5eb; }
+        button { padding: 10px 15px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        input { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 4px; width: 300px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Email Functionality Test</h1>
+    
+    <div class="test-section info">
+        <h3>📋 Test Instructions</h3>
+        <p>This page tests the email functionality step by step. Open browser console (F12) to see detailed logs.</p>
+    </div>
+
+    <div class="test-section">
+        <h3>1. Browser Compatibility Test</h3>
+        <button onclick="testBrowserCompatibility()" class="btn-primary">Test Browser Compatibility</button>
+        <div id="browser-test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>2. Email Sender Initialization Test</h3>
+        <button onclick="testEmailSenderInit()" class="btn-primary">Test Email Sender Init</button>
+        <div id="init-test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>3. Settings Management Test</h3>
+        <button onclick="testSettingsManagement()" class="btn-primary">Test Settings Management</button>
+        <div id="settings-test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>4. Email Configuration Test</h3>
+        <div>
+            <label>Mailgun API Key:</label><br>
+            <input type="password" id="testApiKey" placeholder="Enter your Mailgun API key">
+        </div>
+        <div>
+            <label>Mailgun Domain:</label><br>
+            <input type="text" id="testDomain" placeholder="Enter your Mailgun domain">
+        </div>
+        <button onclick="testEmailConfiguration()" class="btn-primary">Test Email Configuration</button>
+        <div id="config-test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>5. Email Template Test</h3>
+        <button onclick="testEmailTemplate()" class="btn-primary">Test Email Template</button>
+        <div id="template-test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>6. Email Sending Test</h3>
+        <div>
+            <label>Test Email Address:</label><br>
+            <input type="email" id="testEmail" placeholder="Enter test email address">
+        </div>
+        <button onclick="testEmailSending()" class="btn-primary">Test Email Sending</button>
+        <div id="sending-test-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>7. Integration Test</h3>
+        <button onclick="testIntegration()" class="btn-primary">Test Full Integration</button>
+        <div id="integration-test-result"></div>
+    </div>
+
+    <!-- Load the email sender script -->
+    <script src="assets/js/emailSender.js"></script>
+    
+    <script>
+        let emailSender = null;
+        let testResults = {};
+
+        function logResult(testName, success, message) {
+            const resultDiv = document.getElementById(`${testName}-test-result`);
+            const className = success ? 'success' : 'error';
+            resultDiv.innerHTML = `<div class="${className}">${message}</div>`;
+            testResults[testName] = success;
+            console.log(`🧪 ${testName}: ${success ? '✅ PASS' : '❌ FAIL'} - ${message}`);
+        }
+
+        function testBrowserCompatibility() {
+            console.log('🧪 Testing browser compatibility...');
+            
+            const tests = {
+                'fetch': typeof fetch !== 'undefined',
+                'FormData': typeof FormData !== 'undefined',
+                'localStorage': typeof localStorage !== 'undefined',
+                'btoa': typeof btoa !== 'undefined'
+            };
+
+            const allPassed = Object.values(tests).every(test => test);
+            const results = Object.entries(tests).map(([name, passed]) => 
+                `${name}: ${passed ? '✅' : '❌'}`
+            ).join(', ');
+
+            logResult('browser', allPassed, 
+                allPassed ? 'All browser APIs available' : `Missing APIs: ${results}`
+            );
+        }
+
+        function testEmailSenderInit() {
+            console.log('🧪 Testing email sender initialization...');
+            
+            try {
+                emailSender = new EmailSender();
+                logResult('init', true, 'EmailSender class created successfully');
+            } catch (error) {
+                logResult('init', false, `Failed to create EmailSender: ${error.message}`);
+            }
+        }
+
+        function testSettingsManagement() {
+            console.log('🧪 Testing settings management...');
+            
+            try {
+                // Test localStorage operations
+                const testKey = 'testEmailConfig';
+                const testData = { apiKey: 'test', domain: 'test.com' };
+                
+                localStorage.setItem(testKey, JSON.stringify(testData));
+                const retrieved = JSON.parse(localStorage.getItem(testKey));
+                localStorage.removeItem(testKey);
+                
+                const success = JSON.stringify(retrieved) === JSON.stringify(testData);
+                logResult('settings', success, 
+                    success ? 'Settings management working correctly' : 'Settings management failed'
+                );
+            } catch (error) {
+                logResult('settings', false, `Settings test failed: ${error.message}`);
+            }
+        }
+
+        function testEmailConfiguration() {
+            console.log('🧪 Testing email configuration...');
+            
+            const apiKey = document.getElementById('testApiKey').value.trim();
+            const domain = document.getElementById('testDomain').value.trim();
+            
+            if (!apiKey || !domain) {
+                logResult('config', false, 'Please enter both API key and domain');
+                return;
+            }
+
+            try {
+                const config = { apiKey, domain };
+                emailSender.setEmailConfig(config);
+                
+                const savedConfig = emailSender.getEmailConfig();
+                const success = savedConfig.apiKey === apiKey && savedConfig.domain === domain;
+                
+                logResult('config', success, 
+                    success ? 'Email configuration saved and retrieved correctly' : 'Configuration mismatch'
+                );
+            } catch (error) {
+                logResult('config', false, `Configuration test failed: ${error.message}`);
+            }
+        }
+
+        function testEmailTemplate() {
+            console.log('🧪 Testing email template generation...');
+            
+            try {
+                const mockReportData = {
+                    newsItems: [
+                        {
+                            title: "Test AI Research Breakthrough",
+                            summary: "This is a test summary for email template testing.",
+                            source: "Test Source",
+                            topic: "test topic",
+                            time: "1 hour ago"
+                        }
+                    ]
+                };
+                
+                const topics = ['test topic'];
+                const reportDate = new Date();
+                
+                const template = emailSender.createEmailTemplate(mockReportData, topics, reportDate);
+                
+                const success = template.includes('AI Research News Report') && 
+                               template.includes('Test AI Research Breakthrough') &&
+                               template.includes('test topic');
+                
+                logResult('template', success, 
+                    success ? 'Email template generated correctly' : 'Template generation failed'
+                );
+            } catch (error) {
+                logResult('template', false, `Template test failed: ${error.message}`);
+            }
+        }
+
+        async function testEmailSending() {
+            console.log('🧪 Testing email sending...');
+            
+            const testEmail = document.getElementById('testEmail').value.trim();
+            if (!testEmail) {
+                logResult('sending', false, 'Please enter a test email address');
+                return;
+            }
+
+            try {
+                // Add test recipient
+                emailSender.addRecipient(testEmail);
+                
+                // Create test email
+                const subject = 'Test Email from AI Research News Agent';
+                const htmlContent = '<h1>Test Email</h1><p>This is a test email to verify functionality.</p>';
+                
+                // Note: This will only work if Mailgun is properly configured
+                const result = await emailSender.sendEmail(subject, htmlContent);
+                
+                logResult('sending', true, `Email sent successfully! Message ID: ${result.messageId}`);
+            } catch (error) {
+                logResult('sending', false, `Email sending failed: ${error.message}`);
+            }
+        }
+
+        async function testIntegration() {
+            console.log('🧪 Testing full integration...');
+            
+            try {
+                // Test initialization
+                await emailSender.init();
+                
+                // Test configuration loading
+                const config = emailSender.getEmailConfig();
+                
+                // Test recipient management
+                const testEmail = 'test@example.com';
+                emailSender.addRecipient(testEmail);
+                const recipients = emailSender.getRecipients();
+                
+                // Test auto-email settings
+                emailSender.setAutoEmail(true);
+                const autoEmail = emailSender.getAutoEmail();
+                
+                const success = recipients.includes(testEmail) && autoEmail === true;
+                
+                logResult('integration', success, 
+                    success ? 'Full integration test passed' : 'Integration test failed'
+                );
+            } catch (error) {
+                logResult('integration', false, `Integration test failed: ${error.message}`);
+            }
+        }
+
+        // Auto-run basic tests on page load
+        window.addEventListener('load', () => {
+            console.log('🧪 Starting automated tests...');
+            setTimeout(() => {
+                testBrowserCompatibility();
+                testEmailSenderInit();
+                testSettingsManagement();
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

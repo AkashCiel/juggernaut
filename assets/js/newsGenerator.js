@@ -9,11 +9,13 @@ class NewsGenerator {
     init() {
         // Initialize news generator and load API keys
         const savedKeys = window.AINewsData.getApiKeys();
+        console.log('🔍 Loading saved API keys:', savedKeys);
+        
         if (savedKeys && Object.keys(savedKeys).length > 0) {
             this.newsAPIs.setApiKeys(savedKeys);
             console.log('✅ News generator initialized with saved API keys');
         } else {
-            console.log('✅ News generator initialized (API keys not set - will use mock data)');
+            console.log('⚠️ News generator initialized (API keys not set - will use mock data)');
         }
     }
 

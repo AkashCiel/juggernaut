@@ -29,7 +29,10 @@ class NewsAPIs {
     // Set API keys (called from settings)
     setApiKeys(keys) {
         this.apiKeys = { ...this.apiKeys, ...keys };
-        console.log('✅ API keys updated');
+        console.log('✅ API keys updated:', {
+            newsApi: this.apiKeys.newsApi ? 'SET' : 'NOT SET',
+            githubToken: this.apiKeys.githubToken ? 'SET' : 'NOT SET'
+        });
     }
 
     // Main function to fetch all news
@@ -67,7 +70,12 @@ class NewsAPIs {
             return this.cache.get(cacheKey).data;
         }
 
-        if (!this.apiKeys.newsApi || this.apiKeys.newsApi === 'YOUR_NEWSAPI_KEY_HERE' || this.apiKeys.newsApi === '13899fe8453b4899a359ce9e1545696e') {
+        console.log('🔍 Checking NewsAPI key:', {
+            hasKey: !!this.apiKeys.newsApi,
+            keyValue: this.apiKeys.newsApi ? this.apiKeys.newsApi.substring(0, 10) + '...' : 'NOT SET',
+        });
+        
+        if (!this.apiKeys.newsApi) {
             console.warn('⚠️ NewsAPI key not set or invalid, using mock data');
             return [];
         }
@@ -80,64 +88,12 @@ class NewsAPIs {
                 const query = this.buildNewsQuery(topic);
                 const apiUrl = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&sortBy=publishedAt&language=en&pageSize=10&apiKey=${this.apiKeys.newsApi}`;
                 
-                // Always try CORS proxies for GitHub Pages and other hosted sites
-                let response = null;
-                let lastError = null;
-                
-                // Try direct API call first (may work for some domains)
-                try {
-                    console.log('🔄 Trying direct API call...');
-                    response = await fetch(apiUrl, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        signal: AbortSignal.timeout(10000)
-                    });
-                    
-                    if (response.ok) {
-                        console.log('✅ Success with direct API call');
-                    } else {
-                        throw new Error(`Direct API responded with ${response.status}`);
-                    }
-                } catch (error) {
-                    console.warn('⚠️ Direct API call failed:', error.message);
-                    lastError = error;
-                }
-                
-                // If direct call failed, try CORS proxies
-                if (!response || !response.ok) {
-                    for (const proxy of this.corsProxies) {
-                        try {
-                            const proxiedUrl = proxy + encodeURIComponent(apiUrl);
-                            console.log(`🔄 Trying proxy: ${proxy.split('?')[0]}...`);
-                            
-                            response = await fetch(proxiedUrl, {
-                                method: 'GET',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                signal: AbortSignal.timeout(10000) // 10 second timeout
-                            });
-                            
-                            if (response.ok) {
-                                console.log(`✅ Success with proxy: ${proxy.split('?')[0]}`);
-                                break;
-                            } else {
-                                throw new Error(`Proxy responded with ${response.status}`);
-                            }
-                        } catch (error) {
-                            console.warn(`⚠️ Proxy ${proxy.split('?')[0]} failed:`, error.message);
-                            lastError = error;
-                            continue;
-                        }
-                    }
-                }
+                // Try with time-based retry logic
+                const response = await this.fetchWithTimeLimit(apiUrl);
                 
                 if (!response || !response.ok) {
-                    console.warn('⚠️ All CORS proxies failed, falling back to mock data');
-                    console.warn('Last error:', lastError?.message);
-                    return [];
+                    console.warn('⚠️ All API attempts failed for topic:', topic);
+                    continue;
                 }
                 
                 const data = await response.json();
@@ -175,6 +131,77 @@ class NewsAPIs {
             console.error('❌ Error fetching news articles:', error);
             return [];
         }
+    }
+
+    // New method: Fetch with 15-second time limit for proxies
+    async fetchWithTimeLimit(apiUrl, timeLimit = 15000) {
+        const startTime = Date.now();
+        let attempt = 0;
+        
+        // Try direct API call first
+        try {
+            console.log('🔄 Trying direct API call...');
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                signal: AbortSignal.timeout(10000)
+            });
+            
+            if (response.ok) {
+                console.log('✅ Success with direct API call');
+                return response;
+            } else {
+                throw new Error(`Direct API responded with ${response.status}`);
+            }
+        } catch (error) {
+            console.warn('⚠️ Direct API call failed:', error.message);
+        }
+        
+        // If direct call failed, try CORS proxies with time limit
+        while (Date.now() - startTime < timeLimit) {
+            attempt++;
+            
+            for (const proxy of this.corsProxies) {
+                // Check if we've exceeded time limit
+                if (Date.now() - startTime >= timeLimit) {
+                    console.warn('⏰ Time limit reached, giving up');
+                    return null;
+                }
+                
+                try {
+                    const proxiedUrl = proxy + encodeURIComponent(apiUrl);
+                    console.log(`🔄 Attempt ${attempt}: Trying proxy: ${proxy.split('?')[0]}...`);
+                    
+                    const response = await fetch(proxiedUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        signal: AbortSignal.timeout(5000) // 5s timeout per proxy attempt
+                    });
+                    
+                    if (response.ok) {
+                        console.log(`✅ Success with proxy: ${proxy.split('?')[0]} (attempt ${attempt})`);
+                        return response;
+                    } else {
+                        throw new Error(`Proxy responded with ${response.status}`);
+                    }
+                } catch (error) {
+                    console.warn(`⚠️ Proxy ${proxy.split('?')[0]} failed (attempt ${attempt}):`, error.message);
+                    continue;
+                }
+            }
+            
+            // Brief pause between rounds to avoid overwhelming proxies
+            if (Date.now() - startTime < timeLimit - 1000) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+        }
+        
+        console.warn('⏰ Time limit reached, all proxy attempts failed');
+        return null;
     }
 
     // Fetch research papers from ArXiv (ArXiv allows CORS, so no proxy needed)

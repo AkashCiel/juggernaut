@@ -47,6 +47,26 @@ class SettingsManager {
             if (savedAutoShare !== null) {
                 this.settings.autoShare = JSON.parse(savedAutoShare);
             }
+
+            // Load email settings
+            const savedEmailConfig = localStorage.getItem('aiNewsEmailConfig');
+            if (savedEmailConfig) {
+                this.settings.emailConfig = JSON.parse(savedEmailConfig);
+            }
+
+            const savedEmailRecipients = localStorage.getItem('aiNewsEmailRecipients');
+            if (savedEmailRecipients) {
+                this.settings.emailRecipients = JSON.parse(savedEmailRecipients);
+            } else {
+                this.settings.emailRecipients = [];
+            }
+
+            const savedAutoEmail = localStorage.getItem('aiNewsAutoEmail');
+            if (savedAutoEmail !== null) {
+                this.settings.autoEmail = JSON.parse(savedAutoEmail);
+            } else {
+                this.settings.autoEmail = false;
+            }
             
             console.log('Settings loaded:', this.settings);
         } catch (error) {
@@ -64,6 +84,18 @@ class SettingsManager {
             if (this.settings.lastRun) {
                 localStorage.setItem('aiNewsLastRun', this.settings.lastRun.toISOString());
             }
+            
+            // Save email settings
+            if (this.settings.emailConfig) {
+                localStorage.setItem('aiNewsEmailConfig', JSON.stringify(this.settings.emailConfig));
+            }
+            if (this.settings.emailRecipients) {
+                localStorage.setItem('aiNewsEmailRecipients', JSON.stringify(this.settings.emailRecipients));
+            }
+            if (this.settings.autoEmail !== undefined) {
+                localStorage.setItem('aiNewsAutoEmail', JSON.stringify(this.settings.autoEmail));
+            }
+            
             console.log('Settings saved successfully');
         } catch (error) {
             console.warn('Could not save settings:', error);
@@ -145,6 +177,53 @@ class SettingsManager {
 
     setAutoShare(enabled) {
         this.settings.autoShare = enabled;
+        this.saveSettings();
+    }
+
+    // Email methods
+    getEmailConfig() {
+        return this.settings.emailConfig || {};
+    }
+
+    setEmailConfig(config) {
+        this.settings.emailConfig = config;
+        this.saveSettings();
+    }
+
+    getEmailRecipients() {
+        return this.settings.emailRecipients || [];
+    }
+
+    setEmailRecipients(recipients) {
+        this.settings.emailRecipients = recipients;
+        this.saveSettings();
+    }
+
+    addEmailRecipient(email) {
+        if (!this.settings.emailRecipients) {
+            this.settings.emailRecipients = [];
+        }
+        if (email && !this.settings.emailRecipients.includes(email)) {
+            this.settings.emailRecipients.push(email);
+            this.saveSettings();
+            return true;
+        }
+        return false;
+    }
+
+    removeEmailRecipient(email) {
+        if (this.settings.emailRecipients) {
+            this.settings.emailRecipients = this.settings.emailRecipients.filter(e => e !== email);
+            this.saveSettings();
+        }
+    }
+
+    getAutoEmail() {
+        return this.settings.autoEmail || false;
+    }
+
+    setAutoEmail(enabled) {
+        this.settings.autoEmail = enabled;
         this.saveSettings();
     }
 
