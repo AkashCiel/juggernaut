@@ -45,7 +45,7 @@
                 </div>
                 <div style="margin-top: 15px;">
                     <button class="btn btn-primary" onclick="window.newsGenerator.generateReport()">Generate Report Now</button>
-                    <button class="btn btn-secondary" onclick="showApiKeyModal()" style="margin-left: 10px;">API Keys</button>
+                    <button class="btn btn-secondary" onclick="showApiKeyModal()" style="margin-left: 10px;">Settings</button>
                 </div>
                 <div style="margin-top: 10px;">
                     <button class="btn btn-secondary" onclick="window.settingsManager.exportSettings()">Export Settings</button>
@@ -87,7 +87,7 @@
     <!-- API Key Modal -->
     <div id="apiKeyModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 15px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
-            <h3 style="margin-bottom: 20px; color: #333;">🔑 Settings Configuration</h3>
+            <h3 style="margin-bottom: 20px; color: #333;">⚙️ Settings Configuration</h3>
             
             <div style="margin-bottom: 20px;">
                 <h4 style="color: #667eea; margin-bottom: 10px;">📡 API Keys</h4>
@@ -102,6 +102,26 @@
                     <label style="display: block; margin-bottom: 5px; font-weight: 600;">GitHub Token:</label>
                     <input type="password" id="githubToken" placeholder="GitHub Personal Access Token" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
                     <small style="color: #666;">For uploading and hosting reports</small>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                <h4 style="color: #667eea; margin-bottom: 15px;">🔍 Search Options</h4>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <input type="checkbox" id="enableNewsSearch" style="transform: scale(1.2);">
+                        <span style="font-weight: 600;">Enable News Articles Search</span>
+                    </label>
+                    <small style="color: #666;">Search for news articles from NewsAPI.org (requires API key)</small>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <input type="checkbox" id="enableResearchSearch" style="transform: scale(1.2);" checked>
+                        <span style="font-weight: 600;">Enable Research Papers Search</span>
+                    </label>
+                    <small style="color: #666;">Search for research papers from ArXiv.org (always enabled)</small>
                 </div>
             </div>
 
@@ -204,6 +224,9 @@
             // Load email settings
             loadEmailSettings();
             
+            // Load search settings
+            loadSearchSettings();
+            
             modal.style.display = 'block';
         }
         
@@ -228,6 +251,15 @@
             
             // Load email recipients
             updateEmailRecipientsList();
+        }
+        
+        function loadSearchSettings() {
+            // Load search options
+            const enableNewsSearch = window.settingsManager.getEnableNewsSearch();
+            const enableResearchSearch = window.settingsManager.getEnableResearchSearch();
+            
+            document.getElementById('enableNewsSearch').checked = enableNewsSearch;
+            document.getElementById('enableResearchSearch').checked = enableResearchSearch;
         }
         
         function updateWhatsAppNumbersList() {
@@ -342,6 +374,13 @@
             }
             
             window.settingsManager.setAutoEmail(autoEmailEnabled);
+            
+            // Save search settings
+            const enableNewsSearch = document.getElementById('enableNewsSearch').checked;
+            const enableResearchSearch = document.getElementById('enableResearchSearch').checked;
+            
+            window.settingsManager.setEnableNewsSearch(enableNewsSearch);
+            window.settingsManager.setEnableResearchSearch(enableResearchSearch);
             
             closeApiKeyModal();
             

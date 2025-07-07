@@ -6,7 +6,9 @@ class SettingsManager {
             schedule: 'daily',
             lastRun: null,
             whatsappNumbers: ['+31647388314'], // Your default number
-            autoShare: true // Enable auto-sharing by default - truly autonomous!
+            autoShare: true, // Enable auto-sharing by default - truly autonomous!
+            enableNewsSearch: true, // Enable news search by default
+            enableResearchSearch: true // Enable research search by default
         };
     }
 
@@ -67,6 +69,17 @@ class SettingsManager {
             } else {
                 this.settings.autoEmail = false;
             }
+
+            // Load search options
+            const savedEnableNewsSearch = localStorage.getItem('aiNewsEnableNewsSearch');
+            if (savedEnableNewsSearch !== null) {
+                this.settings.enableNewsSearch = JSON.parse(savedEnableNewsSearch);
+            }
+
+            const savedEnableResearchSearch = localStorage.getItem('aiNewsEnableResearchSearch');
+            if (savedEnableResearchSearch !== null) {
+                this.settings.enableResearchSearch = JSON.parse(savedEnableResearchSearch);
+            }
             
             console.log('Settings loaded:', this.settings);
         } catch (error) {
@@ -95,6 +108,10 @@ class SettingsManager {
             if (this.settings.autoEmail !== undefined) {
                 localStorage.setItem('aiNewsAutoEmail', JSON.stringify(this.settings.autoEmail));
             }
+            
+            // Save search options
+            localStorage.setItem('aiNewsEnableNewsSearch', JSON.stringify(this.settings.enableNewsSearch));
+            localStorage.setItem('aiNewsEnableResearchSearch', JSON.stringify(this.settings.enableResearchSearch));
             
             console.log('Settings saved successfully');
         } catch (error) {
@@ -244,6 +261,25 @@ class SettingsManager {
         }
         
         return null; // Invalid number
+    }
+
+    // Search options methods
+    getEnableNewsSearch() {
+        return this.settings.enableNewsSearch;
+    }
+
+    setEnableNewsSearch(enabled) {
+        this.settings.enableNewsSearch = enabled;
+        this.saveSettings();
+    }
+
+    getEnableResearchSearch() {
+        return this.settings.enableResearchSearch;
+    }
+
+    setEnableResearchSearch(enabled) {
+        this.settings.enableResearchSearch = enabled;
+        this.saveSettings();
     }
 
     // Export/Import methods (enhanced)

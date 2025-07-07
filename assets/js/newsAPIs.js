@@ -241,10 +241,8 @@ class NewsAPIs {
                     const publishedDate = entry.querySelector('published')?.textContent;
                     const arxivUrl = entry.querySelector('id')?.textContent;
                     
-                    // Check if it's from a leading AI company
-                    const isFromAICompany = this.isFromAICompany(title, summary, authors);
-                    
-                    if (title && summary && isFromAICompany) {
+                    // Include all papers with valid title and summary
+                    if (title && summary) {
                         papers.push({
                             title: title,
                             summary: summary.substring(0, 300) + '...',
@@ -266,7 +264,7 @@ class NewsAPIs {
                 timestamp: Date.now()
             });
             
-            console.log(`✅ Fetched ${papers.length} research papers from leading AI companies`);
+            console.log(`✅ Fetched ${papers.length} research papers from ArXiv`);
             return papers;
             
         } catch (error) {
@@ -285,7 +283,80 @@ class NewsAPIs {
     buildArxivQuery(topic) {
         // ArXiv categories for AI/ML
         const categories = 'cat:cs.AI OR cat:cs.LG OR cat:cs.CL OR cat:cs.CV OR cat:cs.RO';
-        return `(${categories}) AND all:"${topic}"`;
+        
+        // Expand the topic with related terms and synonyms
+        const expandedTerms = this.expandTopicQuery(topic);
+        
+        return `(${categories}) AND (${expandedTerms})`;
+    }
+
+    // Expand topic query with related terms and synonyms
+    expandTopicQuery(topic) {
+        const topicLower = topic.toLowerCase();
+        
+        // Define expansion mappings for common AI research topics
+        const expansions = {
+            'large language models': ['large language models', 'LLM', 'LLMs', 'language models', 'transformer models', 'GPT', 'BERT', 'text generation'],
+            'computer vision': ['computer vision', 'CV', 'image recognition', 'object detection', 'image processing', 'visual AI', 'computer vision systems'],
+            'reinforcement learning': ['reinforcement learning', 'RL', 'Q-learning', 'policy gradient', 'deep reinforcement learning', 'DRL', 'agent learning'],
+            'neural networks': ['neural networks', 'neural network', 'deep neural networks', 'DNN', 'artificial neural networks', 'ANN'],
+            'natural language processing': ['natural language processing', 'NLP', 'text processing', 'language understanding', 'computational linguistics'],
+            'machine learning': ['machine learning', 'ML', 'supervised learning', 'unsupervised learning', 'statistical learning'],
+            'deep learning': ['deep learning', 'deep neural networks', 'deep architectures', 'hierarchical learning'],
+            'artificial general intelligence': ['artificial general intelligence', 'AGI', 'general AI', 'human-level AI', 'strong AI'],
+            'AI safety': ['AI safety', 'AI alignment', 'AI ethics', 'value alignment', 'AI governance', 'AI risk', 'safety research'],
+            'transformers': ['transformer', 'transformers', 'attention mechanism', 'self-attention', 'transformer architecture'],
+            'diffusion models': ['diffusion models', 'diffusion', 'generative models', 'score-based models', 'denoising diffusion'],
+            'robotics AI': ['robotics AI', 'robotic systems', 'autonomous robots', 'robot learning', 'robotic control', 'robot navigation'],
+            'AI alignment research': ['AI alignment', 'alignment research', 'value alignment', 'AI safety', 'AI ethics', 'human-AI alignment', 'goal alignment'],
+            'AI ethics': ['AI ethics', 'ethical AI', 'responsible AI', 'AI governance', 'AI policy', 'ethical machine learning'],
+            'AI governance': ['AI governance', 'AI policy', 'AI regulation', 'AI oversight', 'AI accountability', 'AI safety'],
+            'multimodal AI': ['multimodal AI', 'multimodal learning', 'vision-language models', 'CLIP', 'DALL-E', 'multimodal systems'],
+            'federated learning': ['federated learning', 'distributed learning', 'privacy-preserving ML', 'collaborative learning'],
+            'few-shot learning': ['few-shot learning', 'meta-learning', 'learning to learn', 'rapid adaptation', 'low-data learning'],
+            'causal inference': ['causal inference', 'causality', 'causal discovery', 'causal reasoning', 'causal models'],
+            'adversarial attacks': ['adversarial attacks', 'adversarial examples', 'robustness', 'adversarial training', 'security'],
+            'interpretability': ['interpretability', 'explainable AI', 'XAI', 'model interpretability', 'transparency', 'explainability']
+        };
+        
+        // Check for exact matches first
+        for (const [key, terms] of Object.entries(expansions)) {
+            if (topicLower.includes(key) || key.includes(topicLower)) {
+                return terms.map(term => `all:"${term}"`).join(' OR ');
+            }
+        }
+        
+        // If no exact match, create a broader query based on the topic
+        const broaderTerms = this.createBroaderQuery(topic);
+        return broaderTerms.map(term => `all:"${term}"`).join(' OR ');
+    }
+
+    // Create broader query for unknown topics
+    createBroaderQuery(topic) {
+        const words = topic.toLowerCase().split(' ');
+        const expanded = [topic]; // Include original topic
+        
+        // Add individual words
+        words.forEach(word => {
+            if (word.length > 2) { // Skip very short words
+                expanded.push(word);
+            }
+        });
+        
+        // Add common AI-related prefixes/suffixes
+        const aiPrefixes = ['AI', 'ML', 'deep', 'neural', 'intelligent'];
+        const aiSuffixes = ['learning', 'models', 'systems', 'algorithms', 'research'];
+        
+        aiPrefixes.forEach(prefix => {
+            expanded.push(`${prefix} ${topic}`);
+        });
+        
+        aiSuffixes.forEach(suffix => {
+            expanded.push(`${topic} ${suffix}`);
+        });
+        
+        // Remove duplicates and limit to reasonable number
+        return [...new Set(expanded)].slice(0, 8);
     }
 
     // Check if paper is from leading AI company
