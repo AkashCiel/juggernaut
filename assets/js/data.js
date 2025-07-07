@@ -4,7 +4,17 @@ window.AINewsData = {
     getApiKeys() {
         try {
             const saved = localStorage.getItem('aiNewsApiKeys');
-            return saved ? JSON.parse(saved) : {};
+            const keys = saved ? JSON.parse(saved) : {};
+            
+            // Include OpenAI API key from settings manager
+            if (window.settingsManager) {
+                const openaiKey = window.settingsManager.getOpenaiApiKey();
+                if (openaiKey) {
+                    keys.openaiApi = openaiKey;
+                }
+            }
+            
+            return keys;
         } catch (error) {
             console.error('Error loading API keys:', error);
             return {};
@@ -13,7 +23,14 @@ window.AINewsData = {
 
     saveApiKeys(keys) {
         try {
+            // Save to localStorage
             localStorage.setItem('aiNewsApiKeys', JSON.stringify(keys));
+            
+            // Save OpenAI key to settings manager if present
+            if (window.settingsManager && keys.openaiApi) {
+                window.settingsManager.setOpenaiApiKey(keys.openaiApi);
+            }
+            
             console.log('✅ API keys saved successfully');
         } catch (error) {
             console.error('Error saving API keys:', error);
