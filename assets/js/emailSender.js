@@ -222,14 +222,21 @@ class EmailSender {
         
         // Get AI summary from the last generated report
         let aiSummary = '';
+        let reportUrl = window.githubUploader ? window.githubUploader.getReportsArchiveUrl() : '#';
         if (window.reportGenerator && window.reportGenerator.getLastReport()) {
             const lastReport = window.reportGenerator.getLastReport();
             aiSummary = lastReport.aiSummary || '';
+            if (lastReport.pagesUrl) {
+                reportUrl = lastReport.pagesUrl;
+            }
         }
         
         // Check if AI summary is available
         const hasAISummary = aiSummary && aiSummary.trim() !== '';
         
+        // Print the reportUrl that will be included in the email (DEBUG)
+        console.log('[DEBUG] Email will include report link:', reportUrl);
+
         // Create HTML email template
         const htmlTemplate = `
 <!DOCTYPE html>
@@ -295,7 +302,7 @@ class EmailSender {
         </div>
         
         <div class="full-report-link">
-            <a href="${window.githubUploader ? window.githubUploader.getReportsArchiveUrl() : '#'}" target="_blank">
+            <a href="${reportUrl}" target="_blank">
                 📄 View Full Report with All Papers
             </a>
         </div>

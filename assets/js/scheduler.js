@@ -95,16 +95,24 @@ class SchedulerManager {
                     // Generate the regular report
                     await window.newsGenerator.generateReport();
                     
-                    // If auto-sharing is enabled, trigger WhatsApp sharing
+                    // Always upload the report to GitHub and set pagesUrl
+                    const lastReport = window.reportGenerator.getLastReport();
+                    let uploadResult = null;
+                    if (lastReport) {
+                        uploadResult = await window.githubUploader.uploadReport(lastReport);
+                        if (uploadResult && uploadResult.pagesUrl) {
+                            lastReport.pagesUrl = uploadResult.pagesUrl;
+                        }
+                    }
+                    
+                    // If auto-sharing is enabled, trigger WhatsApp sharing (skip upload inside autoShareReport)
                     if (window.settingsManager.getAutoShare()) {
                         console.log('🤖 Triggering automated WhatsApp sharing...');
                         
                         // Get current news data for sharing
                         const activeTopics = window.settingsManager.getTopics();
-                        const lastReport = window.reportGenerator.getLastReport();
-                        
                         if (lastReport) {
-                            // Auto-share the generated report
+                            // Auto-share the generated report (assume already uploaded)
                             await window.whatsappSharer.autoShareReport(
                                 lastReport.newsItems, 
                                 activeTopics, 
@@ -112,18 +120,16 @@ class SchedulerManager {
                             );
                         }
                     } else {
-                        console.log('📱 Auto-sharing disabled, report generated only');
+                        console.log('📱 Auto-sharing disabled, report generated and uploaded only');
                     }
                     
-                    // If auto-email is enabled, trigger email sending
+                    // If auto-email is enabled, trigger email sending using the same report object
                     if (window.emailSender && window.emailSender.getAutoEmail()) {
                         console.log('📧 Triggering automated email sending...');
                         
                         const activeTopics = window.settingsManager.getTopics();
-                        const lastReport = window.reportGenerator.getLastReport();
-                        
                         if (lastReport) {
-                            // Auto-send the generated report via email
+                            // Auto-send the generated report via email, passing the same object
                             await window.emailSender.autoSendReport(
                                 lastReport, 
                                 activeTopics, 

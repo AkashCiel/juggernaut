@@ -54,13 +54,21 @@ class NewsGenerator {
             let aiSummary = null;
             if (window.summaryGenerator && this.settingsManager.getOpenaiApiKey()) {
                 try {
-                    console.log('🤖 Starting AI summary generation...');
-                    aiSummary = await window.summaryGenerator.generateSummary(newsItems, activeTopics);
+                    // Add timeout for summary generation (20 seconds)
+                    const timeoutPromise = (promise, ms) => Promise.race([
+                        promise,
+                        new Promise((_, reject) => setTimeout(() => reject(new Error('Summary generation timed out')), ms))
+                    ]);
+                    aiSummary = await timeoutPromise(
+                        window.summaryGenerator.generateSummary(newsItems, activeTopics),
+                        20000 // 20 seconds timeout
+                    );
                     if (aiSummary) {
                         console.log('✅ AI summary generated successfully');
                     }
                 } catch (error) {
-                    console.error('❌ Error generating AI summary:', error);
+                    console.error('❌ Error or timeout generating AI summary:', error);
+                    aiSummary = null; // fallback
                 }
             } else {
                 console.log('⚠️ Skipping AI summary - OpenAI key not set or summary generator not available');
