@@ -1,5 +1,24 @@
 [
   {
+    "id": "20250708-010558",
+    "fileName": "ai-news-report-20250708-010558.html",
+    "date": "2025-07-08T23:05:58.570Z",
+    "topics": [
+      "large language models",
+      "artificial general intelligence",
+      "AI safety",
+      "robotics AI"
+    ],
+    "metadata": {
+      "totalItems": 15,
+      "newsArticles": 0,
+      "researchPapers": 15,
+      "hasAISummary": true,
+      "generatedAt": "2025-07-08T23:05:58.571Z"
+    },
+    "createdAt": "2025-07-08T23:06:00.342Z"
+  },
+  {
     "id": "20250708-010450",
     "fileName": "ai-news-report-20250708-010450.html",
     "date": "2025-07-08T23:04:50.469Z",
