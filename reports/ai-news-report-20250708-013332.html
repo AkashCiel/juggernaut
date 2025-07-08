@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Research News Report - Wednesday, July 9, 2025</title>
+    <meta name="description" content="Daily AI research news and papers covering large language models, artificial general intelligence, AI safety and more">
+    <meta property="og:title" content="AI Research News Report - Wednesday, July 9, 2025">
+    <meta property="og:description" content="15 AI news items covering large language models, artificial general intelligence, AI safety">
+    <meta property="og:type" content="article">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header .date {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .summary h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .topics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .topic-tag {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            font-size: 1.5em;
+        }
+
+        .news-item {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .news-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .news-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .news-summary {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .news-source {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .news-url {
+            margin-top: 10px;
+        }
+
+        .news-url a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .news-url a:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .powered-by {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .news-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+
+        .type-icon {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+
+        .research-paper {
+            border-left-color: #764ba2;
+        }
+
+        .research-paper .type-icon {
+            color: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Research News Report</h1>
+            <div class="date">Wednesday, July 9, 2025</div>
+        </div>
+
+        <div class="summary">
+            <h3>📊 Report Summary</h3>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">15</div>
+                    <div class="stat-label">Total Items</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">News Articles</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">15</div>
+                    <div class="stat-label">Research Papers</div>
+                </div>
+            </div>
+            
+            <strong>Topics Covered:</strong>
+            <div class="topics">
+                <span class="topic-tag">large language models</span><span class="topic-tag">artificial general intelligence</span><span class="topic-tag">AI safety</span><span class="topic-tag">robotics AI</span>
+            </div>
+        </div>
+
+        
+        <div class="summary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-left-color: white;">
+            <h3 style="color: white;">🤖 AI Research Summary</h3>
+            <div style="line-height: 1.6; font-size: 1.1em; color: white;">
+                <p style="margin-bottom: 15px; color: white;">Recent AI research has prominently focused on enhancing the capabilities and safety of Large Language Models (LLMs) as well as their applications in various domains, including image editing, autonomous systems, and human-computer interaction. A notable trend is the development of advanced techniques to interpret complex instructions and improve the coherence and contextual understanding of image and language models. For example, the introduction of X-Planner aims to refine instruction-based image editing by addressing issues such as identity preservation and unintended manipulations. Similarly, the Spatio-Temporal LLM seeks to enhance multimodal understanding by integrating broader environmental context into LLMs, highlighting the importance of holistic reasoning in AI interactions.</p><p style="margin-bottom: 15px; color: white;">Additionally, the exploration of memory management in LLMs and the evaluation of their performance in code generation points to a growing recognition of the need for long-term contextual awareness and operational efficiency. Research on the exploitation of contextual priming vulnerabilities in LLMs emphasizes the importance of safety measures in AI systems. The findings suggest that while current models have made significant strides, they still face challenges related to bias, identity retention, and security. This raises critical implications for the deployment of AI in sensitive environments, necessitating ongoing improvements in safety mechanisms.</p><p style="margin-bottom: 15px; color: white;">Overall, the direction of AI research is increasingly geared towards creating more robust, context-aware, and safety-oriented models. The integration of sociological perspectives in chatbot development and the emphasis on multidisciplinary approaches further underscore the importance of user experience and ethical considerations in AI. As the field continues to evolve, the interplay between technological advancement and societal impact will likely shape future research priorities, particularly in the realms of AI safety, human-centric design, and the pursuit of artificial general intelligence (AGI).</p>
+            </div>
+            <div style="margin-top: 15px; font-size: 0.9em; opacity: 0.9; color: white;">
+                Generated by OpenAI GPT-4o-mini
+            </div>
+        </div>
+        
+
+        
+
+        
+        <div class="section">
+            <h2>🔬 Research Papers</h2>
+            
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Beyond Simple Edits: X-Planner for Complex Instruction-Based Image
+  Editing
+                </div>
+                <div class="news-summary">Recent diffusion-based image editing methods have significantly advanced
+text-guided tasks but often struggle to interpret complex, indirect
+instructions. Moreover, current models frequently suffer from poor identity
+preservation, unintended edits, or rely heavily on manual masks. To address
+these c...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.05259v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Spatio-Temporal LLM: Reasoning about Environments and Actions
+                </div>
+                <div class="news-summary">Despite the significant recent progress of Multimodal Large Language Models
+(MLLMs), MLLMs still struggle to correctly answer prompts that require a
+holistic spatio-temporal understanding. Specifically, it is challenging to
+address prompts that refer to 1) the entirety of an environment that an agen...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.05258v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Evaluating Memory in LLM Agents via Incremental Multi-Turn Interactions
+                </div>
+                <div class="news-summary">Recent benchmarks for Large Language Model (LLM) agents primarily focus on
+evaluating reasoning, planning, and execution capabilities, while another
+critical component-memory, encompassing how agents memorize, update, and
+retrieve long-term information-is under-evaluated due to the lack of
+benchmark...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.05257v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Open Vision Reasoner: Transferring Linguistic Cognitive Behavior for
+  Visual Reasoning
+                </div>
+                <div class="news-summary">The remarkable reasoning capability of large language models (LLMs) stems
+from cognitive behaviors that emerge through reinforcement with verifiable
+rewards. This work investigates how to transfer this principle to Multimodal
+LLMs (MLLMs) to unlock advanced visual reasoning. We introduce a two-stage...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.05255v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Response Attack: Exploiting Contextual Priming to Jailbreak Large
+  Language Models
+                </div>
+                <div class="news-summary">Contextual priming, where earlier stimuli covertly bias later judgments,
+offers an unexplored attack surface for large language models (LLMs). We
+uncover a contextual priming vulnerability in which the previous response in
+the dialogue can steer its subsequent behavior toward policy-violating conten...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.05248v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Critiques of World Models
+                </div>
+                <div class="news-summary">World Model, the supposed algorithmic surrogate of the real-world environment
+which biological agents experience with and act upon, has been an emerging
+topic in recent years because of the rising needs to develop virtual agents
+with artificial (general) intelligence. There has been much debate on w...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.05169v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Performance Evaluation of General Purpose Large Language Models for
+  Basic Linear Algebra Subprograms Code Generation
+                </div>
+                <div class="news-summary">Generative AI technology based on Large Language Models (LLM) has been
+developed and applied to assist or automatically generate program codes. In
+this paper, we evaluate the capability of existing general LLMs for Basic
+Linear Algebra Subprograms (BLAS) code generation for CPUs. We use two LLMs
+pro...</div>
+                <div class="news-meta">
+                    <span class="news-source">OpenAI</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.04697v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    MemOS: A Memory OS for AI System
+                </div>
+                <div class="news-summary">Large Language Models (LLMs) have become an essential infrastructure for
+Artificial General Intelligence (AGI), yet their lack of well-defined memory
+management systems hinders the development of long-context reasoning, continual
+personalization, and knowledge consistency.Existing models mainly rely...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>4 days ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.03724v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Interaction Techniques that Encourage Longer Prompts Can Improve
+  Psychological Ownership when Writing with AI
+                </div>
+                <div class="news-summary">Writing longer prompts for an AI assistant to generate a short story
+increases psychological ownership, a user&#039;s feeling that the writing belongs to
+them. To encourage users to write longer prompts, we evaluated two interaction
+techniques that modify the prompt entry interface of chat-based generati...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>4 days ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.03670v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Benchmarking Vector, Graph and Hybrid Retrieval Augmented Generation
+  (RAG) Pipelines for Open Radio Access Networks (ORAN)
+                </div>
+                <div class="news-summary">Generative AI (GenAI) is expected to play a pivotal role in enabling
+autonomous optimization in future wireless networks. Within the ORAN
+architecture, Large Language Models (LLMs) can be specialized to generate xApps
+and rApps by leveraging specifications and API definitions from the RAN
+Intelligen...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>4 days ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.03608v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Response Attack: Exploiting Contextual Priming to Jailbreak Large
+  Language Models
+                </div>
+                <div class="news-summary">Contextual priming, where earlier stimuli covertly bias later judgments,
+offers an unexplored attack surface for large language models (LLMs). We
+uncover a contextual priming vulnerability in which the previous response in
+the dialogue can steer its subsequent behavior toward policy-violating conten...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.05248v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    When Chain of Thought is Necessary, Language Models Struggle to Evade
+  Monitors
+                </div>
+                <div class="news-summary">While chain-of-thought (CoT) monitoring is an appealing AI safety defense,
+recent work on &quot;unfaithfulness&quot; has cast doubt on its reliability. These
+findings highlight an important failure mode, particularly when CoT acts as a
+post-hoc rationalization in applications like auditing for bias. However, ...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.05246v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    NavigScene: Bridging Local Perception and Global Navigation for
+  Beyond-Visual-Range Autonomous Driving
+                </div>
+                <div class="news-summary">Autonomous driving systems have made significant advances in Q&amp;A, perception,
+prediction, and planning based on local visual information, yet they struggle
+to incorporate broader navigational context that human drivers routinely
+utilize. We address this critical gap between local sensor data and glo...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.05227v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Perspectives on How Sociology Can Advance Theorizing about Human-Chatbot
+  Interaction and Developing Chatbots for Social Good
+                </div>
+                <div class="news-summary">Recently, research into chatbots (also known as conversational agents, AI
+agents, voice assistants), which are computer applications using artificial
+intelligence to mimic human-like conversation, has grown sharply. Despite this
+growth, sociology lags other disciplines (including computer science, m...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.05030v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Adaptation of Multi-modal Representation Models for Multi-task Surgical
+  Computer Vision
+                </div>
+                <div class="news-summary">Surgical AI often involves multiple tasks within a single procedure, like
+phase recognition or assessing the Critical View of Safety in laparoscopic
+cholecystectomy. Traditional models, built for one task at a time, lack
+flexibility, requiring a separate model for each. To address this, we introduce...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.05020v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+        </div>
+        
+
+        <div class="footer">
+            <p>Generated on 09/07/2025, 01:33:32</p>
+            <div class="powered-by">
+                <strong>Powered by AI Research News Agent</strong><br>
+                <small>Automated daily intelligence on artificial intelligence research</small>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
