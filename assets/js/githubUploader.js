@@ -9,10 +9,12 @@ class GitHubUploader {
     }
 
     init() {
-        // Load GitHub token from settings
-        const savedKeys = window.AINewsData.getApiKeys();
-        if (savedKeys.githubToken) {
-            this.setGitHubToken(savedKeys.githubToken);
+        // Load GitHub token from settingsManager
+        if (window.settingsManager) {
+            const token = window.settingsManager.getGithubToken();
+            if (token) {
+                this.setGitHubToken(token);
+            }
         }
         console.log('✅ GitHub uploader initialized');
     }
@@ -47,7 +49,8 @@ class GitHubUploader {
             await this.updateReportsIndex(report);
 
             const githubUrl = uploadResult.content.html_url;
-            const pagesUrl = githubUrl.replace('github.com', 'github.io').replace('/blob/', '/');
+            // Construct the correct GitHub Pages URL
+            const pagesUrl = `https://${this.repoOwner.toLowerCase()}.github.io/${this.repoName}/${this.reportFolder}/${report.fileName}`;
 
             console.log(`✅ Report uploaded successfully: ${pagesUrl}`);
 

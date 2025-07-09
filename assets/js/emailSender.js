@@ -44,8 +44,8 @@ class EmailSender {
             if (window.settingsManager) {
                 return window.settingsManager.getEmailConfig();
             }
-            const saved = localStorage.getItem('aiNewsEmailConfig');
-            return saved ? JSON.parse(saved) : {};
+            console.warn('settingsManager not available, returning empty config');
+            return {};
         } catch (error) {
             console.error('Error loading email config:', error);
             return {};
@@ -57,7 +57,7 @@ class EmailSender {
             if (window.settingsManager) {
                 window.settingsManager.setEmailConfig(config);
             } else {
-                localStorage.setItem('aiNewsEmailConfig', JSON.stringify(config));
+                console.warn('settingsManager not available, cannot save email config');
             }
             console.log('✅ Email config saved successfully');
         } catch (error) {
@@ -70,8 +70,8 @@ class EmailSender {
             if (window.settingsManager) {
                 return window.settingsManager.getEmailRecipients();
             }
-            const saved = localStorage.getItem('aiNewsEmailRecipients');
-            return saved ? JSON.parse(saved) : [];
+            console.warn('settingsManager not available, returning empty recipients');
+            return [];
         } catch (error) {
             console.error('Error loading email recipients:', error);
             return [];
@@ -83,7 +83,7 @@ class EmailSender {
             if (window.settingsManager) {
                 window.settingsManager.setEmailRecipients(recipients);
             } else {
-                localStorage.setItem('aiNewsEmailRecipients', JSON.stringify(recipients));
+                console.warn('settingsManager not available, cannot save recipients');
             }
             console.log('✅ Email recipients saved successfully');
         } catch (error) {
@@ -220,16 +220,16 @@ class EmailSender {
 
         const topicsStr = topics.join(', ');
         
-        // Get AI summary from the last generated report
-        let aiSummary = '';
-        if (window.reportGenerator && window.reportGenerator.getLastReport()) {
-            const lastReport = window.reportGenerator.getLastReport();
-            aiSummary = lastReport.aiSummary || '';
-        }
+        // Get AI summary from the reportData argument
+        let aiSummary = reportData.aiSummary || '';
+        let reportUrl = reportData.pagesUrl || (window.githubUploader ? window.githubUploader.getReportsArchiveUrl() : '#');
         
         // Check if AI summary is available
         const hasAISummary = aiSummary && aiSummary.trim() !== '';
         
+        // Print the reportUrl that will be included in the email (DEBUG)
+        console.log('[DEBUG] Email will include report link:', reportUrl);
+
         // Create HTML email template
         const htmlTemplate = `
 <!DOCTYPE html>
@@ -295,7 +295,7 @@ class EmailSender {
         </div>
         
         <div class="full-report-link">
-            <a href="${window.githubUploader ? window.githubUploader.getReportsArchiveUrl() : '#'}" target="_blank">
+            <a href="${reportUrl}" target="_blank">
                 📄 View Full Report with All Papers
             </a>
         </div>
@@ -315,7 +315,14 @@ class EmailSender {
         try {
             const subject = `AI Research News Report - ${reportDate.toLocaleDateString()}`;
             const htmlContent = this.createEmailTemplate(reportData, topics, reportDate);
-            
+            // Print the reportUrl that will be included in the email (DEBUG)
+            let reportUrl = '#';
+            if (reportData && reportData.pagesUrl) {
+                reportUrl = reportData.pagesUrl;
+            } else if (window.githubUploader) {
+                reportUrl = window.githubUploader.getReportsArchiveUrl();
+            }
+            console.log('[DEBUG] Email will include report link (sendReportEmail):', reportUrl);
             return await this.sendEmail(subject, htmlContent);
         } catch (error) {
             console.error('❌ Failed to send report email:', error);
@@ -326,26 +333,28 @@ class EmailSender {
     async autoSendReport(reportData, topics, reportDate) {
         try {
             console.log('📧 Auto-sending report email...');
-            
+            // Print the reportUrl that will be included in the email (DEBUG)
+            let reportUrl = '#';
+            if (reportData && reportData.pagesUrl) {
+                reportUrl = reportData.pagesUrl;
+            } else if (window.githubUploader) {
+                reportUrl = window.githubUploader.getReportsArchiveUrl();
+            }
+            console.log('[DEBUG] Email will include report link (autoSendReport):', reportUrl);
             if (!window.settingsManager.getAutoEmail()) {
                 console.log('📧 Auto-email disabled');
                 return { success: false, reason: 'Auto-email disabled' };
             }
-
             const result = await this.sendReportEmail(reportData, topics, reportDate);
-            
             if (window.uiManager) {
                 window.uiManager.showStatusMessage(`Email sent successfully to ${result.recipients} recipients!`, 'success');
             }
-            
             return result;
         } catch (error) {
             console.error('❌ Auto-email failed:', error);
-            
             if (window.uiManager) {
                 window.uiManager.showStatusMessage(`Email sending failed: ${error.message}`, 'error');
             }
-            
             throw error;
         }
     }
@@ -493,7 +502,7 @@ class EmailSender {
             if (window.settingsManager) {
                 window.settingsManager.setAutoEmail(enabled);
             } else {
-                localStorage.setItem('aiNewsAutoEmail', JSON.stringify(enabled));
+                console.warn('settingsManager not available, cannot save auto-email setting');
             }
         } catch (error) {
             console.error('Error saving auto-email setting:', error);
@@ -505,8 +514,8 @@ class EmailSender {
             if (window.settingsManager) {
                 return window.settingsManager.getAutoEmail();
             }
-            const saved = localStorage.getItem('aiNewsAutoEmail');
-            return saved ? JSON.parse(saved) : false;
+            console.warn('settingsManager not available, returning false for auto-email');
+            return false;
         } catch (error) {
             console.error('Error loading auto-email setting:', error);
             return false;

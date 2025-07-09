@@ -9,7 +9,12 @@ class SettingsManager {
             autoShare: true, // Enable auto-sharing by default - truly autonomous!
             enableNewsSearch: true, // Enable news search by default
             enableResearchSearch: true, // Enable research search by default
-            openaiApiKey: '' // OpenAI API key for summary generation
+            openaiApiKey: '', // OpenAI API key for summary generation
+            githubToken: '',
+            newsApiKey: '',
+            emailConfig: {}, // Mailgun configuration
+            emailRecipients: [], // Email recipients list
+            autoEmail: false // Auto-email setting
         };
     }
 
@@ -88,6 +93,17 @@ class SettingsManager {
                 this.settings.openaiApiKey = savedOpenaiApiKey;
             }
             
+            // Load GitHub token
+            const savedGithubToken = localStorage.getItem('aiNewsGithubToken');
+            if (savedGithubToken !== null) {
+                this.settings.githubToken = savedGithubToken;
+            }
+            // Load NewsAPI key
+            const savedNewsApiKey = localStorage.getItem('aiNewsNewsApiKey');
+            if (savedNewsApiKey !== null) {
+                this.settings.newsApiKey = savedNewsApiKey;
+            }
+            
             console.log('Settings loaded successfully');
         } catch (error) {
             console.warn('Could not load saved settings, using defaults:', error);
@@ -123,6 +139,12 @@ class SettingsManager {
             // Save OpenAI API key
             if (this.settings.openaiApiKey) {
                 localStorage.setItem('aiNewsOpenaiApiKey', this.settings.openaiApiKey);
+            }
+            if (this.settings.githubToken) {
+                localStorage.setItem('aiNewsGithubToken', this.settings.githubToken);
+            }
+            if (this.settings.newsApiKey) {
+                localStorage.setItem('aiNewsNewsApiKey', this.settings.newsApiKey);
             }
             
             console.log('Settings saved successfully');
@@ -304,73 +326,100 @@ class SettingsManager {
         this.saveSettings();
     }
 
+    getGithubToken() {
+        return this.settings.githubToken;
+    }
+    setGithubToken(token) {
+        this.settings.githubToken = token;
+        this.saveSettings();
+    }
+    getNewsApiKey() {
+        return this.settings.newsApiKey;
+    }
+    setNewsApiKey(key) {
+        this.settings.newsApiKey = key;
+        this.saveSettings();
+    }
+
     // Export/Import methods (enhanced)
     exportSettings() {
+        // Export all settings fields, including email, API keys, tokens, etc.
         const exportData = {
             ...this.settings,
             exportDate: new Date().toISOString(),
-            version: '2.0' // Updated version
+            version: '2.1'
         };
-        
         const dataStr = JSON.stringify(exportData, null, 2);
         const dataBlob = new Blob([dataStr], {type: 'application/json'});
         const url = URL.createObjectURL(dataBlob);
-        
         const link = document.createElement('a');
         link.href = url;
         link.download = `ai-news-settings-${new Date().toISOString().split('T')[0]}.json`;
         link.click();
-        
         URL.revokeObjectURL(url);
-        
         if (window.uiManager) {
             window.uiManager.showStatusMessage('Settings exported successfully!', 'success');
         }
     }
 
+
+
     importSettings() {
         const fileInput = document.getElementById('importFile');
         const file = fileInput.files[0];
-        
         if (!file) return;
-        
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
                 const importedSettings = JSON.parse(e.target.result);
-                
-                // Validate and import settings
+                // Restore all known fields
                 if (importedSettings.topics && Array.isArray(importedSettings.topics)) {
                     this.settings.topics = importedSettings.topics;
                 }
-                
                 if (importedSettings.schedule) {
                     this.settings.schedule = importedSettings.schedule;
                 }
-                
                 if (importedSettings.lastRun) {
                     this.settings.lastRun = new Date(importedSettings.lastRun);
                 }
-
                 if (importedSettings.whatsappNumbers && Array.isArray(importedSettings.whatsappNumbers)) {
                     this.settings.whatsappNumbers = importedSettings.whatsappNumbers;
                 }
-
                 if (importedSettings.autoShare !== undefined) {
                     this.settings.autoShare = importedSettings.autoShare;
                 }
-                
+                if (importedSettings.emailConfig) {
+                    this.settings.emailConfig = importedSettings.emailConfig;
+                }
+                if (importedSettings.emailRecipients) {
+                    this.settings.emailRecipients = importedSettings.emailRecipients;
+                }
+                if (importedSettings.autoEmail !== undefined) {
+                    this.settings.autoEmail = importedSettings.autoEmail;
+                }
+                if (importedSettings.enableNewsSearch !== undefined) {
+                    this.settings.enableNewsSearch = importedSettings.enableNewsSearch;
+                }
+                if (importedSettings.enableResearchSearch !== undefined) {
+                    this.settings.enableResearchSearch = importedSettings.enableResearchSearch;
+                }
+                if (importedSettings.openaiApiKey) {
+                    this.settings.openaiApiKey = importedSettings.openaiApiKey;
+                }
+                if (importedSettings.githubToken) {
+                    this.settings.githubToken = importedSettings.githubToken;
+                }
+                if (importedSettings.newsApiKey) {
+                    this.settings.newsApiKey = importedSettings.newsApiKey;
+                }
+                // Save and update UI
                 this.saveSettings();
-                
-                // Update UI
                 if (window.topicsManager) {
                     window.topicsManager.updateDisplay();
                 }
-                
                 if (window.schedulerManager) {
                     window.schedulerManager.updateDisplay();
                 }
-                
                 if (window.uiManager) {
                     window.uiManager.showStatusMessage('Settings imported successfully!', 'success');
                 }
@@ -381,7 +430,6 @@ class SettingsManager {
                 }
             }
         };
-        
         reader.readAsText(file);
         fileInput.value = '';
     }

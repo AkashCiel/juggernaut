@@ -7,12 +7,14 @@ class NewsGenerator {
     }
 
     init() {
-        // Initialize news generator and load API keys
-        const savedKeys = window.AINewsData.getApiKeys();
-        console.log('🔍 Loading saved API keys:', savedKeys);
-        
-        if (savedKeys && Object.keys(savedKeys).length > 0) {
-            this.newsAPIs.setApiKeys(savedKeys);
+        // Initialize news generator and load API keys from settingsManager
+        if (window.settingsManager) {
+            const keys = {
+                githubToken: window.settingsManager.getGithubToken(),
+                newsApi: window.settingsManager.getNewsApiKey(),
+                openaiApi: window.settingsManager.getOpenaiApiKey()
+            };
+            this.newsAPIs.setApiKeys(keys);
             console.log('✅ News generator initialized with saved API keys');
         } else {
             console.log('⚠️ News generator initialized (API keys not set - will use mock data)');
@@ -21,8 +23,12 @@ class NewsGenerator {
 
     // Set API keys
     setApiKeys(keys) {
+        if (window.settingsManager) {
+            if (keys.githubToken) window.settingsManager.setGithubToken(keys.githubToken);
+            if (keys.newsApi) window.settingsManager.setNewsApiKey(keys.newsApi);
+            if (keys.openaiApi) window.settingsManager.setOpenaiApiKey(keys.openaiApi);
+        }
         this.newsAPIs.setApiKeys(keys);
-        window.AINewsData.saveApiKeys(keys);
     }
 
     async generateReport() {
@@ -54,13 +60,21 @@ class NewsGenerator {
             let aiSummary = null;
             if (window.summaryGenerator && this.settingsManager.getOpenaiApiKey()) {
                 try {
-                    console.log('🤖 Starting AI summary generation...');
-                    aiSummary = await window.summaryGenerator.generateSummary(newsItems, activeTopics);
+                    // Add timeout for summary generation (20 seconds)
+                    const timeoutPromise = (promise, ms) => Promise.race([
+                        promise,
+                        new Promise((_, reject) => setTimeout(() => reject(new Error('Summary generation timed out')), ms))
+                    ]);
+                    aiSummary = await timeoutPromise(
+                        window.summaryGenerator.generateSummary(newsItems, activeTopics),
+                        20000 // 20 seconds timeout
+                    );
                     if (aiSummary) {
                         console.log('✅ AI summary generated successfully');
                     }
                 } catch (error) {
-                    console.error('❌ Error generating AI summary:', error);
+                    console.error('❌ Error or timeout generating AI summary:', error);
+                    aiSummary = null; // fallback
                 }
             } else {
                 console.log('⚠️ Skipping AI summary - OpenAI key not set or summary generator not available');

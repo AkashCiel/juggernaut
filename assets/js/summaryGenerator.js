@@ -12,9 +12,15 @@ class SummaryGenerator {
 
     // Initialize the summary generator
     init() {
-        // Get API keys from settings
-        const apiKeys = window.AINewsData.getApiKeys();
-        this.setApiKeys(apiKeys);
+        // Get API keys from settingsManager
+        if (window.settingsManager) {
+            const apiKeys = {
+                githubToken: window.settingsManager.getGithubToken(),
+                newsApi: window.settingsManager.getNewsApiKey(),
+                openaiApi: window.settingsManager.getOpenaiApiKey()
+            };
+            this.setApiKeys(apiKeys);
+        }
         
         console.log('✅ Summary generator initialized');
     }

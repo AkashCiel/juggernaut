@@ -2,38 +2,22 @@
 window.AINewsData = {
     // API Keys management
     getApiKeys() {
-        try {
-            const saved = localStorage.getItem('aiNewsApiKeys');
-            const keys = saved ? JSON.parse(saved) : {};
-            
-            // Include OpenAI API key from settings manager
-            if (window.settingsManager) {
-                const openaiKey = window.settingsManager.getOpenaiApiKey();
-                if (openaiKey) {
-                    keys.openaiApi = openaiKey;
-                }
-            }
-            
-            return keys;
-        } catch (error) {
-            console.error('Error loading API keys:', error);
-            return {};
+        console.warn('getApiKeys is deprecated. Use settingsManager.getGithubToken(), getNewsApiKey(), getOpenaiApiKey() instead.');
+        if (window.settingsManager) {
+            return {
+                githubToken: window.settingsManager.getGithubToken(),
+                newsApi: window.settingsManager.getNewsApiKey(),
+                openaiApi: window.settingsManager.getOpenaiApiKey()
+            };
         }
+        return {};
     },
-
     saveApiKeys(keys) {
-        try {
-            // Save to localStorage
-            localStorage.setItem('aiNewsApiKeys', JSON.stringify(keys));
-            
-            // Save OpenAI key to settings manager if present
-            if (window.settingsManager && keys.openaiApi) {
-                window.settingsManager.setOpenaiApiKey(keys.openaiApi);
-            }
-            
-            console.log('✅ API keys saved successfully');
-        } catch (error) {
-            console.error('Error saving API keys:', error);
+        console.warn('saveApiKeys is deprecated. Use settingsManager.setGithubToken(), setNewsApiKey(), setOpenaiApiKey() instead.');
+        if (window.settingsManager) {
+            if (keys.githubToken) window.settingsManager.setGithubToken(keys.githubToken);
+            if (keys.newsApi) window.settingsManager.setNewsApiKey(keys.newsApi);
+            if (keys.openaiApi) window.settingsManager.setOpenaiApiKey(keys.openaiApi);
         }
     },
 
