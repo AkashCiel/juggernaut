@@ -28,11 +28,28 @@ class NewsAPIs {
 
     // Set API keys (called from settings)
     setApiKeys(keys) {
+        if (window.settingsManager) {
+            if (keys.githubToken) window.settingsManager.setGithubToken(keys.githubToken);
+            if (keys.newsApi) window.settingsManager.setNewsApiKey(keys.newsApi);
+            if (keys.openaiApi) window.settingsManager.setOpenaiApiKey(keys.openaiApi);
+        }
         this.apiKeys = { ...this.apiKeys, ...keys };
         console.log('✅ API keys updated:', {
             newsApi: this.apiKeys.newsApi ? 'SET' : 'NOT SET',
             githubToken: this.apiKeys.githubToken ? 'SET' : 'NOT SET'
         });
+    }
+
+    // When fetching, always use settingsManager as the source of truth
+    getCurrentApiKeys() {
+        if (window.settingsManager) {
+            return {
+                githubToken: window.settingsManager.getGithubToken(),
+                newsApi: window.settingsManager.getNewsApiKey(),
+                openaiApi: window.settingsManager.getOpenaiApiKey()
+            };
+        }
+        return { ...this.apiKeys };
     }
 
     // Main function to fetch all news
@@ -70,12 +87,8 @@ class NewsAPIs {
             return this.cache.get(cacheKey).data;
         }
 
-        console.log('🔍 Checking NewsAPI key:', {
-            hasKey: !!this.apiKeys.newsApi,
-            keyValue: this.apiKeys.newsApi ? this.apiKeys.newsApi.substring(0, 10) + '...' : 'NOT SET',
-        });
-        
-        if (!this.apiKeys.newsApi) {
+        const { newsApi } = this.getCurrentApiKeys();
+        if (!newsApi) {
             console.warn('⚠️ NewsAPI key not set or invalid, using mock data');
             return [];
         }
@@ -86,7 +99,7 @@ class NewsAPIs {
             // Fetch for each topic
             for (const topic of topics.slice(0, 5)) { // Limit to 5 topics to stay within API limits
                 const query = this.buildNewsQuery(topic);
-                const apiUrl = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&sortBy=publishedAt&language=en&pageSize=10&apiKey=${this.apiKeys.newsApi}`;
+                const apiUrl = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&sortBy=publishedAt&language=en&pageSize=10&apiKey=${newsApi}`;
                 
                 // Try with time-based retry logic
                 const response = await this.fetchWithTimeLimit(apiUrl);

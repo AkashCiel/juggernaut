@@ -9,10 +9,12 @@ class GitHubUploader {
     }
 
     init() {
-        // Load GitHub token from settings
-        const savedKeys = window.AINewsData.getApiKeys();
-        if (savedKeys.githubToken) {
-            this.setGitHubToken(savedKeys.githubToken);
+        // Load GitHub token from settingsManager
+        if (window.settingsManager) {
+            const token = window.settingsManager.getGithubToken();
+            if (token) {
+                this.setGitHubToken(token);
+            }
         }
         console.log('✅ GitHub uploader initialized');
     }

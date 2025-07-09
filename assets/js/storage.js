@@ -9,7 +9,12 @@ class SettingsManager {
             autoShare: true, // Enable auto-sharing by default - truly autonomous!
             enableNewsSearch: true, // Enable news search by default
             enableResearchSearch: true, // Enable research search by default
-            openaiApiKey: '' // OpenAI API key for summary generation
+            openaiApiKey: '', // OpenAI API key for summary generation
+            githubToken: '',
+            newsApiKey: '',
+            emailConfig: {}, // Mailgun configuration
+            emailRecipients: [], // Email recipients list
+            autoEmail: false // Auto-email setting
         };
     }
 
@@ -88,6 +93,17 @@ class SettingsManager {
                 this.settings.openaiApiKey = savedOpenaiApiKey;
             }
             
+            // Load GitHub token
+            const savedGithubToken = localStorage.getItem('aiNewsGithubToken');
+            if (savedGithubToken !== null) {
+                this.settings.githubToken = savedGithubToken;
+            }
+            // Load NewsAPI key
+            const savedNewsApiKey = localStorage.getItem('aiNewsNewsApiKey');
+            if (savedNewsApiKey !== null) {
+                this.settings.newsApiKey = savedNewsApiKey;
+            }
+            
             console.log('Settings loaded successfully');
         } catch (error) {
             console.warn('Could not load saved settings, using defaults:', error);
@@ -123,6 +139,12 @@ class SettingsManager {
             // Save OpenAI API key
             if (this.settings.openaiApiKey) {
                 localStorage.setItem('aiNewsOpenaiApiKey', this.settings.openaiApiKey);
+            }
+            if (this.settings.githubToken) {
+                localStorage.setItem('aiNewsGithubToken', this.settings.githubToken);
+            }
+            if (this.settings.newsApiKey) {
+                localStorage.setItem('aiNewsNewsApiKey', this.settings.newsApiKey);
             }
             
             console.log('Settings saved successfully');
@@ -304,6 +326,21 @@ class SettingsManager {
         this.saveSettings();
     }
 
+    getGithubToken() {
+        return this.settings.githubToken;
+    }
+    setGithubToken(token) {
+        this.settings.githubToken = token;
+        this.saveSettings();
+    }
+    getNewsApiKey() {
+        return this.settings.newsApiKey;
+    }
+    setNewsApiKey(key) {
+        this.settings.newsApiKey = key;
+        this.saveSettings();
+    }
+
     // Export/Import methods (enhanced)
     exportSettings() {
         // Export all settings fields, including email, API keys, tokens, etc.
@@ -324,6 +361,8 @@ class SettingsManager {
             window.uiManager.showStatusMessage('Settings exported successfully!', 'success');
         }
     }
+
+
 
     importSettings() {
         const fileInput = document.getElementById('importFile');
@@ -366,6 +405,12 @@ class SettingsManager {
                 }
                 if (importedSettings.openaiApiKey) {
                     this.settings.openaiApiKey = importedSettings.openaiApiKey;
+                }
+                if (importedSettings.githubToken) {
+                    this.settings.githubToken = importedSettings.githubToken;
+                }
+                if (importedSettings.newsApiKey) {
+                    this.settings.newsApiKey = importedSettings.newsApiKey;
                 }
                 // Save and update UI
                 this.saveSettings();

@@ -44,8 +44,8 @@ class EmailSender {
             if (window.settingsManager) {
                 return window.settingsManager.getEmailConfig();
             }
-            const saved = localStorage.getItem('aiNewsEmailConfig');
-            return saved ? JSON.parse(saved) : {};
+            console.warn('settingsManager not available, returning empty config');
+            return {};
         } catch (error) {
             console.error('Error loading email config:', error);
             return {};
@@ -57,7 +57,7 @@ class EmailSender {
             if (window.settingsManager) {
                 window.settingsManager.setEmailConfig(config);
             } else {
-                localStorage.setItem('aiNewsEmailConfig', JSON.stringify(config));
+                console.warn('settingsManager not available, cannot save email config');
             }
             console.log('✅ Email config saved successfully');
         } catch (error) {
@@ -70,8 +70,8 @@ class EmailSender {
             if (window.settingsManager) {
                 return window.settingsManager.getEmailRecipients();
             }
-            const saved = localStorage.getItem('aiNewsEmailRecipients');
-            return saved ? JSON.parse(saved) : [];
+            console.warn('settingsManager not available, returning empty recipients');
+            return [];
         } catch (error) {
             console.error('Error loading email recipients:', error);
             return [];
@@ -83,7 +83,7 @@ class EmailSender {
             if (window.settingsManager) {
                 window.settingsManager.setEmailRecipients(recipients);
             } else {
-                localStorage.setItem('aiNewsEmailRecipients', JSON.stringify(recipients));
+                console.warn('settingsManager not available, cannot save recipients');
             }
             console.log('✅ Email recipients saved successfully');
         } catch (error) {
@@ -502,7 +502,7 @@ class EmailSender {
             if (window.settingsManager) {
                 window.settingsManager.setAutoEmail(enabled);
             } else {
-                localStorage.setItem('aiNewsAutoEmail', JSON.stringify(enabled));
+                console.warn('settingsManager not available, cannot save auto-email setting');
             }
         } catch (error) {
             console.error('Error saving auto-email setting:', error);
@@ -514,8 +514,8 @@ class EmailSender {
             if (window.settingsManager) {
                 return window.settingsManager.getAutoEmail();
             }
-            const saved = localStorage.getItem('aiNewsAutoEmail');
-            return saved ? JSON.parse(saved) : false;
+            console.warn('settingsManager not available, returning false for auto-email');
+            return false;
         } catch (error) {
             console.error('Error loading auto-email setting:', error);
             return false;
