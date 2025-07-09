@@ -5,8 +5,8 @@ class SettingsManager {
             topics: [],
             schedule: 'daily',
             lastRun: null,
-            whatsappNumbers: ['+31647388314'], // Your default number
-            autoShare: true, // Enable auto-sharing by default - truly autonomous!
+
+
             enableNewsSearch: true, // Enable news search by default
             enableResearchSearch: true, // Enable research search by default
             openaiApiKey: '', // OpenAI API key for summary generation
@@ -44,17 +44,9 @@ class SettingsManager {
                 this.settings.lastRun = new Date(savedLastRun);
             }
 
-            // Load WhatsApp numbers
-            const savedWhatsAppNumbers = localStorage.getItem('aiNewsWhatsAppNumbers');
-            if (savedWhatsAppNumbers) {
-                this.settings.whatsappNumbers = JSON.parse(savedWhatsAppNumbers);
-            }
 
-            // Load auto-share setting
-            const savedAutoShare = localStorage.getItem('aiNewsAutoShare');
-            if (savedAutoShare !== null) {
-                this.settings.autoShare = JSON.parse(savedAutoShare);
-            }
+
+
 
             // Load email settings
             const savedEmailConfig = localStorage.getItem('aiNewsEmailConfig');
@@ -115,8 +107,8 @@ class SettingsManager {
         try {
             localStorage.setItem('aiNewsTopics', JSON.stringify(this.settings.topics));
             localStorage.setItem('aiNewsSchedule', this.settings.schedule);
-            localStorage.setItem('aiNewsWhatsAppNumbers', JSON.stringify(this.settings.whatsappNumbers));
-            localStorage.setItem('aiNewsAutoShare', JSON.stringify(this.settings.autoShare));
+
+
             if (this.settings.lastRun) {
                 localStorage.setItem('aiNewsLastRun', this.settings.lastRun.toISOString());
             }
@@ -196,40 +188,9 @@ class SettingsManager {
         this.saveSettings();
     }
 
-    // WhatsApp methods (new)
-    getWhatsAppNumbers() {
-        return this.settings.whatsappNumbers;
-    }
 
-    setWhatsAppNumbers(numbers) {
-        this.settings.whatsappNumbers = numbers;
-        this.saveSettings();
-    }
 
-    addWhatsAppNumber(number) {
-        // Validate and format phone number
-        const formattedNumber = this.formatPhoneNumber(number);
-        if (formattedNumber && !this.settings.whatsappNumbers.includes(formattedNumber)) {
-            this.settings.whatsappNumbers.push(formattedNumber);
-            this.saveSettings();
-            return true;
-        }
-        return false;
-    }
 
-    removeWhatsAppNumber(number) {
-        this.settings.whatsappNumbers = this.settings.whatsappNumbers.filter(n => n !== number);
-        this.saveSettings();
-    }
-
-    getAutoShare() {
-        return this.settings.autoShare;
-    }
-
-    setAutoShare(enabled) {
-        this.settings.autoShare = enabled;
-        this.saveSettings();
-    }
 
     // Email methods
     getEmailConfig() {
@@ -382,12 +343,8 @@ class SettingsManager {
                 if (importedSettings.lastRun) {
                     this.settings.lastRun = new Date(importedSettings.lastRun);
                 }
-                if (importedSettings.whatsappNumbers && Array.isArray(importedSettings.whatsappNumbers)) {
-                    this.settings.whatsappNumbers = importedSettings.whatsappNumbers;
-                }
-                if (importedSettings.autoShare !== undefined) {
-                    this.settings.autoShare = importedSettings.autoShare;
-                }
+
+
                 if (importedSettings.emailConfig) {
                     this.settings.emailConfig = importedSettings.emailConfig;
                 }

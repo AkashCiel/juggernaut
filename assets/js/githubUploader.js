@@ -27,7 +27,7 @@ class GitHubUploader {
 
     // Upload report to GitHub
     async uploadReport(report) {
-        if (!this.apiKeys.githubToken || this.apiKeys.githubToken === 'YOUR_GITHUB_TOKEN_HERE') {
+        if (!this.apiKeys.githubToken || this.apiKeys.githubToken === 'YOUR_GIT_TOKEN_HERE') {
             throw new Error('GitHub token not set. Please add it in API Keys settings.');
         }
 

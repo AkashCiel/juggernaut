@@ -64,9 +64,7 @@
                 <div class="report-title">AI Research News Report</div>
                 <div class="report-date" id="reportDate"></div>
                 <div class="report-actions" style="margin-top: 15px;">
-                    <button class="btn btn-primary" onclick="showManualShareModal()" id="shareBtn" style="display: none;">
-                        📱 Send to WhatsApp
-                    </button>
+
                     <button class="btn btn-primary" onclick="showManualEmailModal()" id="emailBtn" style="display: none; margin-left: 10px;">
                         📧 Email Report
                     </button>
@@ -131,30 +129,7 @@
                 </div>
             </div>
 
-                            <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
-                <h4 style="color: #667eea; margin-bottom: 15px;">📱 WhatsApp Sharing</h4>
-                
-                <div style="margin-bottom: 15px;">
-                    <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                        <input type="checkbox" id="autoShareEnabled" style="transform: scale(1.2);">
-                        <span style="font-weight: 600;">Enable Automated Daily Sharing</span>
-                    </label>
-                    <small style="color: #666;">Automatically send reports to configured WhatsApp numbers</small>
-                </div>
-                
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">WhatsApp Numbers:</label>
-                    <div id="whatsappNumbersList" style="margin-bottom: 10px;">
-                        <!-- Numbers will be populated here -->
-                    </div>
-                    
-                    <div style="display: flex; gap: 10px;">
-                        <input type="tel" id="newWhatsAppNumber" placeholder="+31647388314" style="flex: 1; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
-                        <button class="btn btn-secondary" onclick="addWhatsAppNumber()">Add</button>
-                    </div>
-                    <small style="color: #666;">Include country code (e.g., +31 for Netherlands)</small>
-                </div>
-            </div>
+
 
             <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
                 <h4 style="color: #667eea; margin-bottom: 15px;">📧 Email Sharing</h4>
@@ -211,7 +186,7 @@
     <script src="assets/js/newsGenerator.js"></script>
     <script src="assets/js/reportGenerator.js"></script>
     <script src="assets/js/githubUploader.js"></script>
-    <script src="assets/js/whatsappSharer.js"></script>
+
     <script src="assets/js/emailSender.js"></script>
     <script src="assets/js/app.js"></script>
     
@@ -226,8 +201,7 @@
             document.getElementById('githubToken').value = savedKeys.githubToken || '';
             document.getElementById('openaiApiKey').value = savedKeys.openaiApi || '';
             
-            // Load WhatsApp settings
-            loadWhatsAppSettings();
+
             
             // Load email settings
             loadEmailSettings();
@@ -238,14 +212,7 @@
             modal.style.display = 'block';
         }
         
-        function loadWhatsAppSettings() {
-            // Load auto-share setting
-            const autoShareEnabled = window.settingsManager.getAutoShare();
-            document.getElementById('autoShareEnabled').checked = autoShareEnabled;
-            
-            // Load WhatsApp numbers
-            updateWhatsAppNumbersList();
-        }
+
         
         function loadEmailSettings() {
             // Load auto-email setting
@@ -270,41 +237,7 @@
             document.getElementById('enableResearchSearch').checked = enableResearchSearch;
         }
         
-        function updateWhatsAppNumbersList() {
-            const numbersList = document.getElementById('whatsappNumbersList');
-            const numbers = window.settingsManager.getWhatsAppNumbers();
-            
-            numbersList.innerHTML = numbers.map(number => `
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: white; border-radius: 8px; margin-bottom: 5px; border: 1px solid #e0e0e0;">
-                    <span style="font-family: monospace;">${number}</span>
-                    <button onclick="removeWhatsAppNumber('${number}')" style="background: #ff4757; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
-                </div>
-            `).join('');
-        }
-        
-        function addWhatsAppNumber() {
-            const input = document.getElementById('newWhatsAppNumber');
-            const number = input.value.trim();
-            
-            if (!number) {
-                alert('Please enter a WhatsApp number');
-                return;
-            }
-            
-            if (window.settingsManager.addWhatsAppNumber(number)) {
-                updateWhatsAppNumbersList();
-                input.value = '';
-            } else {
-                alert('Please enter a valid phone number with country code (e.g., +31647388314)');
-            }
-        }
-        
-        function removeWhatsAppNumber(number) {
-            if (confirm(`Remove ${number} from WhatsApp recipients?`)) {
-                window.settingsManager.removeWhatsAppNumber(number);
-                updateWhatsAppNumbersList();
-            }
-        }
+
         
         function updateEmailRecipientsList() {
             const recipientsList = document.getElementById('emailRecipientsList');
@@ -366,9 +299,7 @@
                 window.newsGenerator.setApiKeys(keys);
             }
             
-            // Save auto-share setting
-            const autoShareEnabled = document.getElementById('autoShareEnabled').checked;
-            window.settingsManager.setAutoShare(autoShareEnabled);
+
             
             // Save email settings
             const mailgunApiKey = document.getElementById('mailgunApiKey').value.trim();
@@ -407,24 +338,7 @@
             }
         });
 
-        // Report sharing functions (updated)
-        function downloadCurrentReport() {
-            if (window.whatsappSharer && typeof window.whatsappSharer.downloadReport === 'function') {
-                window.whatsappSharer.downloadReport();
-            } else {
-                console.error('❌ whatsappSharer not available');
-                alert('WhatsApp sharer not ready. Please wait for the app to initialize.');
-            }
-        }
 
-        function showManualShareModal() {
-            if (window.whatsappSharer && typeof window.whatsappSharer.showManualShareModal === 'function') {
-                window.whatsappSharer.showManualShareModal();
-            } else {
-                console.error('❌ whatsappSharer not available');
-                alert('WhatsApp sharer not ready. Please wait for the app to initialize.');
-            }
-        }
         
         function showManualEmailModal() {
             if (window.emailSender && typeof window.emailSender.showManualEmailModal === 'function') {
@@ -462,14 +376,7 @@
             if (downloadBtn) downloadBtn.style.display = 'none';
         }
 
-        // Handle Enter key in WhatsApp number input
-        document.addEventListener('DOMContentLoaded', function() {
-            document.addEventListener('keypress', function(e) {
-                if (e.target.id === 'newWhatsAppNumber' && e.key === 'Enter') {
-                    addWhatsAppNumber();
-                }
-            });
-        });
+
     </script>
 </body>
 </html>

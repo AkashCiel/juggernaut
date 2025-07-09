@@ -105,23 +105,7 @@ class SchedulerManager {
                         }
                     }
                     
-                    // If auto-sharing is enabled, trigger WhatsApp sharing (skip upload inside autoShareReport)
-                    if (window.settingsManager.getAutoShare()) {
-                        console.log('🤖 Triggering automated WhatsApp sharing...');
-                        
-                        // Get current news data for sharing
-                        const activeTopics = window.settingsManager.getTopics();
-                        if (lastReport) {
-                            // Auto-share the generated report (assume already uploaded)
-                            await window.whatsappSharer.autoShareReport(
-                                lastReport.newsItems, 
-                                activeTopics, 
-                                new Date()
-                            );
-                        }
-                    } else {
-                        console.log('📱 Auto-sharing disabled, report generated and uploaded only');
-                    }
+
                     
                     // If auto-email is enabled, trigger email sending using the same report object
                     if (window.emailSender && window.emailSender.getAutoEmail()) {
