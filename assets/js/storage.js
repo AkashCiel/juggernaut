@@ -306,23 +306,20 @@ class SettingsManager {
 
     // Export/Import methods (enhanced)
     exportSettings() {
+        // Export all settings fields, including email, API keys, tokens, etc.
         const exportData = {
             ...this.settings,
             exportDate: new Date().toISOString(),
-            version: '2.0' // Updated version
+            version: '2.1'
         };
-        
         const dataStr = JSON.stringify(exportData, null, 2);
         const dataBlob = new Blob([dataStr], {type: 'application/json'});
         const url = URL.createObjectURL(dataBlob);
-        
         const link = document.createElement('a');
         link.href = url;
         link.download = `ai-news-settings-${new Date().toISOString().split('T')[0]}.json`;
         link.click();
-        
         URL.revokeObjectURL(url);
-        
         if (window.uiManager) {
             window.uiManager.showStatusMessage('Settings exported successfully!', 'success');
         }
@@ -331,46 +328,53 @@ class SettingsManager {
     importSettings() {
         const fileInput = document.getElementById('importFile');
         const file = fileInput.files[0];
-        
         if (!file) return;
-        
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
                 const importedSettings = JSON.parse(e.target.result);
-                
-                // Validate and import settings
+                // Restore all known fields
                 if (importedSettings.topics && Array.isArray(importedSettings.topics)) {
                     this.settings.topics = importedSettings.topics;
                 }
-                
                 if (importedSettings.schedule) {
                     this.settings.schedule = importedSettings.schedule;
                 }
-                
                 if (importedSettings.lastRun) {
                     this.settings.lastRun = new Date(importedSettings.lastRun);
                 }
-
                 if (importedSettings.whatsappNumbers && Array.isArray(importedSettings.whatsappNumbers)) {
                     this.settings.whatsappNumbers = importedSettings.whatsappNumbers;
                 }
-
                 if (importedSettings.autoShare !== undefined) {
                     this.settings.autoShare = importedSettings.autoShare;
                 }
-                
+                if (importedSettings.emailConfig) {
+                    this.settings.emailConfig = importedSettings.emailConfig;
+                }
+                if (importedSettings.emailRecipients) {
+                    this.settings.emailRecipients = importedSettings.emailRecipients;
+                }
+                if (importedSettings.autoEmail !== undefined) {
+                    this.settings.autoEmail = importedSettings.autoEmail;
+                }
+                if (importedSettings.enableNewsSearch !== undefined) {
+                    this.settings.enableNewsSearch = importedSettings.enableNewsSearch;
+                }
+                if (importedSettings.enableResearchSearch !== undefined) {
+                    this.settings.enableResearchSearch = importedSettings.enableResearchSearch;
+                }
+                if (importedSettings.openaiApiKey) {
+                    this.settings.openaiApiKey = importedSettings.openaiApiKey;
+                }
+                // Save and update UI
                 this.saveSettings();
-                
-                // Update UI
                 if (window.topicsManager) {
                     window.topicsManager.updateDisplay();
                 }
-                
                 if (window.schedulerManager) {
                     window.schedulerManager.updateDisplay();
                 }
-                
                 if (window.uiManager) {
                     window.uiManager.showStatusMessage('Settings imported successfully!', 'success');
                 }
@@ -381,7 +385,6 @@ class SettingsManager {
                 }
             }
         };
-        
         reader.readAsText(file);
         fileInput.value = '';
     }
