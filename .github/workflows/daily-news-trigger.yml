@@ -34,7 +34,7 @@ jobs:
         run: npm run generate-report
         env:
           # GitHub token is automatically available in GitHub Actions
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
           # API keys from GitHub Secrets
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
@@ -43,11 +43,11 @@ jobs:
           # Settings from GitHub Secrets
           TOPICS: ${{ secrets.TOPICS }}
           EMAIL_RECIPIENTS: ${{ secrets.EMAIL_RECIPIENTS }}
-          WHATSAPP_NUMBERS: ${{ secrets.WHATSAPP_NUMBERS }}
+
           ENABLE_NEWS_SEARCH: ${{ secrets.ENABLE_NEWS_SEARCH }}
           ENABLE_RESEARCH_SEARCH: ${{ secrets.ENABLE_RESEARCH_SEARCH }}
           AUTO_EMAIL: ${{ secrets.AUTO_EMAIL }}
-          AUTO_SHARE: ${{ secrets.AUTO_SHARE }}
+
           SCHEDULE: ${{ secrets.SCHEDULE }}
           
       - name: Log completion

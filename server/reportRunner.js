@@ -24,12 +24,12 @@ class ServerReportRunner {
                 topics: this.parseJsonFromEnv('TOPICS', []),
                 schedule: process.env.SCHEDULE || 'daily',
                 lastRun: process.env.LAST_RUN ? new Date(process.env.LAST_RUN) : null,
-                whatsappNumbers: this.parseJsonFromEnv('WHATSAPP_NUMBERS', []),
-                autoShare: this.parseBooleanFromEnv('AUTO_SHARE', false),
+
+
                 enableNewsSearch: this.parseBooleanFromEnv('ENABLE_NEWS_SEARCH', true),
                 enableResearchSearch: this.parseBooleanFromEnv('ENABLE_RESEARCH_SEARCH', true),
                 openaiApiKey: process.env.OPENAI_API_KEY || '',
-                githubToken: process.env.GITHUB_TOKEN || '',
+                githubToken: process.env.GIT_TOKEN || '',
                 newsApiKey: process.env.NEWS_API_KEY || '',
                 emailConfig: {
                     apiKey: process.env.MAILGUN_API_KEY || '',

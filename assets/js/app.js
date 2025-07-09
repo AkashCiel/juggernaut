@@ -6,7 +6,7 @@ class AINewsAgent {
         this.schedulerManager = new SchedulerManager(this.settingsManager);
         this.newsGenerator = new NewsGenerator(this.settingsManager);
         this.reportGenerator = new ReportGenerator();
-        this.whatsappSharer = new WhatsAppSharer();
+
         this.githubUploader = new GitHubUploader();
         this.emailSender = new EmailSender();
         this.summaryGenerator = new SummaryGenerator();
@@ -18,15 +18,14 @@ class AINewsAgent {
         window.schedulerManager = this.schedulerManager;
         window.newsGenerator = this.newsGenerator;
         window.reportGenerator = this.reportGenerator;
-        window.whatsappSharer = this.whatsappSharer;
+
         window.githubUploader = this.githubUploader;
         window.emailSender = this.emailSender;
         window.summaryGenerator = this.summaryGenerator;
         window.uiManager = this.uiManager;
         
         console.log('✅ All managers created successfully');
-        console.log('🔍 WhatsAppSharer instance:', this.whatsappSharer);
-        console.log('🔍 window.whatsappSharer:', window.whatsappSharer);
+
     }
 
     async init() {
@@ -53,8 +52,7 @@ class AINewsAgent {
             this.reportGenerator.init();
             console.log('✅ Report generator initialized');
             
-            this.whatsappSharer.init();
-            console.log('✅ WhatsApp sharer initialized');
+            
             
             this.githubUploader.init();
             console.log('✅ GitHub uploader initialized');
@@ -117,7 +115,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await new Promise(resolve => setTimeout(resolve, 100));
         
         // Check if required classes exist
-        const requiredClasses = ['SettingsManager', 'TopicsManager', 'SchedulerManager', 'NewsGenerator', 'ReportGenerator', 'WhatsAppSharer', 'GitHubUploader', 'UIManager'];
+        const requiredClasses = ['SettingsManager', 'TopicsManager', 'SchedulerManager', 'NewsGenerator', 'ReportGenerator', 'GitHubUploader', 'UIManager'];
         const missingClasses = requiredClasses.filter(className => !window[className]);
         
         console.log('🔍 Available classes:', Object.keys(window).filter(key => 

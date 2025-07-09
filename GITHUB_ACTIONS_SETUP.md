@@ -17,16 +17,14 @@ Go to your GitHub repository → Settings → Secrets and variables → Actions,
 - `MAILGUN_API_KEY`: Your Mailgun API key  
 - `MAILGUN_DOMAIN`: Your Mailgun domain
 - `NEWS_API_KEY`: Your NewsAPI key (optional)
-- `GITHUB_TOKEN`: Usually auto-provided
+- `GIT_TOKEN`: Usually auto-provided
 
 #### **Settings:**
 - `TOPICS`: `["large language models","artificial general intelligence","AI safety","robotics AI"]`
 - `EMAIL_RECIPIENTS`: `["akash.singh.0762@gmail.com"]`
-- `WHATSAPP_NUMBERS`: `["+31647388314"]`
 - `ENABLE_NEWS_SEARCH`: `false`
 - `ENABLE_RESEARCH_SEARCH`: `true`
 - `AUTO_EMAIL`: `true`
-- `AUTO_SHARE`: `false`
 - `SCHEDULE`: `daily`
 
 ### 2. Install Dependencies
@@ -80,7 +78,7 @@ juggernaut/
    - Check `EMAIL_RECIPIENTS` secret is set
 
 4. **"GitHub upload failed"**
-   - The `GITHUB_TOKEN` is usually auto-provided
+   - The `GIT_TOKEN` is usually auto-provided
    - Check repository permissions
 
 ### Debug Mode
