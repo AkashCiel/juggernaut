@@ -163,9 +163,10 @@ async function uploadFileToGitHub(content, date, githubToken) {
                 try {
                     const response = JSON.parse(responseData);
                     
-                    if (response.message && response.message.includes('already exists')) {
-                        // File exists, update it
-                        updateExistingFile(content, date, githubToken, response.sha)
+                    if (res.statusCode === 422 && response.message && response.message.includes('sha')) {
+                        // File exists but SHA wasn't provided, get the SHA and retry
+                        getFileSha(filePath, githubToken)
+                            .then(sha => updateExistingFile(content, date, githubToken, sha))
                             .then(resolve)
                             .catch(reject);
                     } else if (response.content && response.content.sha) {
@@ -189,6 +190,49 @@ async function uploadFileToGitHub(content, date, githubToken) {
         });
 
         req.write(data);
+        req.end();
+    });
+}
+
+async function getFileSha(filePath, githubToken) {
+    return new Promise((resolve, reject) => {
+        const options = {
+            hostname: 'api.github.com',
+            port: 443,
+            path: `/repos/AkashCiel/juggernaut/contents/${filePath}`,
+            method: 'GET',
+            headers: {
+                'Authorization': `token ${githubToken}`,
+                'User-Agent': 'AI-News-Agent'
+            }
+        };
+
+        const req = https.request(options, (res) => {
+            let responseData = '';
+            
+            res.on('data', (chunk) => {
+                responseData += chunk;
+            });
+            
+            res.on('end', () => {
+                try {
+                    const response = JSON.parse(responseData);
+                    
+                    if (response.sha) {
+                        resolve(response.sha);
+                    } else {
+                        reject(new Error('Could not get file SHA'));
+                    }
+                } catch (error) {
+                    reject(new Error(`Failed to parse GitHub response: ${error.message}`));
+                }
+            });
+        });
+
+        req.on('error', (error) => {
+            reject(new Error(`GitHub request failed: ${error.message}`));
+        });
+
         req.end();
     });
 }
