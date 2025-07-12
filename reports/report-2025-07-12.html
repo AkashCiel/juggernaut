@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Research Report - 2025-07-12</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .ai-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+        }
+        .paper {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+        .paper h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .paper a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .paper a:hover {
+            text-decoration: underline;
+        }
+        .meta {
+            color: #666;
+            font-size: 14px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI Research Report</h1>
+        <div class="meta">
+            <strong>Date:</strong> 2025-07-12<br>
+            <strong>Topics:</strong> large language models, artificial general intelligence, AI safety, robotics AI<br>
+            <strong>Papers Found:</strong> 10
+        </div>
+        
+        
+        <div class="ai-summary">
+            <h2>🤖 AI Summary</h2>
+            <p>These research papers collectively highlight significant advancements and challenges in the field of AI, focusing on multimodal models, visual reasoning, adaptive architectures, and quantum processes. The study on the impact of pretraining word co-occurrence in multimodal models reveals how compositional generalization is influenced by the statistical properties of training data, suggesting the need for improved algorithms that enhance generalization without exponentially increasing training data. This insight is pivotal for developing more robust AI systems capable of understanding novel combinations of known concepts.
+
+In visual reasoning, the introduction of TreeBench and the TreeVGR training paradigm emphasizes the importance of traceable evidence in enhancing model performance. These developments underscore the potential of reinforcement learning to improve localization and reasoning capabilities, thus advancing vision-grounded reasoning tasks. Simultaneously, the PyVision framework illustrates a transformative shift towards dynamic tooling, allowing models to autonomously create and refine task-specific tools, which marks a step toward more agentic and flexible AI systems.
+
+On the technical front, innovations in architectures and representations are evident in works like MGVQ, which proposes a novel quantization strategy for VQ-VAEs, narrowing the performance gap with VAEs and improving image reconstruction. Similarly, the adaptive image tokenization by KARL leverages principles from Algorithmic Information Theory to predict the optimal representation size in a single pass, enhancing efficiency without sacrificing accuracy. Additionally, the CoLa framework for test-time depth adaptation offers a dynamic approach to utilizing pretrained LLMs, highlighting the potential for more efficient and accurate processing by adapting model depth based on input complexity.
+
+Overall, these papers reflect a growing trend in AI research towards more adaptable, efficient, and explainable models. By addressing the complexities of multimodal interactions, optimizing resource allocation, and leveraging foundational principles from information theory and quantum mechanics, these studies pave the way for more advanced and versatile AI systems capable of operating effectively across diverse domains and tasks.</p>
+        </div>
+    
+        
+        <h2>📚 Research Papers</h2>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.08000v1" target="_blank">Impact of Pretraining Word Co-occurrence on Compositional Generalization in Multimodal Models</a></h3>
+                <p><strong>Authors:</strong> Helen Qu, Sang Michael Xie</p>
+                <p><strong>Published:</strong> 7/10/2025</p>
+                <p><strong>Categories:</strong> cs.CV, cs.LG</p>
+                <p><strong>Summary:</strong> CLIP and large multimodal models (LMMs) have better accuracy on examples involving concepts that are highly represented in the training data. However, the role of concept combinations in the training data on compositional generalization is largely unclear -- for instance, how does accuracy vary when a common object appears in an uncommon pairing with another object? In this paper, we investigate how word co-occurrence statistics in the pretraining dataset (a proxy for co-occurrence of visual concepts) impacts CLIP/LMM performance. To disentangle the effects of word co-occurrence frequencies from single-word frequencies, we measure co-occurrence with pointwise mutual information (PMI), which normalizes the joint probability of two words co-occurring by the probability of co-occurring independently. Using synthetically generated images with a variety of concept pairs, we show a strong correlation between PMI in the CLIP pretraining data and zero-shot accuracy in CLIP models trained on LAION-400M (r=0.97 and 14% accuracy gap between images in the top and bottom 5% of PMI values), demonstrating that even accuracy on common concepts is affected by the combination of concepts in the image. Leveraging this finding, we reproduce this effect in natural images by editing them to contain pairs with varying PMI, resulting in a correlation of r=0.75. Finally, we demonstrate that this behavior in CLIP transfers to LMMs built on top of CLIP (r=0.70 for TextVQA, r=0.62 for VQAv2). Our findings highlight the need for algorithms and architectures that improve compositional generalization in multimodal models without scaling the training data combinatorially. Our code is available at https://github.com/helenqu/multimodal-pretraining-pmi.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.07999v1" target="_blank">Traceable Evidence Enhanced Visual Grounded Reasoning: Evaluation and Methodology</a></h3>
+                <p><strong>Authors:</strong> Haochen Wang, Xiangtai Li, Zilong Huang, Anran Wang, Jiacong Wang, Tao Zhang, Jiani Zheng, Sule Bai, Zijian Kang, Jiashi Feng, Zhuochen Wang, Zhaoxiang Zhang</p>
+                <p><strong>Published:</strong> 7/10/2025</p>
+                <p><strong>Categories:</strong> cs.CV, cs.AI, cs.CL</p>
+                <p><strong>Summary:</strong> Models like OpenAI-o3 pioneer visual grounded reasoning by dynamically referencing visual regions, just like human "thinking with images". However, no benchmark exists to evaluate these capabilities holistically. To bridge this gap, we propose TreeBench (Traceable Evidence Evaluation Benchmark), a diagnostic benchmark built on three principles: (1) focused visual perception of subtle targets in complex scenes, (2) traceable evidence via bounding box evaluation, and (3) second-order reasoning to test object interactions and spatial hierarchies beyond simple object localization. Prioritizing images with dense objects, we initially sample 1K high-quality images from SA-1B, and incorporate eight LMM experts to manually annotate questions, candidate options, and answers for each image. After three stages of quality control, TreeBench consists of 405 challenging visual question-answering pairs, even the most advanced models struggle with this benchmark, where none of them reach 60% accuracy, e.g., OpenAI-o3 scores only 54.87. Furthermore, we introduce TreeVGR (Traceable Evidence Enhanced Visual Grounded Reasoning), a training paradigm to supervise localization and reasoning jointly with reinforcement learning, enabling accurate localizations and explainable reasoning pathways. Initialized from Qwen2.5-VL-7B, it improves V* Bench (+16.8), MME-RealWorld (+12.6), and TreeBench (+13.4), proving traceability is key to advancing vision-grounded reasoning. The code is available at https://github.com/Haochen-Wang409/TreeVGR.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.07998v1" target="_blank">PyVision: Agentic Vision with Dynamic Tooling</a></h3>
+                <p><strong>Authors:</strong> Shitian Zhao, Haoquan Zhang, Shaoheng Lin, Ming Li, Qilong Wu, Kaipeng Zhang, Chen Wei</p>
+                <p><strong>Published:</strong> 7/10/2025</p>
+                <p><strong>Categories:</strong> cs.CL, cs.AI, cs.CV</p>
+                <p><strong>Summary:</strong> LLMs are increasingly deployed as agents, systems capable of planning, reasoning, and dynamically calling external tools. However, in visual reasoning, prior approaches largely remain limited by predefined workflows and static toolsets. In this report, we present PyVision, an interactive, multi-turn framework that enables MLLMs to autonomously generate, execute, and refine Python-based tools tailored to the task at hand, unlocking flexible and interpretable problem-solving. We develop a taxonomy of the tools created by PyVision and analyze their usage across a diverse set of benchmarks. Quantitatively, PyVision achieves consistent performance gains, boosting GPT-4.1 by +7.8% on V* and Claude-4.0-Sonnet by +31.1% on VLMsAreBlind-mini. These results point to a broader shift: dynamic tooling allows models not just to use tools, but to invent them, advancing toward more agentic visual reasoning.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.07997v1" target="_blank">MGVQ: Could VQ-VAE Beat VAE? A Generalizable Tokenizer with Multi-group Quantization</a></h3>
+                <p><strong>Authors:</strong> Mingkai Jia, Wei Yin, Xiaotao Hu, Jiaxin Guo, Xiaoyang Guo, Qian Zhang, Xiao-Xiao Long, Ping Tan</p>
+                <p><strong>Published:</strong> 7/10/2025</p>
+                <p><strong>Categories:</strong> cs.CV</p>
+                <p><strong>Summary:</strong> Vector Quantized Variational Autoencoders (VQ-VAEs) are fundamental models that compress continuous visual data into discrete tokens. Existing methods have tried to improve the quantization strategy for better reconstruction quality, however, there still exists a large gap between VQ-VAEs and VAEs. To narrow this gap, we propose \NickName, a novel method to augment the representation capability of discrete codebooks, facilitating easier optimization for codebooks and minimizing information loss, thereby enhancing reconstruction quality. Specifically, we propose to retain the latent dimension to preserve encoded features and incorporate a set of sub-codebooks for quantization. Furthermore, we construct comprehensive zero-shot benchmarks featuring resolutions of 512p and 2k to evaluate the reconstruction performance of existing methods rigorously. \NickName~achieves the \textbf{state-of-the-art performance on both ImageNet and $8$ zero-shot benchmarks} across all VQ-VAEs. Notably, compared with SD-VAE, we outperform them on ImageNet significantly, with rFID $\textbf{0.49}$ v.s. $\textbf{0.91}$, and achieve superior PSNR on all zero-shot benchmarks. These results highlight the superiority of \NickName~in reconstruction and pave the way for preserving fidelity in HD image processing tasks. Code will be publicly available at https://github.com/MKJia/MGVQ.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.07996v1" target="_blank">Skip a Layer or Loop it? Test-Time Depth Adaptation of Pretrained LLMs</a></h3>
+                <p><strong>Authors:</strong> Ziyue Li, Yang Li, Tianyi Zhou</p>
+                <p><strong>Published:</strong> 7/10/2025</p>
+                <p><strong>Categories:</strong> cs.LG</p>
+                <p><strong>Summary:</strong> Can a pretrained neural network adapt its architecture to different inputs without any finetuning? Do we need all layers for simple tasks, and are they adequate for challenging tasks? We found that the layers of a pretrained large language model (LLM) can be manipulated as separate modules to build a better and even shallower model customized for each test sample. In particular, each layer from the pretrained model can be skipped/pruned or repeated multiple times as recurrent neural networks (RNN), and stacked with others in arbitrary orders, yielding a chain-of-layers (CoLa) per sample. This compositional space greatly expands the scope of existing works on looped/recurrent pretrained modules, layer pruning, or early-exit networks. We develop a Monte Carlo Tree Search (MCTS) protocol to explore and identify the optimal CoLa for each sample from math and commonsense reasoning benchmarks. Compared to a static model of a fixed depth, CoLa allows shortcut paths (fast thinking), recurrence of the same layer(s) (slow thinking), and combining both, offering more flexible, dynamic architectures for different inputs. We conduct an extensive analysis of the MCTS-optimized CoLa, which leads to two key findings: (1) For >75% of samples with correct predictions by the original LLM, we can find shorter CoLa, suggesting a large space for improving inference efficiency; (2) For >60% of samples with originally incorrect predictions, we can identify CoLa achieving correct predictions, suggesting a large space of performance enhancement. Our results highlight the shortcomings of using a fixed architecture of pre-trained LLMs for inference on different samples and pave the way to unlock the generalization power of test-time depth adaptation.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.07995v1" target="_blank">Single-pass Adaptive Image Tokenization for Minimum Program Search</a></h3>
+                <p><strong>Authors:</strong> Shivam Duggal, Sanghyun Byun, William T. Freeman, Antonio Torralba, Phillip Isola</p>
+                <p><strong>Published:</strong> 7/10/2025</p>
+                <p><strong>Categories:</strong> cs.CV, cs.AI, cs.LG</p>
+                <p><strong>Summary:</strong> According to Algorithmic Information Theory (AIT) -- Intelligent representations compress data into the shortest possible program that can reconstruct its content, exhibiting low Kolmogorov Complexity (KC). In contrast, most visual representation learning systems use fixed-length representations for all inputs, ignoring variations in complexity or familiarity. Recent adaptive tokenization methods address this by allocating variable-length representations but typically require test-time search over multiple encodings to find the most predictive one. Inspired by Kolmogorov Complexity principles, we propose a single-pass adaptive tokenizer, KARL, which predicts the appropriate number of tokens for an image in a single forward pass, halting once its approximate KC is reached. The token count serves as a proxy for the minimum description length. KARL's training procedure closely resembles the Upside-Down Reinforcement Learning paradigm, as it learns to conditionally predict token halting based on a desired reconstruction quality. KARL matches the performance of recent adaptive tokenizers while operating in a single pass. We present scaling laws for KARL, analyzing the role of encoder/decoder size, continuous vs. discrete tokenization and more. Additionally, we offer a conceptual study drawing an analogy between Adaptive Image Tokenization and Algorithmic Information Theory, examining the predicted image complexity (KC) across axes such as structure vs. noise and in- vs. out-of-distribution familiarity -- revealing alignment with human intuition.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.07993v1" target="_blank">Multigranular Evaluation for Brain Visual Decoding</a></h3>
+                <p><strong>Authors:</strong> Weihao Xia, Cengiz Oztireli</p>
+                <p><strong>Published:</strong> 7/10/2025</p>
+                <p><strong>Categories:</strong> cs.CV, cs.AI, eess.IV, q-bio.NC</p>
+                <p><strong>Summary:</strong> Existing evaluation protocols for brain visual decoding predominantly rely on coarse metrics that obscure inter-model differences, lack neuroscientific foundation, and fail to capture fine-grained visual distinctions. To address these limitations, we introduce BASIC, a unified, multigranular evaluation framework that jointly quantifies structural fidelity, inferential alignment, and contextual coherence between decoded and ground truth images. For the structural level, we introduce a hierarchical suite of segmentation-based metrics, including foreground, semantic, instance, and component masks, anchored in granularity-aware correspondence across mask structures. For the semantic level, we extract structured scene representations encompassing objects, attributes, and relationships using multimodal large language models, enabling detailed, scalable, and context-rich comparisons with ground-truth stimuli. We benchmark a diverse set of visual decoding methods across multiple stimulus-neuroimaging datasets within this unified evaluation framework. Together, these criteria provide a more discriminative, interpretable, and comprehensive foundation for measuring brain visual decoding methods.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.07992v1" target="_blank">Correlations and quantum circuits with dynamical causal order</a></h3>
+                <p><strong>Authors:</strong> Raphaël Mothe, Alastair A. Abbott, Cyril Branciard</p>
+                <p><strong>Published:</strong> 7/10/2025</p>
+                <p><strong>Categories:</strong> quant-ph</p>
+                <p><strong>Summary:</strong> Requiring that the causal structure between different parties is well-defined imposes constraints on the correlations they can establish, which define so-called causal correlations. Some of these are known to have a "dynamical" causal order in the sense that their causal structure is not fixed a priori but is instead established on the fly, with for instance the causal order between future parties depending on some choice of action of parties in the past. Here we identify a new way that the causal order between the parties can be dynamical: with at least four parties, there can be some dynamical order which can nevertheless not be influenced by the actions of past parties. This leads us to introduce an intermediate class of correlations with what we call non-influenceable causal order, in between the set of correlations with static (non-dynamical) causal order and the set of general causal correlations. We then define analogous classes of quantum processes, considering recently introduced classes of quantum circuits with classical or quantum control of causal order - the latter being the largest class within the process matrix formalism known to have a clear interpretation in terms of coherent superpositions of causal orders. This allows us to formalise precisely in which sense certain quantum processes can have both indefinite and dynamical causal order.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.07991v1" target="_blank">Baryonification II: Constraining feedback with X-ray and kinematic Sunyaev-Zel'dovich observations</a></h3>
+                <p><strong>Authors:</strong> Michael Kovač, Andrina Nicola, Jozef Bucko, Aurel Schneider, Robert Reischke, Sambit K. Giri, Romain Teyssier, Matthieu Schaller, Joop Schaye</p>
+                <p><strong>Published:</strong> 7/10/2025</p>
+                <p><strong>Categories:</strong> astro-ph.CO</p>
+                <p><strong>Summary:</strong> Baryonic feedback alters the matter distribution on small and intermediate scales, posing a challenge for precision cosmology. The new, component-wise baryonification (BFC) approach provides a self-consistent framework to model feedback effects for different observables. In this paper we use this framework to fit kinematic Sunyaev-Zel'dovich (kSZ) observations from the Atacama Cosmology Telescope (ACT) alongside halo X-ray gas fractions from eROSITA, investigating baryonic feedback in a cosmological context. We first show that the kSZ data from ACT is consistent with the gas fractions from eROSITA, both suggesting a feedback model that is stronger than what is assumed in most hydrodynamical simulations. This finding is in contrast to older, pre-eROSITA gas fraction measurements that point towards weaker feedback in tension with the kSZ results. We suspect these discrepancies to be due to selection bias in the pre-eROSITA sample, or differences in halo mass estimation between the two data sets. In a further step, we use the BFC model to predict the baryonic suppression of the matter power spectrum. Based on our combined fit to data from ACT and eROSITA, we find a power spectrum suppression that exceeds the percent-level at modes above $k=0.3-0.6 \,h\,\mathrm{Mpc}^{-1}$, growing to 2-8 percent at $k=1\,h\,\mathrm{Mpc}^{-1}$, and to 20-25 percent at $k=5\,h\,\mathrm{Mpc}^{-1}$, consistent with strong-feedback hydrodynamical simulations. Finally, we compare our best-fitting model to the observed gas density and pressure profiles of massive galaxy clusters from the X-COP sample, finding excellent agreement. These results show that BFC provides a self-consistent picture of feedback across mass- and length scales as well as different cosmological observables, thus making it promising for applications to multiwavelength studies to jointly constrain cosmology and baryonic effects.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.07990v1" target="_blank">Multi-Granular Spatio-Temporal Token Merging for Training-Free Acceleration of Video LLMs</a></h3>
+                <p><strong>Authors:</strong> Jeongseok Hyun, Sukjun Hwang, Su Ho Han, Taeoh Kim, Inwoong Lee, Dongyoon Wee, Joon-Young Lee, Seon Joo Kim, Minho Shim</p>
+                <p><strong>Published:</strong> 7/10/2025</p>
+                <p><strong>Categories:</strong> cs.CV, cs.AI</p>
+                <p><strong>Summary:</strong> Video large language models (LLMs) achieve strong video understanding by leveraging a large number of spatio-temporal tokens, but suffer from quadratic computational scaling with token count. To address this, we propose a training-free spatio-temporal token merging method, named STTM. Our key insight is to exploit local spatial and temporal redundancy in video data which has been overlooked in prior work. STTM first transforms each frame into multi-granular spatial tokens using a coarse-to-fine search over a quadtree structure, then performs directed pairwise merging across the temporal dimension. This decomposed merging approach outperforms existing token reduction methods across six video QA benchmarks. Notably, STTM achieves a 2$\times$ speed-up with only a 0.5% accuracy drop under a 50% token budget, and a 3$\times$ speed-up with just a 2% drop under a 30% budget. Moreover, STTM is query-agnostic, allowing KV cache reuse across different questions for the same video. The project page is available at https://www.jshyun.me/projects/sttm.</p>
+            </div>
+        
+        
+        <div class="meta">
+            <p><em>Generated by AI News Agent</em></p>
+        </div>
+    </div>
+</body>
+</html>
