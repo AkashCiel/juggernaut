@@ -195,7 +195,7 @@ class NewsGenerator {
             
             if (allNews.length > 0) {
                 console.log(`✅ Successfully fetched ${allNews.length} total items`);
-                return allNews.slice(0, 20); // Limit to top 20 items
+                return allNews.slice(0, 100); // Limit to top 100 items
             } else {
                 console.log('⚠️ No real news found, using mock data');
                 return await this.getMockFilteredNews(activeTopics);

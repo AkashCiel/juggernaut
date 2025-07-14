@@ -114,7 +114,7 @@ Please provide a concise summary (2-3 paragraphs) that covers:
 2. Notable findings and implications
 3. Overall direction of AI research in these areas
 
-Focus on the most significant and impactful research. Write in a clear, professional tone suitable for AI researchers and practitioners.`;
+Focus on the most significant and impactful research. Write in a language that is easily accessible by a STEM graduate who is not an expert in these fields: ${topics.join(', ')}. Ensure all important information is preserved, and explain or rephrase any technical jargon or advanced concepts as needed for clarity.`;
     }
 
     // Call OpenAI API
