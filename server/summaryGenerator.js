@@ -1,6 +1,6 @@
 const https = require('https');
 
-async function generateAISummary(papers, apiKey, timeoutMs = 20000) {
+async function generateAISummary(papers, apiKey, timeoutMs = 60000) {
     if (!papers || papers.length === 0) {
         return 'No papers available for summary generation.';
     }
