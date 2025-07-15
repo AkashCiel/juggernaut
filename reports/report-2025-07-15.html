@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Research Report - 2025-07-15</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .ai-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+        }
+        .paper {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+        .paper h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .paper a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .paper a:hover {
+            text-decoration: underline;
+        }
+        .meta {
+            color: #666;
+            font-size: 14px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI Research Report</h1>
+        <div class="meta">
+            <strong>Date:</strong> 2025-07-15<br>
+            <strong>Topics:</strong> large language models, artificial general intelligence, AI safety, robotics AI<br>
+            <strong>Papers Found:</strong> 10
+        </div>
+        
+        
+        <div class="ai-summary">
+            <h2>🤖 AI Summary</h2>
+            <p>The selected AI research papers collectively highlight significant advancements across various domains, illustrating the ongoing evolution and diversification of AI methodologies and applications. In self-supervised learning, the work on camera trap footage showcases the potential for unsupervised techniques to revolutionize biodiversity monitoring by eliminating the need for labeled data, thereby facilitating scalable and non-invasive wildlife studies. This aligns with a broader trend in AI towards leveraging vast, unlabeled datasets to build robust models that can generalize across different settings and tasks.
+
+In the realm of embodied AI, EmRACE-3K presents a novel benchmark, emphasizing the challenges faced by vision-language models (VLMs) in dynamic, interactive environments. This work underscores a critical gap in current AI capabilities, particularly in spatial reasoning and long-horizon planning, while also illustrating the potential of specialized datasets to drive improvements in these areas. Meanwhile, the Quantize-then-Rectify framework introduces an innovative approach to efficiently train VQ-VAEs, significantly reducing computational demands and highlighting a shift towards more resource-efficient model training paradigms.
+
+Other notable contributions include the disentanglement method for neural DNF models, which enhances interpretability and performance, and the MP1 framework for robotic manipulation, which improves efficiency and generalization in policy learning. REST's stress-testing framework for large reasoning models reveals vulnerabilities in current evaluation methods, advocating for more rigorous testing that reflects real-world complexities. Additionally, the FusionFactory framework and Graph World Model (GWM) highlight efforts to integrate diverse AI capabilities and data modalities, showcasing the potential of fusion techniques and structured data representations to enhance performance across multiple domains.
+
+These papers collectively demonstrate a trend towards more efficient, interpretable, and versatile AI systems capable of handling complex, real-world challenges. They emphasize the importance of leveraging diverse data types, integrating various AI capabilities, and developing benchmarks that push the boundaries of current models, ultimately contributing to the advancement of AI research and its applications in solving multifaceted problems.</p>
+        </div>
+    
+        
+        <h2>📚 Research Papers</h2>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.10552v1" target="_blank">Self-supervised Learning on Camera Trap Footage Yields a Strong Universal Face Embedder</a></h3>
+                <p><strong>Authors:</strong> Vladimir Iashin, Horace Lee, Dan Schofield, Andrew Zisserman</p>
+                <p><strong>Published:</strong> 7/14/2025</p>
+                <p><strong>Categories:</strong> cs.CV, cs.AI, cs.LG</p>
+                <p><strong>Summary:</strong> Camera traps are revolutionising wildlife monitoring by capturing vast amounts of visual data; however, the manual identification of individual animals remains a significant bottleneck. This study introduces a fully self-supervised approach to learning robust chimpanzee face embeddings from unlabeled camera-trap footage. Leveraging the DINOv2 framework, we train Vision Transformers on automatically mined face crops, eliminating the need for identity labels. Our method demonstrates strong open-set re-identification performance, surpassing supervised baselines on challenging benchmarks such as Bossou, despite utilising no labelled data during training. This work underscores the potential of self-supervised learning in biodiversity monitoring and paves the way for scalable, non-invasive population studies.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.10548v1" target="_blank">EmbRACE-3K: Embodied Reasoning and Action in Complex Environments</a></h3>
+                <p><strong>Authors:</strong> Mingxian Lin, Wei Huang, Yitang Li, Chengjie Jiang, Kui Wu, Fangwei Zhong, Shengju Qian, Xin Wang, Xiaojuan Qi</p>
+                <p><strong>Published:</strong> 7/14/2025</p>
+                <p><strong>Categories:</strong> cs.CV, cs.AI, cs.CL</p>
+                <p><strong>Summary:</strong> Recent advanced vision-language models(VLMs) have demonstrated strong performance on passive, offline image and video understanding tasks. However, their effectiveness in embodied settings, which require online interaction and active scene understanding remains limited. In such scenarios, an agent perceives the environment from a first-person perspective, with each action dynamically shaping subsequent observations. Even state-of-the-art models such as GPT-4o, Claude 3.5 Sonnet, and Gemini 2.5 Pro struggle in open-environment interactions, exhibiting clear limitations in spatial reasoning and long-horizon planning. To address this gap, we introduce EmRACE-3K, a dataset of over 3,000 language-guided tasks situated in diverse, photorealistic environments constructed using Unreal Engine and the UnrealCV-Zoo framework. The tasks encompass a wide range of embodied challenges, including navigation, object manipulation, and multi-stage goal execution. Each task unfolds as a multi-step trajectory, pairing first-person visual observations with high-level instructions, grounded actions, and natural language rationales that express the agent's intent at every step. Using EmRACE-3K, we establish a benchmark to evaluate the embodied reasoning capabilities of VLMs across three key dimensions: Exploration, Dynamic Spatial-Semantic Reasoning, and Multi-stage Goal Execution. In zero-shot settings, all models achieve success rates below 20%, underscoring the challenge posed by our benchmark and the current limitations of VLMs in interactive environments. To demonstrate the utility of EmRACE-3K, we further fine-tune Qwen2.5-VL-7B using supervised learning followed by reinforcement learning. This approach yields substantial improvements across all three challenge categories, highlighting the dataset's effectiveness in enabling the development of embodied reasoning capabilities.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.10547v1" target="_blank">Quantize-then-Rectify: Efficient VQ-VAE Training</a></h3>
+                <p><strong>Authors:</strong> Borui Zhang, Qihang Rao, Wenzhao Zheng, Jie Zhou, Jiwen Lu</p>
+                <p><strong>Published:</strong> 7/14/2025</p>
+                <p><strong>Categories:</strong> cs.CV, cs.LG</p>
+                <p><strong>Summary:</strong> Visual tokenizers are pivotal in multimodal large models, acting as bridges between continuous inputs and discrete tokens. Nevertheless, training high-compression-rate VQ-VAEs remains computationally demanding, often necessitating thousands of GPU hours. This work demonstrates that a pre-trained VAE can be efficiently transformed into a VQ-VAE by controlling quantization noise within the VAE's tolerance threshold. We present \textbf{Quantize-then-Rectify (ReVQ)}, a framework leveraging pre-trained VAEs to enable rapid VQ-VAE training with minimal computational overhead. By integrating \textbf{channel multi-group quantization} to enlarge codebook capacity and a \textbf{post rectifier} to mitigate quantization errors, ReVQ compresses ImageNet images into at most 512 tokens while sustaining competitive reconstruction quality (rFID = 1.06). Significantly, ReVQ reduces training costs by over two orders of magnitude relative to state-of-the-art approaches: ReVQ finishes full training on a single NVIDIA 4090 in approximately 22 hours, whereas comparable methods require 4.5 days on 32 A100 GPUs. Experimental results show that ReVQ achieves superior efficiency-reconstruction trade-offs.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.10546v1" target="_blank">Disentangling Neural Disjunctive Normal Form Models</a></h3>
+                <p><strong>Authors:</strong> Kexin Gu Baugh, Vincent Perreault, Matthew Baugh, Luke Dickens, Katsumi Inoue, Alessandra Russo</p>
+                <p><strong>Published:</strong> 7/14/2025</p>
+                <p><strong>Categories:</strong> cs.LG, cs.AI</p>
+                <p><strong>Summary:</strong> Neural Disjunctive Normal Form (DNF) based models are powerful and interpretable approaches to neuro-symbolic learning and have shown promising results in classification and reinforcement learning settings without prior knowledge of the tasks. However, their performance is degraded by the thresholding of the post-training symbolic translation process. We show here that part of the performance degradation during translation is due to its failure to disentangle the learned knowledge represented in the form of the networks' weights. We address this issue by proposing a new disentanglement method; by splitting nodes that encode nested rules into smaller independent nodes, we are able to better preserve the models' performance. Through experiments on binary, multiclass, and multilabel classification tasks (including those requiring predicate invention), we demonstrate that our disentanglement method provides compact and interpretable logical representations for the neural DNF-based models, with performance closer to that of their pre-translation counterparts. Our code is available at https://github.com/kittykg/disentangling-ndnf-classification.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://dx.doi.org/10.3847/1538-4357/adef06" target="_blank">Observational biases on rotation curves from IFU data at cosmic noon</a></h3>
+                <p><strong>Authors:</strong> Amanda E. de Araujo-Carvalho, Thiago S. Gonçalves, Davor Krajnović, Karín Menéndez-Delmestre, Natanael de Isídio</p>
+                <p><strong>Published:</strong> 7/14/2025</p>
+                <p><strong>Categories:</strong> astro-ph.GA</p>
+                <p><strong>Summary:</strong> Through studying rotation curves, which depict how the velocity of the stars and gas changes with distance from the center of the galaxy, it has been confirmed that dark matter dominates galaxy's outer regions, as their rotation curve remains flat. However, recent studies of star-forming galaxies at cosmic noon have shown a decline in their rotation curve beyond a certain point, suggesting a decrease of the abundance of dark matter in galactic halos during earlier times. In this work, we investigate the influence of cosmological surface brightness dimming and loss of resolution on observations of rotation curves at cosmic noon. We used a sample of 19 Lyman Break Analogs at $z \approx 0.2$ and artificially redshifted them as if they were at $z \approx 2.2$. By comparing both rotation curves of the observed and mocked objects, we find that the asymmetry of the cosmic noon galaxies is smaller than that of the low-$z$ galaxies. In low-$z$ galaxies, asymmetry increases with radius and becomes relevant at the external parts, where mergers and interactions cause more disturbance in the galaxy's gravitational field. In contrast, cosmic-noon galaxies appear smoother, smaller, and suitable for dynamical modeling -- when in reality, they are not. The combined effects of the cosmological bias and loss of resolution lead us to the conclusion that caution should be exercised when using cosmic-noon rotation curves, as they might not accurately trace the gravitational potential of the galaxy.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.10543v1" target="_blank">MP1: Mean Flow Tames Policy Learning in 1-step for Robotic Manipulation</a></h3>
+                <p><strong>Authors:</strong> Juyi Sheng, Ziyi Wang, Peiming Li, Mengyuan Liu</p>
+                <p><strong>Published:</strong> 7/14/2025</p>
+                <p><strong>Categories:</strong> cs.RO</p>
+                <p><strong>Summary:</strong> In robot manipulation, robot learning has become a prevailing approach. However, generative models within this field face a fundamental trade-off between the slow, iterative sampling of diffusion models and the architectural constraints of faster Flow-based methods, which often rely on explicit consistency losses. To address these limitations, we introduce MP1, which pairs 3D point-cloud inputs with the MeanFlow paradigm to generate action trajectories in one network function evaluation (1-NFE). By directly learning the interval-averaged velocity via the MeanFlow Identity, our policy avoids any additional consistency constraints. This formulation eliminates numerical ODE-solver errors during inference, yielding more precise trajectories. MP1 further incorporates CFG for improved trajectory controllability while retaining 1-NFE inference without reintroducing structural constraints. Because subtle scene-context variations are critical for robot learning, especially in few-shot learning, we introduce a lightweight Dispersive Loss that repels state embeddings during training, boosting generalization without slowing inference. We validate our method on the Adroit and Meta-World benchmarks, as well as in real-world scenarios. Experimental results show MP1 achieves superior average task success rates, outperforming DP3 by 10.2% and FlowPolicy by 7.3%. Its average inference time is only 6.8 ms-19x faster than DP3 and nearly 2x faster than FlowPolicy. Our code is available at https://mp1-2254.github.io/.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.10542v1" target="_blank">ScaffoldAvatar: High-Fidelity Gaussian Avatars with Patch Expressions</a></h3>
+                <p><strong>Authors:</strong> Shivangi Aneja, Sebastian Weiss, Irene Baeza, Prashanth Chandran, Gaspard Zoss, Matthias Nießner, Derek Bradley</p>
+                <p><strong>Published:</strong> 7/14/2025</p>
+                <p><strong>Categories:</strong> cs.GR, cs.AI, cs.CV</p>
+                <p><strong>Summary:</strong> Generating high-fidelity real-time animated sequences of photorealistic 3D head avatars is important for many graphics applications, including immersive telepresence and movies. This is a challenging problem particularly when rendering digital avatar close-ups for showing character's facial microfeatures and expressions. To capture the expressive, detailed nature of human heads, including skin furrowing and finer-scale facial movements, we propose to couple locally-defined facial expressions with 3D Gaussian splatting to enable creating ultra-high fidelity, expressive and photorealistic 3D head avatars. In contrast to previous works that operate on a global expression space, we condition our avatar's dynamics on patch-based local expression features and synthesize 3D Gaussians at a patch level. In particular, we leverage a patch-based geometric 3D face model to extract patch expressions and learn how to translate these into local dynamic skin appearance and motion by coupling the patches with anchor points of Scaffold-GS, a recent hierarchical scene representation. These anchors are then used to synthesize 3D Gaussians on-the-fly, conditioned by patch-expressions and viewing direction. We employ color-based densification and progressive training to obtain high-quality results and faster convergence for high resolution 3K training images. By leveraging patch-level expressions, ScaffoldAvatar consistently achieves state-of-the-art performance with visually natural motion, while encompassing diverse facial expressions and styles in real time.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.10541v1" target="_blank">REST: Stress Testing Large Reasoning Models by Asking Multiple Problems at Once</a></h3>
+                <p><strong>Authors:</strong> Zhuoshi Pan, Qizhi Pei, Yu Li, Qiyao Sun, Zinan Tang, H. Vicky Zhao, Conghui He, Lijun Wu</p>
+                <p><strong>Published:</strong> 7/14/2025</p>
+                <p><strong>Categories:</strong> cs.CL</p>
+                <p><strong>Summary:</strong> Recent Large Reasoning Models (LRMs) have achieved remarkable progress on task-specific benchmarks, yet their evaluation methods remain constrained by isolated problem-solving paradigms. Existing benchmarks predominantly assess single-question reasoning through sequential testing, resulting critical limitations: (1) vulnerability to data contamination and less challenging (e.g., DeepSeek-R1 achieves 97.0% on MATH500), forcing costly and perpetual creation of new questions with large human efforts, (2) failure to evaluate models under multi-context pressure, a key requirement for real-world deployment. To bridge this gap, we present REST (Reasoning Evaluation through Simultaneous Testing), a stress-testing framework that concurrently exposes LRMs to multiple problems simultaneously. Beyond basic reasoning, REST specifically evaluates several under-tested capabilities: contextual priority allocation, cross-problem interference resistance, and dynamic cognitive load management. Our evaluation reveals several striking findings: Even state-of-the-art (SOTA) models like DeepSeek-R1 exhibit substantial performance degradation under stress testing. Crucially, REST demonstrates stronger discriminative power than existing benchmarks, revealing pronounced performance differences among models that exhibit similar, near-ceiling performance under single-question evaluations. Some key mechanistic insights emerge from our analysis: (1) the "overthinking trap" is a critical factor contributing to the performance degradation; (2) the models trained with "long2short" technique preserve more accuracy of their single-problem performance under REST, outperforming standard-trained counterparts. These results establish REST as a cost-efficient, future-proof evaluation paradigm that better reflects real-world reasoning demands while reducing reliance on continuous human annotation.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.10540v1" target="_blank">Fusing LLM Capabilities with Routing Data</a></h3>
+                <p><strong>Authors:</strong> Tao Feng, Haozhen Zhang, Zijie Lei, Pengrui Han, Mostofa Patwary, Mohammad Shoeybi, Bryan Catanzaro, Jiaxuan You</p>
+                <p><strong>Published:</strong> 7/14/2025</p>
+                <p><strong>Categories:</strong> cs.LG</p>
+                <p><strong>Summary:</strong> The rapid advancement of large language models (LLMs) has created a vibrant ecosystem of diverse architectures, each with unique strengths due to differences in design, training data, and objectives. However, most applications still rely on a single backend model, limiting coverage of capabilities and leading to inefficiencies in performance and token cost when tackling complex tasks. We highlight an underexploited opportunity: LLM routing data, produced when hosting platforms route diverse queries to different models, which can reveal comparative strengths across tasks. To address this, we propose FusionBench, a comprehensive routing benchmark covering 14 tasks across five domains with 20 open-source LLMs (8B to 671B parameters), capturing 103M tokens and summarizing reusable thought templates from top models. Building on this, we introduce FusionFactory, a systematic fusion framework with three levels: (1) query-level fusion, tailoring routers for each query using both direct responses and reasoning-augmented outputs; (2) thought-level fusion, leveraging abstract templates derived from top-performing LLMs' answers to similar queries; and (3) model-level fusion, transferring capabilities between models via distillation, using top responses or highest judge scores as training data. Experiments show FusionFactory consistently outperforms the best individual LLM across all 14 benchmarks, with optimal fusion configurations varying by benchmark, demonstrating the value of systematic LLM fusion in harnessing complementary strengths and improving overall performance.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.10539v1" target="_blank">Graph World Model</a></h3>
+                <p><strong>Authors:</strong> Tao Feng, Yexin Wu, Guanyu Lin, Jiaxuan You</p>
+                <p><strong>Published:</strong> 7/14/2025</p>
+                <p><strong>Categories:</strong> cs.LG</p>
+                <p><strong>Summary:</strong> World models (WMs) demonstrate strong capabilities in prediction, generation, and planning tasks. Existing WMs primarily focus on unstructured data and cannot leverage the ubiquitous structured data, often represented as graphs, in the digital world. While multiple graph foundation models have been proposed, they focus on graph learning tasks and cannot extend to diverse multi-modal data and interdisciplinary tasks. To address these challenges, we propose the Graph World Model (GWM), a world model that supports both unstructured and graph-structured states with multi-modal information and represents diverse tasks as actions. The core of a GWM is a generic message-passing algorithm to aggregate structured information, either over a unified multi-modal token space by converting multi-modal data into text (GWM-T) or a unified multi-modal embedding space by modality-specific encoders (GWM-E). Notably, GWM introduces action nodes to support diverse tasks, where action nodes are linked to other nodes via direct reference or similarity computation. Extensive experiments on six tasks from diverse domains, including multi-modal generation and matching, recommendation, graph prediction, multi-agent, retrieval-augmented generation, and planning and optimization, show that the same GWM outperforms or matches domain-specific baselines' performance, benefits from multi-hop structures, and demonstrates strong zero-shot/few-shot capabilities on unseen new tasks. Our code for GWM is released at https://github.com/ulab-uiuc/GWM.</p>
+            </div>
+        
+        
+        <div class="meta">
+            <p><em>Generated by AI News Agent</em></p>
+        </div>
+    </div>
+</body>
+</html>
