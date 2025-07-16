@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Research News Report - Wednesday, July 16, 2025</title>
+    <meta name="description" content="Daily AI research news and papers covering large language models, artificial general intelligence, AI safety and more">
+    <meta property="og:title" content="AI Research News Report - Wednesday, July 16, 2025">
+    <meta property="og:description" content="15 AI news items covering large language models, artificial general intelligence, AI safety">
+    <meta property="og:type" content="article">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header .date {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .summary h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .topics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .topic-tag {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            font-size: 1.5em;
+        }
+
+        .news-item {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .news-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .news-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .news-summary {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .news-source {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .news-url {
+            margin-top: 10px;
+        }
+
+        .news-url a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .news-url a:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .powered-by {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .news-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+
+        .type-icon {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+
+        .research-paper {
+            border-left-color: #764ba2;
+        }
+
+        .research-paper .type-icon {
+            color: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Research News Report</h1>
+            <div class="date">Wednesday, July 16, 2025</div>
+        </div>
+
+        <div class="summary">
+            <h3>📊 Report Summary</h3>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">15</div>
+                    <div class="stat-label">Total Items</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">News Articles</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">15</div>
+                    <div class="stat-label">Research Papers</div>
+                </div>
+            </div>
+            
+            <strong>Topics Covered:</strong>
+            <div class="topics">
+                <span class="topic-tag">large language models</span><span class="topic-tag">artificial general intelligence</span><span class="topic-tag">AI safety</span><span class="topic-tag">robotics AI</span>
+            </div>
+        </div>
+
+        
+        <div class="summary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-left-color: white;">
+            <h3 style="color: white;">🤖 AI Research Summary</h3>
+            <div style="line-height: 1.6; font-size: 1.1em; color: white;">
+                <p style="margin-bottom: 15px; color: white;">Recent research in the field of artificial intelligence has seen significant advancements and explorations across various domains, particularly focusing on large language models (LLMs), artificial general intelligence (AGI), and AI safety. One of the notable trends is the development of frameworks that enhance the operational capabilities of LLMs in real-world applications. For instance, the &quot;Streaming 4D Visual Geometry Transformer&quot; explores real-time spatial-temporal geometry reconstruction from videos, indicating a push towards interactive AI applications. Similarly, &quot;DrafterBench&quot; emphasizes the need for standardized benchmarks to evaluate LLMs in specific industries like civil engineering, highlighting a growing focus on task automation and practical deployment of AI technologies.</p><p style="margin-bottom: 15px; color: white;">Another significant area of exploration is the intersection of LLMs with safety-critical applications, particularly in robotics. Research such as &quot;LLM-based ambiguity detection in natural language instructions for collaborative surgical robots&quot; aims to address the risks associated with ambiguous instructions in high-stakes environments like surgery. This aligns with broader efforts to ensure AI systems are safe and reliable, as emphasized in works discussing the monitoring of AI&#039;s chains of thought to prevent potential misbehavior. The findings from these studies underscore the importance of building robust frameworks that not only enhance the capabilities of AI systems but also ensure their safe integration into critical areas, such as healthcare and logistics.</p><p style="margin-bottom: 15px; color: white;">Overall, the direction of AI research is increasingly geared towards creating more efficient, reliable, and safe AI systems that can operate in complex and dynamic environments. Researchers are not only focused on the technical performance of these models but also on ethical considerations, user privacy, and the implications of deploying AI in sensitive domains. This holistic approach suggests a future where AI technologies are not only powerful but also designed with safety and societal impact in mind, paving the way for more responsible and effective AI deployment in various sectors.</p>
+            </div>
+            <div style="margin-top: 15px; font-size: 0.9em; opacity: 0.9; color: white;">
+                Generated by OpenAI GPT-4o-mini
+            </div>
+        </div>
+        
+
+        
+
+        
+        <div class="section">
+            <h2>🔬 Research Papers</h2>
+            
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Streaming 4D Visual Geometry Transformer
+                </div>
+                <div class="news-summary">Perceiving and reconstructing 4D spatial-temporal geometry from videos is a
+fundamental yet challenging computer vision task. To facilitate interactive and
+real-time applications, we propose a streaming 4D visual geometry transformer
+that shares a similar philosophy with autoregressive large languag...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.11539v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    How Many Instructions Can LLMs Follow at Once?
+                </div>
+                <div class="news-summary">Production-grade LLM systems require robust adherence to dozens or even
+hundreds of instructions simultaneously. However, the instruction-following
+capabilities of LLMs at high instruction densities have not yet been
+characterized, as existing benchmarks only evaluate models on tasks with a
+single o...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.11538v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    DrafterBench: Benchmarking Large Language Models for Tasks Automation in
+  Civil Engineering
+                </div>
+                <div class="news-summary">Large Language Model (LLM) agents have shown great potential for solving
+real-world problems and promise to be a solution for tasks automation in
+industry. However, more benchmarks are needed to systematically evaluate
+automation agents from an industrial perspective, for example, in Civil
+Engineeri...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.11527v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    LLM-based ambiguity detection in natural language instructions for
+  collaborative surgical robots
+                </div>
+                <div class="news-summary">Ambiguity in natural language instructions poses significant risks in
+safety-critical human-robot interaction, particularly in domains such as
+surgery. To address this, we propose a framework that uses Large Language
+Models (LLMs) for ambiguity detection specifically designed for collaborative
+surgi...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.11525v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    AirLLM: Diffusion Policy-based Adaptive LoRA for Remote Fine-Tuning of
+  LLM over the Air
+                </div>
+                <div class="news-summary">Operating Large Language Models (LLMs) on edge devices is increasingly
+challenged by limited communication bandwidth and strained computational and
+memory costs. Thus, cloud-assisted remote fine-tuning becomes indispensable.
+Nevertheless, existing Low-Rank Adaptation (LoRA) approaches typically empl...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.11515v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    KV-Latent: Dimensional-level KV Cache Reduction with Frequency-aware
+  Rotary Positional Embedding
+                </div>
+                <div class="news-summary">Large language models (LLMs) based on Transformer Decoders have become the
+preferred choice for conversational generative AI. Despite the overall
+superiority of the Decoder architecture, the gradually increasing Key-Value
+(KV) cache during inference has emerged as a primary efficiency bottleneck,
+bo...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.11273v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Biological Processing Units: Leveraging an Insect Connectome to Pioneer
+  Biofidelic Neural Architectures
+                </div>
+                <div class="news-summary">The complete connectome of the Drosophila larva brain offers a unique
+opportunity to investigate whether biologically evolved circuits can support
+artificial intelligence. We convert this wiring diagram into a Biological
+Processing Unit (BPU), a fixed recurrent network derived directly from synaptic...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.10951v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Visually grounded emotion regulation via diffusion models and
+  user-driven reappraisal
+                </div>
+                <div class="news-summary">Cognitive reappraisal is a key strategy in emotion regulation, involving
+reinterpretation of emotionally charged stimuli to alter affective responses.
+Despite its central role in clinical and cognitive science, real-world
+reappraisal interventions remain cognitively demanding, abstract, and primaril...</div>
+                <div class="news-meta">
+                    <span class="news-source">Cohere</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.10861v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Exploring User Security and Privacy Attitudes and Concerns Toward the
+  Use of General-Purpose LLM Chatbots for Mental Health
+                </div>
+                <div class="news-summary">Individuals are increasingly relying on large language model (LLM)-enabled
+conversational agents for emotional support. While prior research has examined
+privacy and security issues in chatbots specifically designed for mental health
+purposes, these chatbots are overwhelmingly &quot;rule-based&quot; offerings...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>2 days ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.10695v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    WildFX: A DAW-Powered Pipeline for In-the-Wild Audio FX Graph Modeling
+                </div>
+                <div class="news-summary">Despite rapid progress in end-to-end AI music generation, AI-driven modeling
+of professional Digital Signal Processing (DSP) workflows remains challenging.
+In particular, while there is growing interest in neural black-box modeling of
+audio effect graphs (e.g. reverb, compression, equalization), AI-...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>2 days ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.10534v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    LLM-based ambiguity detection in natural language instructions for
+  collaborative surgical robots
+                </div>
+                <div class="news-summary">Ambiguity in natural language instructions poses significant risks in
+safety-critical human-robot interaction, particularly in domains such as
+surgery. To address this, we propose a framework that uses Large Language
+Models (LLMs) for ambiguity detection specifically designed for collaborative
+surgi...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.11525v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Chain of Thought Monitorability: A New and Fragile Opportunity for AI
+  Safety
+                </div>
+                <div class="news-summary">AI systems that &quot;think&quot; in human language offer a unique opportunity for AI
+safety: we can monitor their chains of thought (CoT) for the intent to
+misbehave. Like all other known AI oversight methods, CoT monitoring is
+imperfect and allows some misbehavior to go unnoticed. Nevertheless, it shows
+pro...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.11473v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Human-Robot collaboration in surgery: Advances and challenges towards
+  autonomous surgical assistants
+                </div>
+                <div class="news-summary">Human-robot collaboration in surgery represents a significant area of
+research, driven by the increasing capability of autonomous robotic systems to
+assist surgeons in complex procedures. This systematic review examines the
+advancements and persistent challenges in the development of autonomous
+surg...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.11460v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    From Observational Data to Clinical Recommendations: A Causal Framework
+  for Estimating Patient-level Treatment Effects and Learning Policies
+                </div>
+                <div class="news-summary">We propose a framework for building patient-specific treatment recommendation
+models, building on the large recent literature on learning patient-level
+causal models and inspired by the target trial paradigm of Hernan and Robins.
+We focus on safety and validity, including the crucial issue of causal...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.11381v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+            <div class="news-item research-paper">
+                <div class="news-title">
+                    <span class="type-icon">🔬</span>
+                    Foundation Models for Logistics: Toward Certifiable, Conversational
+  Planning Interfaces
+                </div>
+                <div class="news-summary">Logistics operators, from battlefield coordinators rerouting airlifts ahead
+of a storm to warehouse managers juggling late trucks, often face life-critical
+decisions that demand both domain expertise and rapid and continuous
+replanning. While popular methods like integer programming yield logistics
+...</div>
+                <div class="news-meta">
+                    <span class="news-source">ArXiv Research</span>
+                    <span>1 day ago</span>
+                </div>
+                
+                <div class="news-url">
+                    <a href="http://arxiv.org/abs/2507.11352v1" target="_blank" rel="noopener">Read full article →</a>
+                </div>
+                
+            </div>
+        
+        </div>
+        
+
+        <div class="footer">
+            <p>Generated on 16/07/2025, 22:14:50</p>
+            <div class="powered-by">
+                <strong>Powered by AI Research News Agent</strong><br>
+                <small>Automated daily intelligence on artificial intelligence research</small>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
