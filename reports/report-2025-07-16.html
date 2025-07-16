@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Research Report - 2025-07-16</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .ai-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+        }
+        .paper {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+        .paper h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .paper a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .paper a:hover {
+            text-decoration: underline;
+        }
+        .meta {
+            color: #666;
+            font-size: 14px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI Research Report</h1>
+        <div class="meta">
+            <strong>Date:</strong> 2025-07-16<br>
+            <strong>Topics:</strong> large language models, artificial general intelligence, AI safety, robotics AI<br>
+            <strong>Papers Found:</strong> 10
+        </div>
+        
+        
+        <div class="ai-summary">
+            <h2>🤖 AI Summary</h2>
+            <p>The papers collectively represent a significant breadth of innovation in AI and related fields, illustrating both cutting-edge advancements and practical applications across diverse domains. The research into depth estimation highlights the transformative potential of "depth foundation models" that leverage large datasets for robust zero-shot generalization, offering a promising alternative to traditional sensor-based methods. These models aim to overcome current limitations in generalization and stability inherent in vision-based methods, facilitating advancements in fields like autonomous driving and AR/VR technologies. Similarly, the development of the Streaming 4D Visual Geometry Transformer introduces a novel approach to real-time 4D reconstruction, utilizing causal transformers and temporal causal attention to enhance efficiency and spatial consistency. This work underscores the ongoing trend of adapting techniques from language models to vision tasks, aiming for scalable and interactive systems.
+
+In the realm of language models, the IFScale benchmark provides crucial insights into the scalability of instruction-following capabilities in LLMs, revealing performance limitations under high instruction densities. This research highlights the need for further development in model design to accommodate complex, multi-instruction environments, pertinent for real-world applications such as business report generation. Meanwhile, the canonical Bayesian linear system identification paper offers a methodological advancement that resolves parameter non-identifiability issues in Bayesian approaches, paving the way for more efficient and interpretable posterior inference in system dynamics.
+
+Other notable contributions include the CharaConsist framework, which addresses consistency challenges in text-to-image generation, enabling the production of coherent visual sequences—a valuable capability for various applications. Moreover, the exploration of Langevin Flows for neural latent dynamics introduces a physics-inspired framework that models complex neural population dynamics, demonstrating superiority in predicting neural behaviors compared to existing methods. Each of these papers contributes to a broader understanding of how AI technologies can be refined and implemented to address specific challenges, ultimately expanding their applicability and impact across scientific and practical fields.</p>
+        </div>
+    
+        
+        <h2>📚 Research Papers</h2>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.11540v1" target="_blank">Towards Depth Foundation Model: Recent Trends in Vision-Based Depth Estimation</a></h3>
+                <p><strong>Authors:</strong> Zhen Xu, Hongyu Zhou, Sida Peng, Haotong Lin, Haoyu Guo, Jiahao Shao, Peishan Yang, Qinglin Yang, Sheng Miao, Xingyi He, Yifan Wang, Yue Wang, Ruizhen Hu, Yiyi Liao, Xiaowei Zhou, Hujun Bao</p>
+                <p><strong>Published:</strong> 7/15/2025</p>
+                <p><strong>Categories:</strong> cs.CV</p>
+                <p><strong>Summary:</strong> Depth estimation is a fundamental task in 3D computer vision, crucial for applications such as 3D reconstruction, free-viewpoint rendering, robotics, autonomous driving, and AR/VR technologies. Traditional methods relying on hardware sensors like LiDAR are often limited by high costs, low resolution, and environmental sensitivity, limiting their applicability in real-world scenarios. Recent advances in vision-based methods offer a promising alternative, yet they face challenges in generalization and stability due to either the low-capacity model architectures or the reliance on domain-specific and small-scale datasets. The emergence of scaling laws and foundation models in other domains has inspired the development of "depth foundation models": deep neural networks trained on large datasets with strong zero-shot generalization capabilities. This paper surveys the evolution of deep learning architectures and paradigms for depth estimation across the monocular, stereo, multi-view, and monocular video settings. We explore the potential of these models to address existing challenges and provide a comprehensive overview of large-scale datasets that can facilitate their development. By identifying key architectures and training strategies, we aim to highlight the path towards robust depth foundation models, offering insights into their future research and applications.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.11539v1" target="_blank">Streaming 4D Visual Geometry Transformer</a></h3>
+                <p><strong>Authors:</strong> Dong Zhuo, Wenzhao Zheng, Jiahe Guo, Yuqi Wu, Jie Zhou, Jiwen Lu</p>
+                <p><strong>Published:</strong> 7/15/2025</p>
+                <p><strong>Categories:</strong> cs.CV, cs.AI, cs.LG</p>
+                <p><strong>Summary:</strong> Perceiving and reconstructing 4D spatial-temporal geometry from videos is a fundamental yet challenging computer vision task. To facilitate interactive and real-time applications, we propose a streaming 4D visual geometry transformer that shares a similar philosophy with autoregressive large language models. We explore a simple and efficient design and employ a causal transformer architecture to process the input sequence in an online manner. We use temporal causal attention and cache the historical keys and values as implicit memory to enable efficient streaming long-term 4D reconstruction. This design can handle real-time 4D reconstruction by incrementally integrating historical information while maintaining high-quality spatial consistency. For efficient training, we propose to distill knowledge from the dense bidirectional visual geometry grounded transformer (VGGT) to our causal model. For inference, our model supports the migration of optimized efficient attention operator (e.g., FlashAttention) from the field of large language models. Extensive experiments on various 4D geometry perception benchmarks demonstrate that our model increases the inference speed in online scenarios while maintaining competitive performance, paving the way for scalable and interactive 4D vision systems. Code is available at: https://github.com/wzzheng/StreamVGGT.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.11538v1" target="_blank">How Many Instructions Can LLMs Follow at Once?</a></h3>
+                <p><strong>Authors:</strong> Daniel Jaroslawicz, Brendan Whiting, Parth Shah, Karime Maamari</p>
+                <p><strong>Published:</strong> 7/15/2025</p>
+                <p><strong>Categories:</strong> cs.AI</p>
+                <p><strong>Summary:</strong> Production-grade LLM systems require robust adherence to dozens or even hundreds of instructions simultaneously. However, the instruction-following capabilities of LLMs at high instruction densities have not yet been characterized, as existing benchmarks only evaluate models on tasks with a single or few instructions. We introduce IFScale, a simple benchmark of 500 keyword-inclusion instructions for a business report writing task to measure how instruction-following performance degrades as instruction density increases. We evaluate 20 state-of-the-art models across seven major providers and find that even the best frontier models only achieve 68% accuracy at the max density of 500 instructions. Our analysis reveals model size and reasoning capability to correlate with 3 distinct performance degradation patterns, bias towards earlier instructions, and distinct categories of instruction-following errors. Our insights can help inform design of instruction-dense prompts in real-world applications and highlight important performance-latency tradeoffs. We open-source the benchmark and all results for further analysis at https://distylai.github.io/IFScale.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.11537v1" target="_blank">KPZ equation from open ASEP with general boundary asymmetry</a></h3>
+                <p><strong>Authors:</strong> Kevin Yang</p>
+                <p><strong>Published:</strong> 7/15/2025</p>
+                <p><strong>Categories:</strong> math.PR</p>
+                <p><strong>Summary:</strong> We consider generalizations of open ASEP in the interval and half-space, where the speed of the reservoir dynamics can depend on the local particle configuration. We show that their height functions have a continuum limit given by the open KPZ equation. This removes the assumption of Liggett's condition in Corwin-Shen '18 and Parekh '19, thus answering a question of Corwin, and it also removes the assumption of product invariant measures in Goncalves-Perkowski-Simon '20.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.11536v1" target="_blank">Understanding Quantum Information and Computation</a></h3>
+                <p><strong>Authors:</strong> John Watrous</p>
+                <p><strong>Published:</strong> 7/15/2025</p>
+                <p><strong>Categories:</strong> quant-ph</p>
+                <p><strong>Summary:</strong> This is a course on the theory of quantum computing. It consists of 16 lessons, each with a video and written component, covering the basics of quantum information, quantum algorithms (including query algorithms, Shor's algorithm for integer factorization, and Grover's algorithm), the general formulation of quantum information (including density matrices, quantum channels, and general measurements), and quantum error correction (including the basics, the stabilizer formalism, CSS codes, the toric code, and fault-tolerant quantum computation).</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.11535v1" target="_blank">Canonical Bayesian Linear System Identification</a></h3>
+                <p><strong>Authors:</strong> Andrey Bryutkin, Matthew E. Levine, Iñigo Urteaga, Youssef Marzouk</p>
+                <p><strong>Published:</strong> 7/15/2025</p>
+                <p><strong>Categories:</strong> stat.ML, cs.LG, cs.SY, eess.SY, stat.CO</p>
+                <p><strong>Summary:</strong> Standard Bayesian approaches for linear time-invariant (LTI) system identification are hindered by parameter non-identifiability; the resulting complex, multi-modal posteriors make inference inefficient and impractical. We solve this problem by embedding canonical forms of LTI systems within the Bayesian framework. We rigorously establish that inference in these minimal parameterizations fully captures all invariant system dynamics (e.g., transfer functions, eigenvalues, predictive distributions of system outputs) while resolving identifiability. This approach unlocks the use of meaningful, structure-aware priors (e.g., enforcing stability via eigenvalues) and ensures conditions for a Bernstein--von Mises theorem -- a link between Bayesian and frequentist large-sample asymptotics that is broken in standard forms. Extensive simulations with modern MCMC methods highlight advantages over standard parameterizations: canonical forms achieve higher computational efficiency, generate interpretable and well-behaved posteriors, and provide robust uncertainty estimates, particularly from limited data.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.11533v1" target="_blank">CharaConsist: Fine-Grained Consistent Character Generation</a></h3>
+                <p><strong>Authors:</strong> Mengyu Wang, Henghui Ding, Jianing Peng, Yao Zhao, Yunpeng Chen, Yunchao Wei</p>
+                <p><strong>Published:</strong> 7/15/2025</p>
+                <p><strong>Categories:</strong> cs.CV</p>
+                <p><strong>Summary:</strong> In text-to-image generation, producing a series of consistent contents that preserve the same identity is highly valuable for real-world applications. Although a few works have explored training-free methods to enhance the consistency of generated subjects, we observe that they suffer from the following problems. First, they fail to maintain consistent background details, which limits their applicability. Furthermore, when the foreground character undergoes large motion variations, inconsistencies in identity and clothing details become evident. To address these problems, we propose CharaConsist, which employs point-tracking attention and adaptive token merge along with decoupled control of the foreground and background. CharaConsist enables fine-grained consistency for both foreground and background, supporting the generation of one character in continuous shots within a fixed scene or in discrete shots across different scenes. Moreover, CharaConsist is the first consistent generation method tailored for text-to-image DiT model. Its ability to maintain fine-grained consistency, combined with the larger capacity of latest base model, enables it to produce high-quality visual outputs, broadening its applicability to a wider range of real-world scenarios. The source code has been released at https://github.com/Murray-Wang/CharaConsist</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.11532v1" target="_blank">Critical and super-critical scatterings in baryogenesis and leptogenesis</a></h3>
+                <p><strong>Authors:</strong> Marcos M. Flores, Kalliopi Petraki, Anna Socha</p>
+                <p><strong>Published:</strong> 7/15/2025</p>
+                <p><strong>Categories:</strong> hep-ph</p>
+                <p><strong>Summary:</strong> In many theories, matter-antimatter asymmetries originate from out-of-equilibrium decays and scatterings of heavy particles. While decays remain efficient, scattering rates typically drop below the Hubble rate as the universe expands. We point out the possibility of scatterings between non-relativistic particles and the relativistic bath whose cross-sections grow with decreasing temperature, leading to scattering rates that track or exceed the Hubble rate at late times. This results in soaring asymmetry generation, even at low scales and with small CP- or baryon/lepton-violating couplings.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.11531v1" target="_blank">Langevin Flows for Modeling Neural Latent Dynamics</a></h3>
+                <p><strong>Authors:</strong> Yue Song, T. Anderson Keller, Yisong Yue, Pietro Perona, Max Welling</p>
+                <p><strong>Published:</strong> 7/15/2025</p>
+                <p><strong>Categories:</strong> cs.LG, q-bio.NC</p>
+                <p><strong>Summary:</strong> Neural populations exhibit latent dynamical structures that drive time-evolving spiking activities, motivating the search for models that capture both intrinsic network dynamics and external unobserved influences. In this work, we introduce LangevinFlow, a sequential Variational Auto-Encoder where the time evolution of latent variables is governed by the underdamped Langevin equation. Our approach incorporates physical priors -- such as inertia, damping, a learned potential function, and stochastic forces -- to represent both autonomous and non-autonomous processes in neural systems. Crucially, the potential function is parameterized as a network of locally coupled oscillators, biasing the model toward oscillatory and flow-like behaviors observed in biological neural populations. Our model features a recurrent encoder, a one-layer Transformer decoder, and Langevin dynamics in the latent space. Empirically, our method outperforms state-of-the-art baselines on synthetic neural populations generated by a Lorenz attractor, closely matching ground-truth firing rates. On the Neural Latents Benchmark (NLB), the model achieves superior held-out neuron likelihoods (bits per spike) and forward prediction accuracy across four challenging datasets. It also matches or surpasses alternative methods in decoding behavioral metrics such as hand velocity. Overall, this work introduces a flexible, physics-inspired, high-performing framework for modeling complex neural population dynamics and their unobserved influences.</p>
+            </div>
+        
+            <div class="paper">
+                <h3><a href="http://arxiv.org/abs/2507.11530v1" target="_blank">Intrinsic alignment demographics for next-generation lensing: Revealing galaxy property trends with DESI Y1 direct measurements</a></h3>
+                <p><strong>Authors:</strong> J. Siegel, J. McCullough, A. Amon, C. Lamman, N. Jeffrey, B. Joachimi, H. Hoekstra, S. Heydenreich, A. J. Ross, J. Aguilar, S. Ahlen, D. Bianchi, C. Blake, D. Brooks, F. J. Castander, T. Claybaugh, A. de la Macorra, J. DeRose, P. Doel, N. Emas, S. Ferraro, A. Font-Ribera, J. E. Forero-Romero, E. Gaztañaga, S. Gontcho A Gontcho, G. Gutierrez, K. Honscheid, M. Ishak, S. Joudaki, R. Kehoe, D. Kirkby, T. Kisner, A. Krolewski, O. Lahav, A. Lambert, M. Landriau, L. Le Guillou, M. E. Levi, M. Manera, A. Meisner, R. Miquel, J. Moustakas, S. Nadathur, J. A. Newman, G. Niz, N. Palanque-Delabrouille, W. J. Percival, A. Porredon, F. Prada, I. Pérez-Ràfols, G. Rossi, E. Sanchez, C. Saulder, D. Schlegel, M. Schubnell, A. Semenaite, J. Silber, D. Sprayberry, Z. Sun, G. Tarlé, B. A. Weaver, R. Zhou, H. Zou</p>
+                <p><strong>Published:</strong> 7/15/2025</p>
+                <p><strong>Categories:</strong> astro-ph.CO, astro-ph.GA</p>
+                <p><strong>Summary:</strong> We present direct measurements of the intrinsic alignments (IA) of over 2 million spectroscopic galaxies using DESI Data Release 1 and imaging from four lensing surveys: DES, HSC, KiDS, and SDSS. In this uniquely data-rich regime, we take initial steps towards a more tailored IA modelling approach by building a library of IA measurements across colour, luminosity, stellar mass, and redshift. We map the dependence between galaxy type -- in terms of rest-frame colour, strength of the 4000 Angstrom break, and specific star formation rate -- and IA amplitude; the bluest galaxies have an alignment consistent with zero, across low (0.05<z<0.5) and high (0.8<z<1.55) redshifts. In order to construct cosmic shear samples that are minimally impacted by IA but maintain maximum sample size and statistical power, we map the dependence of alignment with colour purity. Red, quenched galaxies are strongly aligned and the amplitude of the signal increases with luminosity, which is tightly correlated with stellar mass in our catalogues. For DESI galaxies between 0<z<1.5, trends in luminosity and colour alone are sufficient to explain the alignments we measure -- with no need for an explicit redshift dependence. In a companion paper (Jeffrey et al., in prep), we perform detailed modelling of the IA signals with significant detections, including model comparison. Finally, to direct efforts for future IA measurements, we juxtapose the colour-magnitude-redshift coverage of existing IA measurements against modern and future lensing surveys.</p>
+            </div>
+        
+        
+        <div class="meta">
+            <p><em>Generated by AI News Agent</em></p>
+        </div>
+    </div>
+</body>
+</html>
