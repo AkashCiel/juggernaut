@@ -1,8 +1,13 @@
 const https = require('https');
 const xml2js = require('xml2js');
 
-async function fetchArxivPapers(topics, maxResults = 10) {
+// Server-side ArXiv API for GitHub Actions
+// Default: 50 papers (higher than client-side for comprehensive automated reports)
+const SERVER_MAX_PAPERS = 50;
+
+async function fetchArxivPapers(topics, maxResults = SERVER_MAX_PAPERS) {
     console.log(`🔍 Searching ArXiv for topics: ${topics.join(', ')}`);
+    console.log(`📊 Server-side limit: ${maxResults} papers (GitHub Actions)`);
     
     const papers = [];
     
@@ -22,7 +27,7 @@ async function fetchArxivPapers(topics, maxResults = 10) {
     return uniquePapers.slice(0, maxResults);
 }
 
-function searchArxiv(query, maxResults = 10) {
+function searchArxiv(query, maxResults = SERVER_MAX_PAPERS) {
     return new Promise((resolve, reject) => {
         const encodedQuery = encodeURIComponent(query);
         const url = `https://export.arxiv.org/api/query?search_query=all:${encodedQuery}&start=0&max_results=${maxResults}&sortBy=submittedDate&sortOrder=descending`;

@@ -118,4 +118,4 @@ You can modify:
 - Schedule timing in `.github/workflows/daily-news-trigger.yml`
 - Report format in `server/githubUploader.js`
 - Email template in `server/reportRunner.js`
-- Paper count in `server/arxivAPI.js` 
+- Paper count in `server/arxivAPI.js` (50 papers for automated runs)
