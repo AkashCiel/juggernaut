@@ -1,5 +1,8 @@
 const https = require('https');
 const xml2js = require('xml2js');
+const { logger, logApiCall } = require('../utils/logger');
+const { handleArxivError } = require('../utils/errorHandler');
+const { sanitizePapers } = require('../utils/sanitizer');
 
 // ArXiv API Service for fetching research papers
 // Default: 50 papers for comprehensive reports
@@ -7,8 +10,8 @@ const SERVER_MAX_PAPERS = 50;
 
 class ArxivService {
     async fetchPapers(topics, maxResults = SERVER_MAX_PAPERS) {
-        console.log(`🔍 Searching ArXiv for topics: ${topics.join(', ')}`);
-        console.log(`📊 Server-side limit: ${maxResults} papers`);
+        logger.info(`🔍 Searching ArXiv for topics: ${topics.join(', ')}`);
+        logger.info(`📊 Server-side limit: ${maxResults} papers`);
         
         const papers = [];
         
@@ -17,7 +20,7 @@ class ArxivService {
                 const searchResults = await this.searchArxiv(topic, maxResults);
                 papers.push(...searchResults);
             } catch (error) {
-                console.error(`❌ Error searching for topic "${topic}":`, error.message);
+                handleArxivError(error, topic);
             }
         }
         
@@ -25,7 +28,15 @@ class ArxivService {
         const uniquePapers = this.removeDuplicates(papers);
         uniquePapers.sort((a, b) => new Date(b.published) - new Date(a.published));
         
-        return uniquePapers.slice(0, maxResults);
+        // Sanitize papers before returning
+        const sanitizedPapers = sanitizePapers(uniquePapers.slice(0, maxResults));
+        
+        logApiCall('arxiv', 'fetchPapers', { 
+            topics: topics.join(', '), 
+            papersFound: sanitizedPapers.length 
+        });
+        
+        return sanitizedPapers;
     }
 
     searchArxiv(query, maxResults = SERVER_MAX_PAPERS) {
@@ -33,7 +44,18 @@ class ArxivService {
             const encodedQuery = encodeURIComponent(query);
             const url = `https://export.arxiv.org/api/query?search_query=all:${encodedQuery}&start=0&max_results=${maxResults}&sortBy=submittedDate&sortOrder=descending`;
             
+            const timeout = setTimeout(() => {
+                reject(new Error('ArXiv request timeout'));
+            }, 30000); // 30 second timeout
+            
             https.get(url, (res) => {
+                clearTimeout(timeout);
+                
+                if (res.statusCode !== 200) {
+                    reject(new Error(`ArXiv API returned status ${res.statusCode}`));
+                    return;
+                }
+                
                 let data = '';
                 
                 res.on('data', (chunk) => {
@@ -49,6 +71,7 @@ class ArxivService {
                     }
                 });
             }).on('error', (error) => {
+                clearTimeout(timeout);
                 reject(error);
             });
         });

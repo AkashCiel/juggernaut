@@ -1,4 +1,7 @@
 const https = require('https');
+const { logger, logApiCall } = require('../utils/logger');
+const { handleGitHubError } = require('../utils/errorHandler');
+const { sanitizeText, sanitizeHtml } = require('../utils/sanitizer');
 
 // GitHub Service for uploading reports to GitHub Pages
 class GitHubService {
@@ -8,7 +11,7 @@ class GitHubService {
     }
 
     async uploadReport(reportData, githubToken) {
-        console.log('📤 Uploading report to GitHub...');
+        logger.info('📤 Uploading report to GitHub...');
         
         try {
             // Create report HTML
@@ -17,13 +20,17 @@ class GitHubService {
             // Upload to GitHub
             const uploadResult = await this.uploadFileToGitHub(reportHtml, reportData.date, githubToken);
             
+            logApiCall('github', 'uploadReport', { 
+                reportDate: reportData.date,
+                pagesUrl: uploadResult.pagesUrl 
+            });
+            
             return {
                 pagesUrl: uploadResult.pagesUrl,
                 sha: uploadResult.sha
             };
         } catch (error) {
-            console.error('❌ GitHub upload failed:', error.message);
-            throw error;
+            handleGitHubError(error);
         }
     }
 
@@ -31,14 +38,20 @@ class GitHubService {
         const papersHtml = reportData.papers.map((paper, index) => {
             const authors = Array.isArray(paper.authors) ? paper.authors.join(', ') : paper.authors;
             const publishedDate = new Date(paper.published).toLocaleDateString();
+            const title = sanitizeText(paper.title || '', 200);
+            const summary = sanitizeText(paper.summary || '', 1000);
+            const link = sanitizeText(paper.link || '', 500);
+            const categories = Array.isArray(paper.categories) 
+                ? paper.categories.map(cat => sanitizeText(cat, 50)).join(', ')
+                : '';
             
             return `
                 <div class="paper">
-                    <h3><a href="${paper.link}" target="_blank">${paper.title}</a></h3>
+                    <h3><a href="${link}" target="_blank">${title}</a></h3>
                     <p><strong>Authors:</strong> ${authors}</p>
                     <p><strong>Published:</strong> ${publishedDate}</p>
-                    <p><strong>Categories:</strong> ${paper.categories.join(', ')}</p>
-                    <p><strong>Summary:</strong> ${paper.summary}</p>
+                    <p><strong>Categories:</strong> ${categories}</p>
+                    <p><strong>Summary:</strong> ${summary}</p>
                 </div>
             `;
         }).join('');
@@ -46,11 +59,13 @@ class GitHubService {
         const aiSummarySection = reportData.aiSummary ? `
             <div class="ai-summary">
                 <h2>🤖 AI Summary</h2>
-                <p>${reportData.aiSummary}</p>
+                <p>${sanitizeText(reportData.aiSummary, 3000)}</p>
             </div>
         ` : '';
 
-        return `<!DOCTYPE html>
+        const topicsStr = sanitizeText(reportData.topics.join(', '), 200);
+
+        return sanitizeHtml(`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -116,7 +131,7 @@ class GitHubService {
         <h1>🤖 AI Research Report</h1>
         <div class="meta">
             <strong>Date:</strong> ${reportData.date}<br>
-            <strong>Topics:</strong> ${reportData.topics.join(', ')}<br>
+            <strong>Topics:</strong> ${topicsStr}<br>
             <strong>Papers Found:</strong> ${reportData.papers.length}
         </div>
         
@@ -130,7 +145,7 @@ class GitHubService {
         </div>
     </div>
 </body>
-</html>`;
+</html>`);
     }
 
     async uploadFileToGitHub(content, date, githubToken) {
@@ -157,7 +172,19 @@ class GitHubService {
                 }
             };
 
+            const timeout = setTimeout(() => {
+                req.destroy();
+                reject(new Error('GitHub request timeout'));
+            }, 30000);
+
             const req = https.request(options, (res) => {
+                clearTimeout(timeout);
+                
+                if (res.statusCode !== 200 && res.statusCode !== 201) {
+                    reject(new Error(`GitHub API returned status ${res.statusCode}`));
+                    return;
+                }
+                
                 let responseData = '';
                 
                 res.on('data', (chunk) => {
@@ -191,6 +218,7 @@ class GitHubService {
             });
 
             req.on('error', (error) => {
+                clearTimeout(timeout);
                 reject(new Error(`GitHub request failed: ${error.message}`));
             });
 
@@ -212,7 +240,19 @@ class GitHubService {
                 }
             };
 
+            const timeout = setTimeout(() => {
+                req.destroy();
+                reject(new Error('GitHub request timeout'));
+            }, 30000);
+
             const req = https.request(options, (res) => {
+                clearTimeout(timeout);
+                
+                if (res.statusCode !== 200) {
+                    reject(new Error(`GitHub API returned status ${res.statusCode}`));
+                    return;
+                }
+                
                 let responseData = '';
                 
                 res.on('data', (chunk) => {
@@ -235,6 +275,7 @@ class GitHubService {
             });
 
             req.on('error', (error) => {
+                clearTimeout(timeout);
                 reject(new Error(`GitHub request failed: ${error.message}`));
             });
 
@@ -267,7 +308,19 @@ class GitHubService {
                 }
             };
 
+            const timeout = setTimeout(() => {
+                req.destroy();
+                reject(new Error('GitHub request timeout'));
+            }, 30000);
+
             const req = https.request(options, (res) => {
+                clearTimeout(timeout);
+                
+                if (res.statusCode !== 200 && res.statusCode !== 201) {
+                    reject(new Error(`GitHub API returned status ${res.statusCode}`));
+                    return;
+                }
+                
                 let responseData = '';
                 
                 res.on('data', (chunk) => {
@@ -294,6 +347,7 @@ class GitHubService {
             });
 
             req.on('error', (error) => {
+                clearTimeout(timeout);
                 reject(new Error(`GitHub request failed: ${error.message}`));
             });
 

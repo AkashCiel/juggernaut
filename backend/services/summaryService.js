@@ -1,4 +1,7 @@
 const https = require('https');
+const { logger, logApiCall } = require('../utils/logger');
+const { handleOpenAIError } = require('../utils/errorHandler');
+const { sanitizeText } = require('../utils/sanitizer');
 
 class SummaryService {
     async generateSummary(papers, apiKey, timeoutMs = 60000) {
@@ -6,23 +9,32 @@ class SummaryService {
             return 'No papers available for summary generation.';
         }
 
-        console.log(`🤖 Generating AI summary for ${papers.length} papers...`);
+        logger.info(`🤖 Generating AI summary for ${papers.length} papers...`);
 
         const prompt = this.createSummaryPrompt(papers);
         
         try {
             const summary = await this.callOpenAI(prompt, apiKey, timeoutMs);
-            return summary;
+            const sanitizedSummary = sanitizeText(summary, 5000);
+            
+            logApiCall('openai', 'generateSummary', { 
+                papersCount: papers.length,
+                summaryLength: sanitizedSummary.length 
+            });
+            
+            return sanitizedSummary;
         } catch (error) {
-            console.error('❌ Error generating AI summary:', error.message);
-            return 'AI summary generation failed. Please check the full report for paper details.';
+            handleOpenAIError(error);
         }
     }
 
     createSummaryPrompt(papers) {
         const papersText = papers.map((paper, index) => {
             const authors = Array.isArray(paper.authors) ? paper.authors.join(', ') : paper.authors;
-            return `${index + 1}. **${paper.title}**\n   Authors: ${authors}\n   Summary: ${paper.summary}\n`;
+            const title = sanitizeText(paper.title || '', 200);
+            const summary = sanitizeText(paper.summary || '', 1000);
+            
+            return `${index + 1}. **${title}**\n   Authors: ${authors}\n   Summary: ${summary}\n`;
         }).join('\n');
 
         return `You are an AI research assistant. Please provide a high-level summary of the following AI research papers. Focus on the most important trends, breakthroughs, and implications. Keep it concise but insightful (2-3 paragraphs max).
@@ -63,7 +75,19 @@ Please provide a clear, well-structured summary that highlights the key findings
                 }
             };
 
+            const timeout = setTimeout(() => {
+                req.destroy();
+                reject(new Error('OpenAI request timeout'));
+            }, timeoutMs);
+
             const req = https.request(options, (res) => {
+                clearTimeout(timeout);
+                
+                if (res.statusCode !== 200) {
+                    reject(new Error(`OpenAI API returned status ${res.statusCode}`));
+                    return;
+                }
+                
                 let responseData = '';
                 
                 res.on('data', (chunk) => {
@@ -91,15 +115,10 @@ Please provide a clear, well-structured summary that highlights the key findings
             });
 
             req.on('error', (error) => {
+                clearTimeout(timeout);
                 reject(new Error(`Request failed: ${error.message}`));
             });
 
-            req.on('timeout', () => {
-                req.destroy();
-                reject(new Error('Request timeout'));
-            });
-
-            req.setTimeout(timeoutMs);
             req.write(data);
             req.end();
         });

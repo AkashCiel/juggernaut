@@ -1,5 +1,8 @@
 const mailgun = require('mailgun.js');
 const FormData = require('form-data');
+const { logger, logApiCall } = require('../utils/logger');
+const { handleMailgunError } = require('../utils/errorHandler');
+const { sanitizeText, sanitizeHtml } = require('../utils/sanitizer');
 
 // Email Service for sending reports via Mailgun
 class EmailService {
@@ -20,7 +23,7 @@ class EmailService {
 
         this.domain = domain;
         this.isInitialized = true;
-        console.log('✅ Email service initialized');
+        logger.info('✅ Email service initialized');
     }
 
     async sendEmail(reportData, topics, recipients, reportDate = new Date()) {
@@ -32,7 +35,7 @@ class EmailService {
             throw new Error('No email recipients provided');
         }
 
-        console.log('📧 Sending email...');
+        logger.info('📧 Sending email...');
 
         const emailContent = this.createEmailTemplate(reportData, topics, reportDate);
         const subject = `AI Research Report - ${reportDate.toISOString().split('T')[0]}`;
@@ -46,11 +49,16 @@ class EmailService {
             };
 
             const response = await this.mailgunClient.messages.create(this.domain, messageData);
-            console.log('✅ Email sent successfully:', response.id);
+            logger.info('✅ Email sent successfully:', response.id);
+            
+            logApiCall('mailgun', 'sendEmail', { 
+                recipientsCount: recipients.length,
+                messageId: response.id 
+            });
+            
             return { success: true, messageId: response.id };
         } catch (error) {
-            console.error('❌ Error sending email:', error.message);
-            throw new Error(`Failed to send email: ${error.message}`);
+            handleMailgunError(error);
         }
     }
 
@@ -62,11 +70,11 @@ class EmailService {
             day: 'numeric'
         });
 
-        const topicsStr = topics.join(', ');
+        const topicsStr = sanitizeText(topics.join(', '), 200);
         
         // Get AI summary from the reportData argument
-        let aiSummary = reportData.aiSummary || '';
-        let reportUrl = reportData.pagesUrl || '#';
+        let aiSummary = sanitizeText(reportData.aiSummary || '', 3000);
+        let reportUrl = sanitizeText(reportData.pagesUrl || '#', 500);
         
         // Check if AI summary is available
         const hasAISummary = aiSummary && aiSummary.trim() !== '';
@@ -152,7 +160,7 @@ class EmailService {
 </body>
 </html>`;
 
-        return htmlTemplate;
+        return sanitizeHtml(htmlTemplate);
     }
 
     generateMetadata(reportData) {

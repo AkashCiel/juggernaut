@@ -2,178 +2,67 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
-// Import services
-const ArxivService = require('./services/arxivService');
-const SummaryService = require('./services/summaryService');
-const EmailService = require('./services/emailService');
-const GitHubService = require('./services/githubService');
+// Import middleware
+const { generalLimiter, securityHeaders } = require('./middleware/security');
+const { logRequest } = require('./utils/logger');
+const { errorHandler } = require('./utils/errorHandler');
 
-// Initialize services
-const arxivService = new ArxivService();
-const summaryService = new SummaryService();
-const emailService = new EmailService();
-const githubService = new GitHubService();
+// Import routes
+const healthRoutes = require('./routes/healthRoutes');
+const reportRoutes = require('./routes/reportRoutes');
 
 // Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// Security middleware
+app.use(securityHeaders);
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-    res.json({ 
-        status: 'healthy', 
-        timestamp: new Date().toISOString(),
-        service: 'AI News Agent Backend'
-    });
-});
+// CORS configuration
+app.use(cors({
+    origin: process.env.NODE_ENV === 'production' 
+        ? ['https://yourdomain.com'] // Replace with your frontend domain
+        : ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://[::]:3000'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key']
+}));
 
-// Main report generation endpoint
-app.post('/api/generate-report', async (req, res) => {
-    try {
-        console.log('🚀 Starting report generation...');
-        
-        const { 
-            topics = ['artificial intelligence', 'machine learning', 'deep learning'],
-            recipients = [],
-            maxPapers = 50
-        } = req.body;
+// Request parsing middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-        // Check for demo mode (missing environment variables)
-        const requiredEnvVars = ['OPENAI_API_KEY', 'MAILGUN_API_KEY', 'MAILGUN_DOMAIN', 'GITHUB_TOKEN'];
-        const missingVars = requiredEnvVars.filter(varName => !process.env[varName] || process.env[varName].includes('placeholder'));
-        
-        const isDemoMode = missingVars.length > 0;
-        
-        if (isDemoMode) {
-            console.log('⚠️ Running in demo mode - some features will be limited');
-        }
+// Logging middleware
+app.use(logRequest);
 
-        // Step 1: Fetch papers from ArXiv
-        console.log('📚 Fetching papers from ArXiv...');
-        const papers = await arxivService.fetchPapers(topics, maxPapers);
-        
-        if (!papers || papers.length === 0) {
-            return res.status(404).json({
-                error: 'No papers found for the specified topics'
-            });
-        }
+// Rate limiting
+app.use(generalLimiter);
 
-        // Step 2: Generate AI summary (skip in demo mode)
-        let aiSummary = null;
-        if (!isDemoMode) {
-            console.log('🤖 Generating AI summary...');
-            try {
-                aiSummary = await summaryService.generateSummary(papers, process.env.OPENAI_API_KEY);
-            } catch (error) {
-                console.log('⚠️ AI summary generation failed, continuing without summary');
-            }
-        } else {
-            console.log('⚠️ Skipping AI summary in demo mode');
-        }
+// Routes
+app.use('/', healthRoutes);
+app.use('/api', reportRoutes);
 
-        // Step 3: Prepare report data
-        const reportDate = new Date().toISOString().split('T')[0];
-        const reportData = {
-            date: reportDate,
-            topics: topics,
-            papers: papers,
-            aiSummary: aiSummary
-        };
-
-        // Step 4: Upload report to GitHub (skip in demo mode)
-        let uploadResult = null;
-        if (!isDemoMode) {
-            console.log('📤 Uploading report to GitHub...');
-            try {
-                uploadResult = await githubService.uploadReport(reportData, process.env.GITHUB_TOKEN);
-                reportData.pagesUrl = uploadResult.pagesUrl;
-            } catch (error) {
-                console.log('⚠️ GitHub upload failed, continuing without upload');
-            }
-        } else {
-            console.log('⚠️ Skipping GitHub upload in demo mode');
-        }
-
-        // Step 5: Send email if recipients provided (skip in demo mode)
-        let emailResult = null;
-        if (recipients && recipients.length > 0 && !isDemoMode) {
-            console.log('📧 Sending email...');
-            try {
-                emailService.initialize(process.env.MAILGUN_API_KEY, process.env.MAILGUN_DOMAIN);
-                emailResult = await emailService.sendEmail(reportData, topics, recipients, new Date());
-            } catch (error) {
-                console.log('⚠️ Email sending failed, continuing without email');
-            }
-        } else if (recipients && recipients.length > 0 && isDemoMode) {
-            console.log('⚠️ Skipping email in demo mode');
-        }
-
-        // Step 6: Return success response
-        const response = {
-            success: true,
-            message: isDemoMode ? 'Report generated successfully (Demo Mode)' : 'Report generated successfully',
-            data: {
-                reportDate: reportDate,
-                topics: topics,
-                papersCount: papers.length,
-                hasAISummary: !!aiSummary,
-                reportUrl: uploadResult?.pagesUrl || null,
-                emailSent: !!emailResult,
-                demoMode: isDemoMode
-            }
-        };
-
-        if (emailResult) {
-            response.data.emailId = emailResult.messageId;
-        }
-
-        console.log('✅ Report generation completed successfully');
-        res.json(response);
-
-    } catch (error) {
-        console.error('❌ Report generation failed:', error.message);
-        res.status(500).json({
-            error: 'Report generation failed',
-            message: error.message
-        });
-    }
-});
-
-// Simple test endpoint
-app.get('/api/test', (req, res) => {
-    res.json({ 
-        status: 'ok', 
-        message: 'Backend is running',
+// 404 handler
+app.use('*', (req, res) => {
+    res.status(404).json({
+        error: 'Not Found',
+        message: `Route ${req.originalUrl} not found`,
         timestamp: new Date().toISOString()
     });
 });
 
-// Test endpoint for individual services
-app.post('/api/test/arxiv', async (req, res) => {
-    try {
-        const { topics = ['artificial intelligence'], maxPapers = 10 } = req.body;
-        const papers = await arxivService.fetchPapers(topics, maxPapers);
-        res.json({ success: true, papersCount: papers.length, papers });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+// Error handling middleware (must be last)
+app.use(errorHandler);
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received, shutting down gracefully');
+    process.exit(0);
 });
 
-app.post('/api/test/summary', async (req, res) => {
-    try {
-        const { papers, apiKey } = req.body;
-        if (!apiKey) {
-            return res.status(400).json({ error: 'OpenAI API key required' });
-        }
-        const summary = await summaryService.generateSummary(papers, apiKey);
-        res.json({ success: true, summary });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+process.on('SIGINT', () => {
+    console.log('SIGINT received, shutting down gracefully');
+    process.exit(0);
 });
 
 // Start server
@@ -181,6 +70,7 @@ app.listen(PORT, () => {
     console.log(`🚀 AI News Agent Backend running on port ${PORT}`);
     console.log(`📊 Health check: http://localhost:${PORT}/health`);
     console.log(`🔧 API endpoint: http://localhost:${PORT}/api/generate-report`);
+    console.log(`🔍 Status check: http://localhost:${PORT}/status`);
 });
 
 module.exports = app; 

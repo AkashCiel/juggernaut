@@ -69,6 +69,7 @@ class App {
             progressBar: document.getElementById('progress-bar'),
             progressText: document.getElementById('progress-text'),
             recentReports: document.getElementById('recent-reports'),
+            emailRecipients: document.getElementById('email-recipients'),
             
             // Topics
             topicsList: document.getElementById('topics-list'),
@@ -411,6 +412,25 @@ class App {
 
             const topicNames = this.topics.map(t => t.name);
             
+            // Parse email recipients
+            const emailRecipientsInput = this.elements.emailRecipients.value.trim();
+            const recipients = emailRecipientsInput 
+                ? emailRecipientsInput.split(',').map(email => email.trim()).filter(email => email)
+                : [];
+            
+            // Validate email addresses
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const invalidEmails = recipients.filter(email => !emailRegex.test(email));
+            
+            if (invalidEmails.length > 0) {
+                this.showNotification(`Invalid email addresses: ${invalidEmails.join(', ')}`, 'warning');
+                return;
+            }
+            
+            if (recipients.length > 0) {
+                this.showNotification(`Will send report to: ${recipients.join(', ')}`, 'info');
+            }
+            
             this.elements.progressText.textContent = 'Requesting backend...';
             
             const response = await fetch('http://localhost:8000/api/generate-report', {
@@ -420,7 +440,8 @@ class App {
                 },
                 body: JSON.stringify({
                     topics: topicNames,
-                    maxPapers: 50
+                    maxPapers: 50,
+                    recipients: recipients
                 })
             });
 
@@ -430,25 +451,42 @@ class App {
 
             const result = await response.json();
             
+            console.log('Backend response:', result); // Debug log
+            
             this.elements.progressText.textContent = 'Processing results...';
             
-            // Create report object
+            // Create report object with HTML content
             const report = {
                 id: this.generateId(),
                 title: 'AI News Report',
                 topics: topicNames,
-                papers: result.data?.papers || [],
+                htmlReport: result.data?.htmlReport || '',
                 generatedAt: new Date().toISOString(),
-                paperCount: result.data?.papersCount || 0
+                paperCount: result.data?.papersCount || 0,
+                hasAISummary: result.data?.hasAISummary || false,
+                reportUrl: result.data?.reportUrl || null
             };
+            
+            console.log('Created report:', report); // Debug log
             
             this.reports.unshift(report);
             this.saveData();
             
             this.elements.progressText.textContent = 'Complete!';
             
-            this.showNotification('Report generated successfully!', 'success');
+            // Show success message with email status
+            let successMessage = 'Report generated successfully!';
+            if (result.data?.emailSent) {
+                successMessage += ` Email sent to ${recipients.join(', ')}`;
+            } else if (recipients.length > 0) {
+                successMessage += ' (Email sending failed or skipped)';
+            }
+            
+            this.showNotification(successMessage, 'success');
             this.updateDashboard();
+            
+            // Clear email recipients field after successful generation
+            this.elements.emailRecipients.value = '';
             
         } catch (error) {
             console.error('Report generation failed:', error);
@@ -470,25 +508,8 @@ class App {
             return;
         }
 
-        const content = `
-            <h2>${report.title}</h2>
-            <p><strong>Generated:</strong> ${new Date(report.generatedAt).toLocaleString()}</p>
-            <p><strong>Topics:</strong> ${report.topics.join(', ')}</p>
-            <p><strong>Papers:</strong> ${report.papers.length}</p>
-            <hr>
-            <div class="papers-list">
-                ${report.papers.map(paper => `
-                    <div class="paper-item">
-                        <h4>${paper.title}</h4>
-                        <p><strong>Authors:</strong> ${paper.authors?.join(', ') || 'Unknown'}</p>
-                        <p><strong>Abstract:</strong> ${paper.abstract || 'No abstract available'}</p>
-                        <p><strong>Published:</strong> ${paper.published || 'Unknown'}</p>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-
-        this.showModal('Report Details', content);
+        // Display the HTML report directly in the modal
+        this.showModal('Report Details', report.htmlReport);
     }
 
     /**
@@ -496,7 +517,23 @@ class App {
      */
     showModal(title, content) {
         this.elements.modalTitle.textContent = title;
-        this.elements.modalContent.querySelector('.modal-body').innerHTML = content;
+        
+        // If content is HTML (starts with <), set it directly
+        if (content.trim().startsWith('<')) {
+            this.elements.modalContent.querySelector('.modal-body').innerHTML = content;
+            // Make modal larger for HTML reports
+            this.elements.modalContent.style.maxWidth = '90vw';
+            this.elements.modalContent.style.maxHeight = '90vh';
+            this.elements.modalContent.style.width = '90vw';
+        } else {
+            // For plain text, wrap in paragraph
+            this.elements.modalContent.querySelector('.modal-body').innerHTML = `<p>${content}</p>`;
+            // Reset modal size for simple content
+            this.elements.modalContent.style.maxWidth = '500px';
+            this.elements.modalContent.style.maxHeight = '80vh';
+            this.elements.modalContent.style.width = 'auto';
+        }
+        
         this.elements.modal.style.display = 'block';
     }
 
@@ -565,7 +602,7 @@ class App {
                     🔄 Retry
                 </button>
             </div>
-        `;
+        `
     }
 
     /**
@@ -579,7 +616,7 @@ class App {
             return reportDate >= weekAgo;
         }).length;
 
-        const totalPapers = this.reports.reduce((sum, r) => sum + (r.papers?.length || 0), 0);
+        const totalPapers = this.reports.reduce((sum, r) => sum + (r.paperCount || 0), 0);
 
         return {
             topics: this.topics.length,
