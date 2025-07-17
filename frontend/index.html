@@ -3,201 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Research News Agent</title>
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/css/components.css">
-    <link rel="stylesheet" href="assets/css/animations.css">
+    <title>AI Research News - Daily Reports</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="email"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .topics-section {
+            margin-bottom: 25px;
+        }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .topic-item {
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .topic-item:hover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+
+        .topic-item.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .add-topic {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .add-topic input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .add-topic input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
 </head>
 <body>
-    <div id="app">
-        <!-- Sidebar Navigation -->
-        <div id="sidebar" class="sidebar">
-            <div class="sidebar-header">
-                <h1>🤖 AI News Agent</h1>
-            </div>
-            <nav class="sidebar-nav">
-                <a href="#" id="nav-dashboard" class="nav-item active">
-                    📊 Dashboard
-                </a>
-                <a href="#" id="nav-topics" class="nav-item">
-                    🏷️ Topics
-                </a>
-                <a href="#" id="nav-reports" class="nav-item">
-                    📄 Reports
-                </a>
-                <a href="#" id="nav-scheduler" class="nav-item">
-                    ⏰ Scheduler
-                </a>
-                <a href="#" id="nav-settings" class="nav-item">
-                    ⚙️ Settings
-                </a>
-            </nav>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Research News</h1>
+            <p>Get personalized daily reports on the latest AI research papers</p>
         </div>
 
-        <!-- Main Content Area -->
-        <div id="main-content" class="main-content">
-            <!-- Dashboard View -->
-            <div id="dashboard-view" class="view">
-                <div class="view-header">
-                    <h2>📊 Dashboard</h2>
-                    <p>Overview of your AI news generation activity</p>
-                </div>
-                
-                <div class="dashboard-stats" id="dashboard-stats">
-                    <!-- Stats will be populated here -->
-                </div>
-                
-                <div class="dashboard-actions">
-                    <div class="email-recipients-section">
-                        <label for="email-recipients">Email Recipients (comma-separated):</label>
-                        <input type="text" id="email-recipients" placeholder="email1@example.com, email2@example.com">
-                        <small>Leave empty to skip email sending</small>
-                    </div>
-                    <button id="generate-button" class="btn btn-primary">
-                        🚀 Generate Report
-                    </button>
-                    <div id="progress-bar" class="progress-bar" style="display: none;">
-                        <div class="progress-fill"></div>
-                        <span id="progress-text" class="progress-text">Initializing...</span>
-                    </div>
-                </div>
-                
-                <div class="recent-reports">
-                    <h3>📄 Recent Reports</h3>
-                    <div id="recent-reports">
-                        <!-- Recent reports will be populated here -->
-                    </div>
-                </div>
+        <form id="registrationForm">
+            <div class="form-group">
+                <label for="email">📧 Email Address</label>
+                <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
             </div>
 
-            <!-- Topics View -->
-            <div id="topics-view" class="view" style="display: none;">
-                <div class="view-header">
-                    <h2>🏷️ Research Topics</h2>
-                    <p>Manage your AI research topics and categories</p>
-                </div>
-                
-                <div class="topics-container">
-                    <div class="topics-list" id="topics-list">
+            <div class="form-group">
+                <label>🔍 Research Topics</label>
+                <div class="topics-section">
+                    <div class="topics-grid" id="topicsGrid">
                         <!-- Topics will be populated here -->
                     </div>
-                    
-                    <div class="add-topic-form" id="add-topic-form">
-                        <h3>Add New Topic</h3>
-                        <div class="form-group">
-                            <input type="text" id="topic-name" placeholder="Topic name (e.g., 'Large Language Models')">
-                            <select id="topic-category">
-                                <option value="ai">Artificial Intelligence</option>
-                                <option value="ml">Machine Learning</option>
-                                <option value="nlp">Natural Language Processing</option>
-                                <option value="cv">Computer Vision</option>
-                                <option value="robotics">Robotics</option>
-                                <option value="neural">Neural Networks</option>
-                                <option value="ethics">AI Ethics</option>
-                                <option value="applications">AI Applications</option>
-                                <option value="theory">AI Theory</option>
-                                <option value="systems">AI Systems</option>
-                            </select>
-                            <button id="add-topic-btn" class="btn btn-secondary">Add Topic</button>
-                        </div>
+                    <div class="add-topic">
+                        <input type="text" id="newTopic" placeholder="Add custom topic (e.g., 'large language models')">
+                        <button type="button" class="btn btn-secondary" onclick="addCustomTopic()">Add</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Reports View -->
-            <div id="reports-view" class="view" style="display: none;">
-                <div class="view-header">
-                    <h2>📄 Reports</h2>
-                    <p>View and manage your generated reports</p>
-                </div>
-                
-                <div class="reports-container">
-                    <div class="reports-list" id="reports-list">
-                        <!-- Reports will be populated here -->
-                    </div>
-                    
-                    <div class="report-viewer" id="report-viewer">
-                        <!-- Report content will be displayed here -->
-                    </div>
-                </div>
-            </div>
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+                📧 Register for Daily Reports
+            </button>
+        </form>
 
-            <!-- Scheduler View -->
-            <div id="scheduler-view" class="view" style="display: none;">
-                <div class="view-header">
-                    <h2>⏰ Scheduler</h2>
-                    <p>Configure automated report generation</p>
-                </div>
-                
-                <div class="scheduler-container">
-                    <div class="scheduler-controls">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="scheduler-enabled">
-                            Enable automated scheduling
-                        </label>
-                    </div>
-                    
-                    <div class="scheduler-list" id="scheduler-list">
-                        <!-- Schedules will be populated here -->
-                    </div>
-                    
-                    <div class="add-schedule-form" id="add-schedule-form">
-                        <h3>Add New Schedule</h3>
-                        <!-- Schedule form will be here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Settings View -->
-            <div id="settings-view" class="view" style="display: none;">
-                <div class="view-header">
-                    <h2>⚙️ Settings</h2>
-                    <p>Configure application settings and preferences</p>
-                </div>
-                
-                <div class="settings-container">
-                    <form id="settings-form">
-                        <div class="form-group">
-                            <label>Email Recipients</label>
-                            <div id="email-recipients">
-                                <!-- Email recipients will be populated here -->
-                            </div>
-                            <input type="email" placeholder="Add email recipient">
-                            <button type="button" class="btn btn-secondary">Add</button>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary">Save Settings</button>
-                    </form>
-                </div>
-            </div>
-        </div>
+        <div id="status" class="status" style="display: none;"></div>
     </div>
 
-    <!-- Modal -->
-    <div id="modal" class="modal" style="display: none;">
-        <div id="modal-content" class="modal-content">
-            <div class="modal-header">
-                <h2 id="modal-title">Modal Title</h2>
-                <button id="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <!-- Modal content will be populated here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Notifications -->
-    <div id="notifications" class="notifications">
-        <!-- Notifications will be populated here -->
-    </div>
-
-    <!-- JavaScript Files -->
-    <!-- Configuration -->
     <script>
         // Backend API Configuration
-        window.API_URL = 'https://juggernaut-37yk.onrender.com';
+        const API_URL = 'https://juggernaut-37yk.onrender.com';
+
+        // Default topics
+        const defaultTopics = [
+            'artificial intelligence',
+            'machine learning', 
+            'deep learning',
+            'natural language processing',
+            'computer vision',
+            'robotics',
+            'neural networks',
+            'reinforcement learning',
+            'large language models',
+            'computer science'
+        ];
+
+        let selectedTopics = new Set(['artificial intelligence', 'machine learning']);
+
+        // Initialize topics grid
+        function initializeTopics() {
+            const grid = document.getElementById('topicsGrid');
+            grid.innerHTML = '';
+            
+            defaultTopics.forEach(topic => {
+                const topicElement = document.createElement('div');
+                topicElement.className = 'topic-item';
+                topicElement.textContent = topic;
+                topicElement.onclick = () => toggleTopic(topic, topicElement);
+                
+                if (selectedTopics.has(topic)) {
+                    topicElement.classList.add('selected');
+                }
+                
+                grid.appendChild(topicElement);
+            });
+        }
+
+        // Toggle topic selection
+        function toggleTopic(topic, element) {
+            if (selectedTopics.has(topic)) {
+                selectedTopics.delete(topic);
+                element.classList.remove('selected');
+            } else {
+                selectedTopics.add(topic);
+                element.classList.add('selected');
+            }
+        }
+
+        // Add custom topic
+        function addCustomTopic() {
+            const input = document.getElementById('newTopic');
+            const topic = input.value.trim().toLowerCase();
+            
+            if (topic && !defaultTopics.includes(topic)) {
+                selectedTopics.add(topic);
+                input.value = '';
+                initializeTopics();
+                showStatus('Custom topic added!', 'success');
+            }
+        }
+
+        // Show status message
+        function showStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    status.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (!email) {
+                showStatus('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            if (selectedTopics.size === 0) {
+                showStatus('Please select at least one topic', 'error');
+                return;
+            }
+            
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Registering...';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/register-user`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        topics: Array.from(selectedTopics)
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus('✅ Successfully registered! You\'ll receive daily reports starting tomorrow.', 'success');
+                    document.getElementById('registrationForm').reset();
+                    selectedTopics = new Set(['artificial intelligence', 'machine learning']);
+                    initializeTopics();
+                } else {
+                    showStatus(`❌ Registration failed: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus('❌ Network error. Please try again.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '📧 Register for Daily Reports';
+            }
+        });
+
+        // Handle Enter key in custom topic input
+        document.getElementById('newTopic').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addCustomTopic();
+            }
+        });
+
+        // Initialize the page
+        initializeTopics();
     </script>
-    <!-- Main Application -->
-    <script src="assets/js/app.js"></script>
 </body>
 </html> 
