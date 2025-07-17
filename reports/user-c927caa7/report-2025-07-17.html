@@ -3,23 +3,35 @@
         <h1>🤖 AI Research Report</h1>
         
             <strong>Date:</strong> 2025-07-17<br>
-            <strong>Topics:</strong> artificial intelligence, machine learning, systems neuroscience<br>
+            <strong>Topics:</strong> artificial intelligence, machine learning, quantum computing<br>
             <strong>Papers Found:</strong> 50
         
         
         
             
                 <h2>🤖 AI Summary</h2>
-                <p>The research papers presented span a diverse range of topics within the AI and machine learning fields, showcasing significant advancements and challenges in leveraging AI for practical applications. A prominent theme across these papers is the optimization and application of machine learning models in specific domains, such as language models, medical imaging, autonomous vehicles, and more.
+                <p>The recent AI research papers demonstrate a diverse range of advancements and novel approaches across various domains. In the realm of theoretical physics and string theory, The AdS/$\mathsf{C}$-$\mathsf{P}$-${\mathsf T}$ Correspondence elucidates the symmetries involved in ${\cal N}=4$ SYM and their dualities in string theory, bridging concepts between field theory and string theory. This work highlights ongoing efforts to unify different areas of theoretical physics and could have implications for our understanding of the fundamental structure of the universe.
 
-Several papers focus on improving model efficiency and applicability by tailoring training data or leveraging specialized architectures. For instance, the paper on Language Models Improve When Pretraining Data Matches Target Tasks emphasizes the importance of aligning pretraining data with target tasks using the BETR method, which optimizes data selection to enhance model performance significantly. Similarly, CytoSAE: Interpretable Cell Embeddings for Hematology introduces a sparse autoencoder that aids in interpretability and generalization across diverse medical datasets, emphasizing the need for explainable AI in healthcare. In the realm of autonomous systems, Vision-based Perception for Autonomous Vehicles in Obstacle Avoidance Scenarios explores the integration of camera-only perception modules with advanced planning strategies to enhance navigation safety.
+In natural language processing, Language Models Improve When Pretraining Data Matches Target Tasks introduces BETR, a data selection method that aligns pretraining data with evaluation benchmarks, showing a 2.1x compute efficiency improvement. This underscores a growing trend toward optimizing data selection for better model performance, emphasizing the importance of data quality and relevance. Similarly, Interpreting Radiologists Intention from Eye Movements in Chest X-ray Diagnosis and CytoSAE: Interpretable Cell Embeddings for Hematology highlight the integration of AI in medical imaging, focusing on interpretability and domain-specific applications, which are crucial for clinical adoption of AI technologies.
 
-Another key trend is the focus on addressing inherent limitations and challenges in AI systems. Papers like Mitigating Object Hallucinations via Sentence-Level Early Intervention and LLM-Based Config Synthesis requires Disambiguation tackle issues of hallucination and ambiguity in language models, proposing innovative frameworks to improve model reliability and accuracy. Furthermore, research on hardware optimizations, such as in A single chip 1.024 Tb/s silicon photonics PAM4 receiver and BitWave: Exploiting Column-Based Bit-Level Sparsity for Deep Learning Acceleration, highlights the ongoing efforts to enhance computational efficiency and scalability of AI systems. These advancements not only push the boundaries of current AI capabilities but also pave the way for more robust and efficient deployment across various sectors, from healthcare to autonomous driving and beyond.</p>
+In computer vision and 3D modeling, papers like PhysX: Physical-Grounded 3D Asset Generation and SpatialTrackerV2: 3D Point Tracking Made Easy reflect advancements in physically grounded and efficient 3D modeling techniques. These approaches aim to bridge the gap between virtual and physical realities, enhancing applications in simulation and embodied AI. Moreover, Unsupervised Monocular 3D Keypoint Discovery from Multi-View Diffusion Priors showcases unsupervised techniques for estimating 3D structures from 2D images, leveraging diffusion models to capture geometric priors, highlighting the trend towards reducing reliance on labeled data and improving model generalization.
+
+In the field of machine learning and optimization, Cost-aware Stopping for Bayesian Optimization and Improving Reinforcement Learning Sample-Efficiency using Local Approximation address practical challenges in optimizing computational resources and sample efficiency. These works reflect the ongoing need for more efficient and adaptive algorithms in AI, particularly in resource-constrained settings. Additionally, efforts in improving AI robustness and transparency are evident in Trustworthy Tree-based Machine Learning by $MoS_2$ Flash-based Analog CAM with Inherent Soft Boundaries and Thought Purity: Defense Paradigm For Chain-of-Thought Attack, focusing on enhancing model security and interpretability, which are essential for trustworthy AI systems.
+
+Overall, these papers collectively highlight key trends in AI research, including the push for more efficient data-driven methods, the integration of AI in specialized domains like healthcare and physics, and the ongoing pursuit of robustness and interpretabilit...</p>
             
         
         
         <h2>📚 Research Papers</h2>
         
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12467v1" target="_blank">The AdS/$\mathsf{C}$-$\mathsf{P}$-${\mathsf T}$ Correspondence</a></h3>
+                    <p><strong>Authors:</strong> Jaume Gomis</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> hep-th</p>
+                    <p><strong>Summary:</strong> We study the realization of $\mathsf{C}$, $\mathsf{P}$, $\mathsf{T}$ in ${\cal N}=4$ SYM - corresponding to charge conjugation, parity, and time-reversal - and identify the $\mathsf{C}$, $\mathsf{P}$, $\mathsf{T}$ global symmetries of ${\cal N}=4$ SYM with bulk (gauge) symmetries of string theory on $AdS_5\times S^5$. The dual bulk transformations are symmetries of Type IIB string theory on $AdS_5\times S^5$ that combine string worldsheet symmetries, with geometric transformations acting on $AdS_5\times S^5$. We show that $\mathsf P$ and $\mathsf T$ map to $\mathsf{CP}$ and $\mathsf{CT}$ under $S$-duality (combined with an $SU(4)$ R-symmetry outer automorphism), while $\mathsf C$ and $ \mathsf{CPT}$ are invariant. We also define a chiral, codimension-two surface defect in ${\cal N}=4$ SYM associated with charge conjugation, and provide its bulk $AdS_5\times S^5$ dual gravitational description. We discuss the relation between symmetries on the string worldsheet and symmetries of target ...</p>
+                
+            
                 
                     <h3><a href="http://arxiv.org/abs/2507.12466v1" target="_blank">Language Models Improve When Pretraining Data Matches Target Tasks</a></h3>
                     <p><strong>Authors:</strong> David Mizrahi, Anders Boesen Lindbo Larsen, Jesse Allardice, Suzie Petryk, Yuri Gorokhov, Jeffrey Li, Alex Fang, Josh Gardner, Tom Gunter, Afshin Dehghan</p>
@@ -29,19 +41,19 @@ Another key trend is the focus on addressing inherent limitations and challenges
                 
             
                 
+                    <h3><a href="http://arxiv.org/abs/2507.12465v1" target="_blank">PhysX: Physical-Grounded 3D Asset Generation</a></h3>
+                    <p><strong>Authors:</strong> Ziang Cao, Zhaoxi Chen, Linag Pan, Ziwei Liu</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CV</p>
+                    <p><strong>Summary:</strong> 3D modeling is moving from virtual to physical. Existing 3D generation primarily emphasizes geometries and textures while neglecting physical-grounded modeling. Consequently, despite the rapid development of 3D generative models, the synthesized 3D assets often overlook rich and important physical properties, hampering their real-world application in physical domains like simulation and embodied AI. As an initial attempt to address this challenge, we propose \textbf{PhysX}, an end-to-end paradigm for physical-grounded 3D asset generation. 1) To bridge the critical gap in physics-annotated 3D datasets, we present PhysXNet - the first physics-grounded 3D dataset systematically annotated across five foundational dimensions: absolute scale, material, affordance, kinematics, and function description. In particular, we devise a scalable human-in-the-loop annotation pipeline based on vision-language models, which enables efficient creation of physics-first assets from raw 3D assets.2) Further...</p>
+                
+            
+                
                     <h3><a href="http://arxiv.org/abs/2507.12464v1" target="_blank">CytoSAE: Interpretable Cell Embeddings for Hematology</a></h3>
                     <p><strong>Authors:</strong> Muhammed Furkan Dasdelen, Hyesu Lim, Michele Buck, Katharina S. Götze, Carsten Marr, Steffen Schneider</p>
                     <p><strong>Published:</strong> 7/16/2025</p>
                     <p><strong>Categories:</strong> cs.CV, cs.LG, q-bio.QM</p>
                     <p><strong>Summary:</strong> Sparse autoencoders (SAEs) emerged as a promising tool for mechanistic interpretability of transformer-based foundation models. Very recently, SAEs were also adopted for the visual domain, enabling the discovery of visual concepts and their patch-wise attribution to tokens in the transformer model. While a growing number of foundation models emerged for medical imaging, tools for explaining their inferences are still lacking. In this work, we show the applicability of SAEs for hematology. We propose CytoSAE, a sparse autoencoder which is trained on over 40,000 peripheral blood single-cell images. CytoSAE generalizes to diverse and out-of-domain datasets, including bone marrow cytology, where it identifies morphologically relevant concepts which we validated with medical experts. Furthermore, we demonstrate scenarios in which CytoSAE can generate patient-specific and disease-specific concepts, enabling the detection of pathognomonic cells and localized cellular abnormalities at the patc...</p>
-                
-            
-                
-                    <h3><a href="http://arxiv.org/abs/2507.12463v1" target="_blank">MMHU: A Massive-Scale Multimodal Benchmark for Human Behavior Understanding</a></h3>
-                    <p><strong>Authors:</strong> Renjie Li, Ruijie Ye, Mingyang Wu, Hao Frank Yang, Zhiwen Fan, Hezhen Hu, Zhengzhong Tu</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> cs.CV</p>
-                    <p><strong>Summary:</strong> Humans are integral components of the transportation ecosystem, and understanding their behaviors is crucial to facilitating the development of safe driving systems. Although recent progress has explored various aspects of human behavior$\unicode{x2014}$such as motion, trajectories, and intention$\unicode{x2014}$a comprehensive benchmark for evaluating human behavior understanding in autonomous driving remains unavailable. In this work, we propose $\textbf{MMHU}$, a large-scale benchmark for human behavior analysis featuring rich annotations, such as human motion and trajectories, text description for human motions, human intention, and critical behavior labels relevant to driving safety. Our dataset encompasses 57k human motion clips and 1.73M frames gathered from diverse sources, including established driving datasets such as Waymo, in-the-wild videos from YouTube, and self-collected data. A human-in-the-loop annotation pipeline is developed to generate rich behavior captions. We pro...</p>
                 
             
                 
@@ -77,51 +89,11 @@ Another key trend is the focus on addressing inherent limitations and challenges
                 
             
                 
-                    <h3><a href="http://arxiv.org/abs/2507.12452v1" target="_blank">A single chip 1.024 Tb/s silicon photonics PAM4 receiver</a></h3>
-                    <p><strong>Authors:</strong> Ali Pirmoradi, Han Hao, Kaisarbek Omirzakhov, Alexander J. Geers, Firooz Aflatouni</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> physics.optics, cs.SY, eess.SY</p>
-                    <p><strong>Summary:</strong> Energy-efficient high-bandwidth interconnects play a key role in computing systems. Advances in silicon photonic electro-optic modulators and wavelength selective components have enabled the utilization of wavelength-division-multiplexing (WDM) in integrated optical transceivers, offering a high data-rate operation while achieving enhanced energy efficiency, bandwidth density, scalability, and the reach required for data-centers. Here, we report the demonstration of a single chip optical WDM PAM4 receiver, where by co-integration of a 32-channel optical demultiplexer (O-DeMux) with autonomous wavelength tuning and locking at a near-zero power consumption and a 32-channel ultra-low power concurrent electrical detection system, a record chip energy efficiency of under 0.38 pJ/bit is measured. The implemented 32 channel monolithic WDM optical receiver chip achieves an end-to-end latency of under 100 ps and a bit-error-rate of less than 10-12 with no equalization, pre-distortion, or digita...</p>
-                
-            
-                
                     <h3><a href="http://arxiv.org/abs/2507.12451v1" target="_blank">S2WTM: Spherical Sliced-Wasserstein Autoencoder for Topic Modeling</a></h3>
                     <p><strong>Authors:</strong> Suman Adhya, Debarshi Kumar Sanyal</p>
                     <p><strong>Published:</strong> 7/16/2025</p>
                     <p><strong>Categories:</strong> cs.CL, cs.AI, cs.LG</p>
                     <p><strong>Summary:</strong> Modeling latent representations in a hyperspherical space has proven effective for capturing directional similarities in high-dimensional text data, benefiting topic modeling. Variational autoencoder-based neural topic models (VAE-NTMs) commonly adopt the von Mises-Fisher prior to encode hyperspherical structure. However, VAE-NTMs often suffer from posterior collapse, where the KL divergence term in the objective function highly diminishes, leading to ineffective latent representations. To mitigate this issue while modeling hyperspherical structure in the latent space, we propose the Spherical Sliced Wasserstein Autoencoder for Topic Modeling (S2WTM). S2WTM employs a prior distribution supported on the unit hypersphere and leverages the Spherical Sliced-Wasserstein distance to align the aggregated posterior distribution with the prior. Experimental results demonstrate that S2WTM outperforms state-of-the-art topic models, generating more coherent and diverse topics while improving perfo...</p>
-                
-            
-                
-                    <h3><a href="http://arxiv.org/abs/2507.12449v1" target="_blank">Vision-based Perception for Autonomous Vehicles in Obstacle Avoidance Scenarios</a></h3>
-                    <p><strong>Authors:</strong> Van-Hoang-Anh Phan, Chi-Tam Nguyen, Doan-Trung Au, Thanh-Danh Phan, Minh-Thien Duong, My-Ha Le</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> cs.CV</p>
-                    <p><strong>Summary:</strong> Obstacle avoidance is essential for ensuring the safety of autonomous vehicles. Accurate perception and motion planning are crucial to enabling vehicles to navigate complex environments while avoiding collisions. In this paper, we propose an efficient obstacle avoidance pipeline that leverages a camera-only perception module and a Frenet-Pure Pursuit-based planning strategy. By integrating advancements in computer vision, the system utilizes YOLOv11 for object detection and state-of-the-art monocular depth estimation models, such as Depth Anything V2, to estimate object distances. A comparative analysis of these models provides valuable insights into their accuracy, efficiency, and robustness in real-world conditions. The system is evaluated in diverse scenarios on a university campus, demonstrating its effectiveness in handling various obstacles and enhancing autonomous navigation. The video presenting the results of the obstacle avoidance experiments is available at: https://www.yout...</p>
-                
-            
-                
-                    <h3><a href="http://arxiv.org/abs/2507.12448v1" target="_blank">Jenga-Krotov algorithm: Efficient compilation of multi-qubit gates for exchange-only qubits</a></h3>
-                    <p><strong>Authors:</strong> Jiahao Wu, Guanjie He, Wenyuan Zhuo, Quan Fu, Xin Wang</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> quant-ph, cond-mat.mes-hall, physics.comp-ph</p>
-                    <p><strong>Summary:</strong> Exchange-only (EO) qubits, implemented in triple-quantum-dot systems, offer a compelling platform for scalable semiconductor-based quantum computing by enabling universal control through purely exchange interactions. While high-fidelity single- and two-qubit gates have been demonstrated, the synthesis of efficient multi-qubit operations -- such as the Toffoli gate -- remains a key bottleneck. Conventional gate decompositions into elementary operations lead to prohibitively long and error-prone pulse sequences, limiting practical deployment. In this work, we introduce a gradient-based optimization algorithm, Jenga-Krotov (JK), tailored to discover compact, high-fidelity EO gate sequences. Applying JK to the Toffoli gate, we reduce the number of required exchange unitaries from 216 (in standard decomposition) to 92, and compress the time steps required from 162 to 50, all while maintaining target fidelity. Under realistic noise, the accumulated gate error from our optimized sequence is a...</p>
-                
-            
-                
-                    <h3><a href="http://arxiv.org/abs/2507.12446v1" target="_blank">Alkali doping of Zn$_{\rm x}$Mg$_{\rm 1-x}$O alloys for $p$-type conductivity</a></h3>
-                    <p><strong>Authors:</strong> John L. Lyons</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> cond-mat.mtrl-sci</p>
-                    <p><strong>Summary:</strong> Nearly all ultrawide-bandgap oxides are affected by hole localization that limits $p$-type conductivity and thus potential applications for these materials. Highly localized holes, also known as hole polarons, trap in the vicinity of acceptor dopants, giving rise to large ionization energies and severely constraining free hole concentrations. Though this hole-trapping behavior affects wurtzite zinc oxide, rocksalt zinc oxide was recently found to be resistant to the formation of hole polarons. Moreover, $p$-type doping using lithium acceptors was predicted to be achievable. While rocksalt zinc oxide is metastable and has a band gap near $\sim$3 eV, here it is found that zinc magnesium oxide (Zn$_{\rm x}$Mg$_{\rm 1-x}$O) alloys remain $p$-type dopable within the stable rocksalt crystal structure, in addition to exhibiting band gaps in excess of 4 eV. As in rocksalt zinc oxide, alkali acceptors are shallow in zinc magnesium oxide and do not appear to be affected by donor compensation. Th...</p>
-                
-            
-                
-                    <h3><a href="http://arxiv.org/abs/2507.12445v1" target="_blank">CRAFT: Latency and Cost-Aware Genetic-Based Framework for Node Placement in Edge-Fog Environments</a></h3>
-                    <p><strong>Authors:</strong> Soheil Mahdizadeh, Amir Mahdi Rasouli, Mohammad Pourashory, Sadra Galavani, Mohsen Ansari</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> cs.NI, cs.AR, cs.DC</p>
-                    <p><strong>Summary:</strong> Reducing latency in the Internet of Things (IoT) is a critical concern. While cloud computing facilitates communication, it falls short of meeting real-time requirements reliably. Edge and fog computing have emerged as viable solutions by positioning computing nodes closer to end users, offering lower latency and increased processing power. An edge-fog framework comprises various components, including edge and fog nodes, whose strategic placement is crucial as it directly impacts latency and system cost. This paper presents an effective and tunable node placement strategy based on a genetic algorithm to address the optimization problem of deploying edge and fog nodes. The main objective is to minimize latency and cost through optimal node placement. Simulation results demonstrate that the proposed framework achieves up to 2.77% latency and 31.15% cost reduction.</p>
                 
             
                 
@@ -181,27 +153,11 @@ Another key trend is the focus on addressing inherent limitations and challenges
                 
             
                 
-                    <h3><a href="http://arxiv.org/abs/2507.12433v1" target="_blank">Traffic-Aware Pedestrian Intention Prediction</a></h3>
-                    <p><strong>Authors:</strong> Fahimeh Orvati Nia, Hai Lin</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> cs.CV, cs.SY, eess.SY, I.2.10; I.5.1</p>
-                    <p><strong>Summary:</strong> Accurate pedestrian intention estimation is crucial for the safe navigation of autonomous vehicles (AVs) and hence attracts a lot of research attention. However, current models often fail to adequately consider dynamic traffic signals and contextual scene information, which are critical for real-world applications. This paper presents a Traffic-Aware Spatio-Temporal Graph Convolutional Network (TA-STGCN) that integrates traffic signs and their states (Red, Yellow, Green) into pedestrian intention prediction. Our approach introduces the integration of dynamic traffic signal states and bounding box size as key features, allowing the model to capture both spatial and temporal dependencies in complex urban environments. The model surpasses existing methods in accuracy. Specifically, TA-STGCN achieves a 4.75% higher accuracy compared to the baseline model on the PIE dataset, demonstrating its effectiveness in improving pedestrian intention prediction.</p>
-                
-            
-                
                     <h3><a href="http://arxiv.org/abs/2507.12432v1" target="_blank">Energy-based models for inverse imaging problems</a></h3>
                     <p><strong>Authors:</strong> Andreas Habring, Martin Holler, Thomas Pock, Martin Zach</p>
                     <p><strong>Published:</strong> 7/16/2025</p>
                     <p><strong>Categories:</strong> eess.IV</p>
                     <p><strong>Summary:</strong> In this chapter we provide a thorough overview of the use of energy-based models (EBMs) in the context of inverse imaging problems. EBMs are probability distributions modeled via Gibbs densities $p(x) \propto \exp{-E(x)}$ with an appropriate energy functional $E$. Within this chapter we present a rigorous theoretical introduction to Bayesian inverse problems that includes results on well-posedness and stability in the finite-dimensional and infinite-dimensional setting. Afterwards we discuss the use of EBMs for Bayesian inverse problems and explain the most relevant techniques for learning EBMs from data. As a crucial part of Bayesian inverse problems, we cover several popular algorithms for sampling from EBMs, namely the Metropolis-Hastings algorithm, Gibbs sampling, Langevin Monte Carlo, and Hamiltonian Monte Carlo. Moreover, we present numerical results for the resolution of several inverse imaging problems obtained by leveraging an EBM that allows for the explicit verification of t...</p>
-                
-            
-                
-                    <h3><a href="http://arxiv.org/abs/2507.12431v1" target="_blank">Design and Development of an Automated Contact Angle Tester (ACAT) for Surface Wettability Measurement</a></h3>
-                    <p><strong>Authors:</strong> Connor Burgess, Kyle Douin, Amir Kordijazi</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> cs.RO, physics.ins-det</p>
-                    <p><strong>Summary:</strong> The Automated Contact Angle Tester (ACAT) is a fully integrated robotic work cell developed to automate the measurement of surface wettability on 3D-printed materials. Designed for precision, repeatability, and safety, ACAT addresses the limitations of manual contact angle testing by combining programmable robotics, precise liquid dispensing, and a modular software-hardware architecture. The system is composed of three core subsystems: (1) an electrical system including power, control, and safety circuits compliant with industrial standards such as NEC 70, NFPA 79, and UL 508A; (2) a software control system based on a Raspberry Pi and Python, featuring fault detection, GPIO logic, and operator interfaces; and (3) a mechanical system that includes a 3-axis Cartesian robot, pneumatic actuation, and a precision liquid dispenser enclosed within a safety-certified frame. The ACAT enables high-throughput, automated surface characterization and provides a robust platform for future integratio...</p>
                 
             
                 
@@ -229,30 +185,6 @@ Another key trend is the focus on addressing inherent limitations and challenges
                 
             
                 
-                    <h3><a href="http://arxiv.org/abs/2507.12424v1" target="_blank">Hierarchical Temporal Point Process Modeling of Aggressive Behavior Onset in Psychiatric Inpatient Youth with Autism for Branching Factor Estimation</a></h3>
-                    <p><strong>Authors:</strong> Michael Potter, Michael Everett, Deniz Erdogmus, Yuna Watanabe, Tales Imbiriba, Matthew S. Goodwin</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> stat.AP, math.PR, stat.OT</p>
-                    <p><strong>Summary:</strong> Aggressive behavior in autistic inpatient youth often arises in temporally clustered bursts complicating efforts to distinguish external triggers from internal escalation. The sample population branching factor-the expected number of new onsets triggered by a given event-is a key summary of self-excitation in behavior dynamics. Prior pooled models overestimate this quantity by ignoring patient-specific variability. We addressed this using a hierarchical Hawkes process with an exponential kernel and edge-effect correction allowing partial pooling across patients. This approach reduces bias from high-frequency individuals and stabilizes estimates for those with sparse data. Bayesian inference was performed using the No U-Turn Sampler with model evaluation via convergence diagnostics, power-scaling sensitivity analysis, and multiple Goodness-of-Fit (GOF) metrics: PSIS-LOO the Lewis test with Durbins modification and residual analysis based on the Random Time Change Theorem (RTCT). The hie...</p>
-                
-            
-                
-                    <h3><a href="http://arxiv.org/abs/2507.12422v1" target="_blank">Effect of a downstream vertical wall on the rise regime of an isolated bubble: an experimental study</a></h3>
-                    <p><strong>Authors:</strong> T. González-Rubio, A. Rubio, R. Bolaños-Jiménez, E. J. Vega</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> physics.flu-dyn</p>
-                    <p><strong>Summary:</strong> This work experimentally investigates deformable nitrogen bubbles rising in ultrapure water and interacting with a vertical wall, focusing on how this downstream boundary alters their dynamics, an effect critical to many real-world processes. The experiments were conducted with a fixed Morton number, $Mo = 2.64 \times 10^{-11}$, with Bond, Galilei, and Reynolds numbers in the ranges $0.08 \lesssim Bo \lesssim 0.33$, $71 \lesssim Ga \lesssim 194$, and $132 \lesssim Re \lesssim 565$, respectively. The initial dimensionless horizontal distance between the wall and the bubble centroid was systematically varied, $0.3 \lesssim L \lesssim 5$, and the bubble trajectories from two orthogonal vertical planes were captured using high-speed imaging. While the bubble rising paths were stable without the wall presence for all the cases, the results reveal that wall proximity significantly affects the rising path, depending on $Bo$ (or $Ga$) and $L$. A map with four distinct interaction regimes and t...</p>
-                
-            
-                
-                    <h3><a href="http://arxiv.org/abs/2507.12421v1" target="_blank">A graphene platform for nano scale coherent interaction of surface plasmons with resonant atomic ensembles</a></h3>
-                    <p><strong>Authors:</strong> Ali A. Kamli, Sergey A. Moiseev</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> physics.optics, physics.atom-ph, quant-ph</p>
-                    <p><strong>Summary:</strong> We propose a 2D graphene structure containing atomic ensemble as a platform for implementing nanoscale enhanced coherent interactions of plasmonic fields with resonant atomic systems. We determine the graphene surface plasmon modes, and the properties of its electromagnetic fields, and emphasize the role of graphene sheet separation on the interaction with atomic systems for various dipole orientations and positions between the graphene sheets. We analyze the conditions for implementation of coherent interaction of SP mode with resonant atomic ensembles. By solving the Maxwell-Bloch equations that govern the resonant interaction of surface plasmons with atoms, we derive the modified area theorem, which makes it possible to identify the most common nonlinear patterns in the behavior of plasmons under the studied conditions. We obtain analytical and numerical solutions of the area theorem, and find the possibility of stable propagation of isolated SP pulses of graphene surface plasmon mo...</p>
-                
-            
-                
                     <h3><a href="http://arxiv.org/abs/2507.12419v1" target="_blank">Mixture of Raytraced Experts</a></h3>
                     <p><strong>Authors:</strong> Andrea Perin, Giacomo Lagomarsini, Claudio Gallicchio, Giuseppe Nuti</p>
                     <p><strong>Published:</strong> 7/16/2025</p>
@@ -261,35 +193,11 @@ Another key trend is the focus on addressing inherent limitations and challenges
                 
             
                 
-                    <h3><a href="http://arxiv.org/abs/2507.12418v1" target="_blank">High-Performance Pipelined NTT Accelerators with Homogeneous Digit-Serial Modulo Arithmetic</a></h3>
-                    <p><strong>Authors:</strong> George Alexakis, Dimitrios Schoinianakis, Giorgos Dimitrakopoulos</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> cs.AR</p>
-                    <p><strong>Summary:</strong> The Number Theoretic Transform (NTT) is a fundamental operation in privacy-preserving technologies, particularly within fully homomorphic encryption (FHE). The efficiency of NTT computation directly impacts the overall performance of FHE, making hardware acceleration a critical technology that will enable realistic FHE applications. Custom accelerators, in FPGAs or ASICs, offer significant performance advantages due to their ability to exploit massive parallelism and specialized optimizations. However, the operation of NTT over large moduli requires large word-length modulo arithmetic that limits achievable clock frequencies in hardware and increases hardware area costs. To overcome such deficits, digit-serial arithmetic has been explored for modular multiplication and addition independently. The goal of this work is to leverage digit-serial modulo arithmetic combined with appropriate redundant data representation to design modular pipelined NTT accelerators that operate uniformly on a...</p>
-                
-            
-                
-                    <h3><a href="http://arxiv.org/abs/2507.12417v1" target="_blank">Spontaneous Spatial Cognition Emerges during Egocentric Video Viewing through Non-invasive BCI</a></h3>
-                    <p><strong>Authors:</strong> Weichen Dai, Yuxuan Huang, Li Zhu, Dongjun Liu, Yu Zhang, Qibin Zhao, Andrzej Cichocki, Fabio Babiloni, Ke Li, Jianyu Qiu, Gangyong Jia, Wanzeng Kong, Qing Wu</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> q-bio.NC, cs.CV, eess.SP</p>
-                    <p><strong>Summary:</strong> Humans possess a remarkable capacity for spatial cognition, allowing for self-localization even in novel or unfamiliar environments. While hippocampal neurons encoding position and orientation are well documented, the large-scale neural dynamics supporting spatial representation, particularly during naturalistic, passive experience, remain poorly understood. Here, we demonstrate for the first time that non-invasive brain-computer interfaces (BCIs) based on electroencephalography (EEG) can decode spontaneous, fine-grained egocentric 6D pose, comprising three-dimensional position and orientation, during passive viewing of egocentric video. Despite EEGs limited spatial resolution and high signal noise, we find that spatially coherent visual input (i.e., continuous and structured motion) reliably evokes decodable spatial representations, aligning with participants subjective sense of spatial engagement. Decoding performance further improves when visual input is presented at a frame rate of...</p>
-                
-            
-                
                     <h3><a href="http://arxiv.org/abs/2507.12416v1" target="_blank">QuRe: Query-Relevant Retrieval through Hard Negative Sampling in Composed Image Retrieval</a></h3>
                     <p><strong>Authors:</strong> Jaehyun Kwak, Ramahdani Muhammad Izaaz Inhar, Se-Young Yun, Sung-Ju Lee</p>
                     <p><strong>Published:</strong> 7/16/2025</p>
                     <p><strong>Categories:</strong> cs.CV, cs.AI</p>
                     <p><strong>Summary:</strong> Composed Image Retrieval (CIR) retrieves relevant images based on a reference image and accompanying text describing desired modifications. However, existing CIR methods only focus on retrieving the target image and disregard the relevance of other images. This limitation arises because most methods employing contrastive learning-which treats the target image as positive and all other images in the batch as negatives-can inadvertently include false negatives. This may result in retrieving irrelevant images, reducing user satisfaction even when the target image is retrieved. To address this issue, we propose Query-Relevant Retrieval through Hard Negative Sampling (QuRe), which optimizes a reward model objective to reduce false negatives. Additionally, we introduce a hard negative sampling strategy that selects images positioned between two steep drops in relevance scores following the target image, to effectively filter false negatives. In order to evaluate CIR models on their alignment...</p>
-                
-            
-                
-                    <h3><a href="http://arxiv.org/abs/2507.12415v1" target="_blank">SWE-Perf: Can Language Models Optimize Code Performance on Real-World Repositories?</a></h3>
-                    <p><strong>Authors:</strong> Xinyi He, Qian Liu, Mingzhe Du, Lin Yan, Zhijie Fan, Yiming Huang, Zejian Yuan, Zejun Ma</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> cs.SE</p>
-                    <p><strong>Summary:</strong> Code performance optimization is paramount in real-world software engineering and critical for production-level systems. While Large Language Models (LLMs) have demonstrated impressive capabilities in code generation and bug fixing, their proficiency in enhancing code performance at the repository level remains largely unexplored. To address this gap, we introduce SWE-Perf, the first benchmark specifically designed to systematically evaluate LLMs on code performance optimization tasks within authentic repository contexts. SWE-Perf comprises 140 carefully curated instances, each derived from performance-improving pull requests from popular GitHub repositories. Each benchmark instance includes the relevant codebase, target functions, performance-related tests, expert-authored patches, and executable environments. Through a comprehensive evaluation of representative methods that span file-level and repo-level approaches (e.g., Agentless and OpenHands), we reveal a substantial capability g...</p>
                 
             
                 
@@ -317,51 +225,11 @@ Another key trend is the focus on addressing inherent limitations and challenges
                 
             
                 
-                    <h3><a href="http://arxiv.org/abs/2507.12400v1" target="_blank">Modeling Feasible Locomotion of Nanobots for Cancer Detection and Treatment</a></h3>
-                    <p><strong>Authors:</strong> Noble Harasha, Cristina Gava, Nancy Lynch, Claudia Contini, Frederik Mallmann-Trenn</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> cs.MA, cs.DM</p>
-                    <p><strong>Summary:</strong> Deploying motile nanosized particles, also known as ``nanobots, in the human body promises to improve selectivity in drug delivery and reduce side effects. We consider a swarm of nanobots locating a single cancerous region and treating it by releasing an onboard payload of drugs at the site. At nanoscale, the computation, communication, sensing, and locomotion capabilities of individual agents are extremely limited, noisy, and/or nonexistent. We present a general model to formally describe the individual and collective behavior of agents in a colloidal environment, such as the bloodstream, for cancer detection and treatment by nanobots. This includes a feasible and precise model of agent locomotion, inspired by actual nanoparticles that, in the presence of an external chemical gradient, move towards areas of higher concentration by means of self-propulsion. We present two variants of our general model: The first assumes an endogenous chemical gradient that is fixed over time and center...</p>
-                
-            
-                
                     <h3><a href="http://arxiv.org/abs/2507.12399v1" target="_blank">ROC-n-reroll: How verifier imperfection affects test-time scaling</a></h3>
                     <p><strong>Authors:</strong> Florian E. Dorner, Yatong Chen, André F. Cruz, Fanny Yang</p>
                     <p><strong>Published:</strong> 7/16/2025</p>
                     <p><strong>Categories:</strong> cs.LG, stat.ML</p>
                     <p><strong>Summary:</strong> Test-time scaling aims to improve language model performance by leveraging additional compute during inference. While many works have empirically studied techniques like Best-of-N (BoN) and rejection sampling that make use of a verifier to enable test-time scaling, there is little theoretical understanding of how verifier imperfection affects performance. In this work, we address this gap. Specifically, we prove how instance-level accuracy of these methods is precisely characterized by the geometry of the verifiers ROC curve. Interestingly, while scaling is determined by the local geometry of the ROC curve for rejection sampling, it depends on global properties of the ROC curve for BoN. As a consequence when the ROC curve is unknown, it is impossible to extrapolate the performance of rejection sampling based on the low-compute regime. Furthermore, while rejection sampling outperforms BoN for fixed compute, in the infinite-compute limit both methods converge to the same level of accurac...</p>
-                
-            
-                
-                    <h3><a href="http://arxiv.org/abs/2507.12396v1" target="_blank">OD-VIRAT: A Large-Scale Benchmark for Object Detection in Realistic Surveillance Environments</a></h3>
-                    <p><strong>Authors:</strong> Hayat Ullah, Abbas Khan, Arslan Munir, Hari Kalva</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> cs.CV</p>
-                    <p><strong>Summary:</strong> Realistic human surveillance datasets are crucial for training and evaluating computer vision models under real-world conditions, facilitating the development of robust algorithms for human and human-interacting object detection in complex environments. These datasets need to offer diverse and challenging data to enable a comprehensive assessment of model performance and the creation of more reliable surveillance systems for public safety. To this end, we present two visual object detection benchmarks named OD-VIRAT Large and OD-VIRAT Tiny, aiming at advancing visual understanding tasks in surveillance imagery. The video sequences in both benchmarks cover 10 different scenes of human surveillance recorded from significant height and distance. The proposed benchmarks offer rich annotations of bounding boxes and categories, where OD-VIRAT Large has 8.7 million annotated instances in 599,996 images and OD-VIRAT Tiny has 288,901 annotated instances in 19,860 images. This work also focuses ...</p>
-                
-            
-                
-                    <h3><a href="http://arxiv.org/abs/2507.12395v1" target="_blank">Invariant non-equilibrium dynamics of transcriptional regulation optimize information flow</a></h3>
-                    <p><strong>Authors:</strong> Benjamin Zoller, Alexis Bénichou, Thomas Gregor, Gašper Tkačik</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> q-bio.MN, physics.bio-ph</p>
-                    <p><strong>Summary:</strong> Eukaryotic gene regulation is based on stochastic yet controlled promoter switching, during which genes transition between transcriptionally active and inactive states. Despite the molecular complexity of this process, recent studies reveal a surprising invariance of the switching correlation time ($T_C$), which characterizes promoter activity fluctuations, across gene expression levels in diverse genes and organisms. A biophysically plausible explanation for this invariance remains missing. Here, we show that this invariance imposes stringent constraints on minimal yet plausible models of transcriptional regulation, requiring at least four system states and non-equilibrium dynamics that break detailed balance. Using Bayesian inference on Drosophila gap gene expression data, we demonstrate that such models (i) accurately reproduce the observed $T_C$-invariance; (ii) remain robust to parameter perturbations; and (iii) maximize information transmission from transcription factor concentra...</p>
-                
-            
-                
-                    <h3><a href="http://arxiv.org/abs/2507.12391v1" target="_blank">Assessing the Value of Visual Input: A Benchmark of Multimodal Large Language Models for Robotic Path Planning</a></h3>
-                    <p><strong>Authors:</strong> Jacinto Colan, Ana Davila, Yasuhisa Hasegawa</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> cs.RO</p>
-                    <p><strong>Summary:</strong> Large Language Models (LLMs) show potential for enhancing robotic path planning. This paper assesses visual inputs utility for multimodal LLMs in such tasks via a comprehensive benchmark. We evaluated 15 multimodal LLMs on generating valid and optimal paths in 2D grid environments, simulating simplified robotic planning, comparing text-only versus text-plus-visual inputs across varying model sizes and grid complexities. Our results indicate moderate success rates on simpler small grids, where visual input or few-shot text prompting offered some benefits. However, performance significantly degraded on larger grids, highlighting a scalability challenge. While larger models generally achieved higher average success, the visual modality was not universally dominant over well-structured text for these multimodal systems, and successful paths on simpler grids were generally of high quality. These results indicate current limitations in robust spatial reasoning, constraint adherence, and scal...</p>
-                
-            
-                
-                    <h3><a href="http://arxiv.org/abs/2507.12390v1" target="_blank">Derivation of the time-dependent Hartree equations for strongly interacting dense fermionic systems</a></h3>
-                    <p><strong>Authors:</strong> Duc Viet Hoang, David Mitrouskas, Peter Pickl</p>
-                    <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> math-ph, math.MP</p>
-                    <p><strong>Summary:</strong> The time-dependent Hartree and Hartree-Fock equations provide effective mean-field descriptions for the dynamics of large fermionic systems and play a fundamental role in many areas of physics. In this work, we rigorously derive the time-dependent Hartree equations as the large-$N$ limit of the microscopic Schr\odinger dynamics of $N$ fermions confined to a volume of order one and interacting via strong pair potentials. A central step in our analysis is the implementation of time-dependent gauge transformations, which eliminate the dominant contribution from the interaction potential in both the Schr\odinger and Hartree evolutions.</p>
                 
             
                 
@@ -405,19 +273,155 @@ Another key trend is the focus on addressing inherent limitations and challenges
                 
             
                 
-                    <h3><a href="http://arxiv.org/abs/2507.12378v1" target="_blank">Developing Visual Augmented QA System using Scalable Vision Embedding Retrieval  Late Interaction Re-ranker</a></h3>
-                    <p><strong>Authors:</strong> Rachna Saxena, Abhijeet Kumar, Suresh Shanmugam</p>
+                    <h3><a href="http://arxiv.org/abs/2507.12373v1" target="_blank">Emerging Paradigms in the Energy Sector: Forecasting and System Control Optimisation</a></h3>
+                    <p><strong>Authors:</strong> Dariush Pourkeramati, Gareth Wadge, Rachel Hassall, Charlotte Mitchell, Anish Khadka, Shiwang Jaiswal, Andrew Duncan, Rossella Arcucci</p>
                     <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> cs.IR, cs.CL</p>
-                    <p><strong>Summary:</strong> Traditional information extraction systems face challenges with text only language models as it does not consider infographics (visual elements of information) such as tables, charts, images etc. often used to convey complex information to readers. Multimodal LLM (MLLM) face challenges of finding needle in the haystack problem i.e., either longer context length or substantial number of documents as search space. Late interaction mechanism over visual language models has shown state of the art performance in retrieval-based vision augmented QA tasks. There are yet few challenges using it for RAG based multi-modal QA. Firstly, many popular and widely adopted vector databases do not support native multi-vector retrieval. Secondly, late interaction requires computation which inflates space footprint and can hinder enterprise adoption. Lastly, the current state of late interaction mechanism does not leverage the approximate neighbor search indexing methods for large speed ups in retrieval p...</p>
+                    <p><strong>Categories:</strong> cs.ET, eess.SP</p>
+                    <p><strong>Summary:</strong> The energy sector is experiencing rapid transformation due to increasing renewable energy integration, decentralisation of power systems, and a heightened focus on efficiency and sustainability. With energy demand becoming increasingly dynamic and generation sources more variable, advanced forecasting and optimisation strategies are crucial for maintaining grid stability, cost-effectiveness, and environmental sustainability. This paper explores emerging paradigms in energy forecasting and management, emphasizing four critical domains: Energy Demand Forecasting integrated with Weather Data, Building Energy Optimisation, Heat Network Optimisation, and Energy Management System (EMS) Optimisation within a System of Systems (SoS) framework. Leveraging machine learning techniques and Model Predictive Control (MPC), the study demonstrates substantial enhancements in energy efficiency across scales -- from individual buildings to complex interconnected energy networks. Weather-informed demand ...</p>
                 
             
                 
-                    <h3><a href="http://arxiv.org/abs/2507.12375v1" target="_blank">Discontinuity in the distribution of field increments between avalanches in non-abelian random field Blume-Emery-Griffiths model with no passing violation</a></h3>
-                    <p><strong>Authors:</strong> Aldrin B E, Alberto Rosso, Sumedha</p>
+                    <h3><a href="http://arxiv.org/abs/2507.12369v1" target="_blank">Catching Bid-rigging Cartels with Graph Attention Neural Networks</a></h3>
+                    <p><strong>Authors:</strong> David Imhof, Emanuel W Viklund, Martin Huber</p>
                     <p><strong>Published:</strong> 7/16/2025</p>
-                    <p><strong>Categories:</strong> cond-mat.stat-mech</p>
-                    <p><strong>Summary:</strong> We study the zero-temperature quasi-statically driven dynamics of the random field Blume-Emery-Griffiths model (RFBEGM) as a prototype for disordered systems with competing interactions. While the random field Ising model is known to obey the no-passing rule we show that this property is generically violated in the RFBEGM. By exploring the full parameter space, we identify the precise conditions under which no-passing is broken, particularly in the regime where a repulsive biquadratic coupling introduces frustration. Here, we find that this violation leaves a clear fingerprint in the form of a discontinuity in the distribution of the field increments between successive avalanches. We provide analytical arguments that locate the onset of this discontinuity, in excellent agreement with numerical simulations.</p>
+                    <p><strong>Categories:</strong> econ.EM</p>
+                    <p><strong>Summary:</strong> We propose a novel application of graph attention networks (GATs), a type of graph neural network enhanced with attention mechanisms, to develop a deep learning algorithm for detecting collusive behavior, leveraging predictive features suggested in prior research. We test our approach on a large dataset covering 13 markets across seven countries. Our results show that predictive models based on GATs, trained on a subset of the markets, can be effectively transferred to other markets, achieving accuracy rates between 80\% and 90\%, depending on the hyperparameter settings. The best-performing configuration, applied to eight markets from Switzerland and the Japanese region of Okinawa, yields an average accuracy of 91% for cross-market prediction. When extended to 12 markets, the method maintains a strong performance with an average accuracy of 84\%, surpassing traditional ensemble approaches in machine learning. These results suggest that GAT-based detection methods offer a promising too...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12367v1" target="_blank">GitChameleon: Evaluating AI Code Generation Against Python Library Version Incompatibilities</a></h3>
+                    <p><strong>Authors:</strong> Diganta Misra, Nizar Islah, Victor May, Brice Rauby, Zihan Wang, Justine Gehring, Antonio Orvieto, Muawiz Chaudhary, Eilif B. Muller, Irina Rish, Samira Ebrahimi Kahou, Massimo Caccia</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.SE, cs.AI, cs.PL</p>
+                    <p><strong>Summary:</strong> The rapid evolution of software libraries poses a considerable hurdle for code generation, necessitating continuous adaptation to frequent version updates while preserving backward compatibility. While existing code evolution benchmarks provide valuable insights, they typically lack execution-based evaluation for generating code compliant with specific library versions. To address this, we introduce GitChameleon, a novel, meticulously curated dataset comprising 328 Python code completion problems, each conditioned on specific library versions and accompanied by executable unit tests. GitChameleon rigorously evaluates the capacity of contemporary large language models (LLMs), LLM-powered agents, code assistants, and RAG systems to perform version-conditioned code generation that demonstrates functional accuracy through execution. Our extensive evaluations indicate that state-of-the-art systems encounter significant challenges with this task; enterprise models achieving baseline success ...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12366v1" target="_blank">FactorHD: A Hyperdimensional Computing Model for Multi-Object Multi-Class Representation and Factorization</a></h3>
+                    <p><strong>Authors:</strong> Yifei Zhou, Xuchu Huang, Chenyu Ni, Min Zhou, Zheyu Yan, Xunzhao Yin, Cheng Zhuo</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.SC, cs.AI, cs.CV</p>
+                    <p><strong>Summary:</strong> Neuro-symbolic artificial intelligence (neuro-symbolic AI) excels in logical analysis and reasoning. Hyperdimensional Computing (HDC), a promising brain-inspired computational model, is integral to neuro-symbolic AI. Various HDC models have been proposed to represent class-instance and class-class relations, but when representing the more complex class-subclass relation, where multiple objects associate different levels of classes and subclasses, they face challenges for factorization, a crucial task for neuro-symbolic AI systems. In this article, we propose FactorHD, a novel HDC model capable of representing and factorizing the complex class-subclass relation efficiently. FactorHD features a symbolic encoding method that embeds an extra memorization clause, preserving more information for multiple objects. In addition, it employs an efficient factorization algorithm that selectively eliminates redundant classes by identifying the memorization clause of the target class. Such model sig...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12364v1" target="_blank">Rethinking the confidential cloud through a unified low-level abstraction for composable isolation</a></h3>
+                    <p><strong>Authors:</strong> Adrien Ghosn, Charly Castes, Neelu S. Kalani, Yuchen Qian, Marios Kogias, Edouard Bugnion</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CR, cs.OS</p>
+                    <p><strong>Summary:</strong> Securing sensitive cloud workloads requires composing confidential virtual machines (CVMs) with nested enclaves or sandboxes. Unfortunately, each new isolation boundary adds ad-hoc access control mechanisms, hardware extensions, and trusted software. This escalating complexity bloats the TCB, complicates end-to-end attestation, and leads to fragmentation across platforms and cloud service providers (CSPs). We introduce a unified isolation model that delegates enforceable, composable, and attestable isolation to a single trusted security monitor: Tyche. Tyche provides an API for partitioning, sharing, attesting, and reclaiming resources through its core abstraction, trust domains (TDs). To provide fine-grain isolation, TDs can recursively create and manage sub-TDs. Tyche captures these relationships in attestations, allowing cloud tenants to reason about end-to-end security. TDs serve as the building blocks for constructing composable enclaves, sandboxes, and CVMs. Tyche runs on commodi...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12363v1" target="_blank">Using deep learning to characterize single-exposure double-line spectroscopic binaries</a></h3>
+                    <p><strong>Authors:</strong> Avraham Binnenfeld, Samuel Lilek, Rami Nasser, Raja Giryes, Shay Zucker</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> astro-ph.IM, astro-ph.SR</p>
+                    <p><strong>Summary:</strong> Distinguishing the component spectra of double-line spectroscopic binaries (SB2s) and extracting their stellar parameters is a complex and computationally intensive task that usually requires observations spanning several epochs that represent various orbital phases. This poses an especially significant challenge for large surveys such as Gaia or LAMOST, where the number of available spectra per target is often not enough for a proper spectral disentangling. We present a new approach for characterizing SB2 components from single-exposure spectroscopic observations. The proposed tool uses deep neural networks to extract the stellar parameters of the individual component spectra that comprise the single exposure, without explicitly disentangling them or extracting their radial velocities. The neural networks were trained, tested, and validated using simulated data resembling Gaia RVS spectra, which will be made available to the community in the coming Gaia data releases. We expect our to...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12359v1" target="_blank">Cluster Contrast for Unsupervised Visual Representation Learning</a></h3>
+                    <p><strong>Authors:</strong> Nikolaos Giakoumoglou, Tania Stathaki</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CV, cs.AI</p>
+                    <p><strong>Summary:</strong> We introduce Cluster Contrast (CueCo), a novel approach to unsupervised visual representation learning that effectively combines the strengths of contrastive learning and clustering methods. Inspired by recent advancements, CueCo is designed to simultaneously scatter and align feature representations within the feature space. This method utilizes two neural networks, a query and a key, where the key network is updated through a slow-moving average of the query outputs. CueCo employs a contrastive loss to push dissimilar features apart, enhancing inter-class separation, and a clustering objective to pull together features of the same cluster, promoting intra-class compactness. Our method achieves 91.40% top-1 classification accuracy on CIFAR-10, 68.56% on CIFAR-100, and 78.65% on ImageNet-100 using linear evaluation with a ResNet-18 backbone. By integrating contrastive learning with clustering, CueCo sets a new direction for advancing unsupervised visual representation learning.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12358v1" target="_blank">Surrogate modeling for uncertainty quantification in nonlinear dynamics</a></h3>
+                    <p><strong>Authors:</strong> S. Marelli, S. Schär, B. Sudret</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> stat.CO, stat.AP, stat.ML</p>
+                    <p><strong>Summary:</strong> Predicting the behavior of complex systems in engineering often involves significant uncertainty about operating conditions, such as external loads, environmental effects, and manufacturing variability. As a result, uncertainty quantification (UQ) has become a critical tool in modeling-based engineering, providing methods to identify, characterize, and propagate uncertainty through computational models. However, the stochastic nature of UQ typically requires numerous evaluations of these models, which can be computationally expensive and limit the scope of feasible analyses. To address this, surrogate models, i.e., efficient functional approximations trained on a limited set of simulations, have become central in modern UQ practice. This book chapter presents a concise review of surrogate modeling techniques for UQ, with a focus on the particularly challenging task of capturing the full time-dependent response of dynamical systems. It introduces a classification of time-dependent probl...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12347v1" target="_blank">Threshold sensing yields optimal path formation in Physarum polycephalum -- but the mould does not know</a></h3>
+                    <p><strong>Authors:</strong> Daniele Proverbio, Giulia Giordano</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> physics.bio-ph, nlin.AO, q-bio.CB</p>
+                    <p><strong>Summary:</strong> A circuital network model for the foraging behaviour of Physarum polycephalum proves that threshold sensing yields the emergence of optimal paths that connect food sources and solve mazes. These findings are in agreement with the experimental evidence of emergent problem solving by P. polycephalum and provide insight into the evolution of primitive intelligence. Our results can also inspire the development of threshold-based algorithms for computing applications.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12344v1" target="_blank">Improving Lightweight Weed Detection via Knowledge Distillation</a></h3>
+                    <p><strong>Authors:</strong> Ahmet Oğuz Saltık, Max Voigt, Sourav Modak, Mike Beckworth, Anthony Stein</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CV</p>
+                    <p><strong>Summary:</strong> Weed detection is a critical component of precision agriculture, facilitating targeted herbicide application and reducing environmental impact. However, deploying accurate object detection models on resource-limited platforms remains challenging, particularly when differentiating visually similar weed species commonly encountered in plant phenotyping applications. In this work, we investigate Channel-wise Knowledge Distillation (CWD) and Masked Generative Distillation (MGD) to enhance the performance of lightweight models for real-time smart spraying systems. Utilizing YOLO11x as the teacher model and YOLO11n as both reference and student, both CWD and MGD effectively transfer knowledge from the teacher to the student model. Our experiments, conducted on a real-world dataset comprising sugar beet crops and four weed types (Cirsium, Convolvulus, Fallopia, and Echinochloa), consistently show increased AP50 across all classes. The distilled CWD student model achieves a notable improvement...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12341v1" target="_blank">Nonlinear Concept Erasure: a Density Matching Approach</a></h3>
+                    <p><strong>Authors:</strong> Antoine Saillenfest, Pirmin Lemberger</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.LG, cs.CL</p>
+                    <p><strong>Summary:</strong> Ensuring that neural models used in real-world applications cannot infer sensitive information, such as demographic attributes like gender or race, from text representations is a critical challenge when fairness is a concern. We address this issue through concept erasure, a process that removes information related to a specific concept from distributed representations while preserving as much of the remaining semantic information as possible. Our approach involves learning an orthogonal projection in the embedding space, designed to make the class-conditional feature distributions of the discrete concept to erase indistinguishable after projection. By adjusting the rank of the projector, we control the extent of information removal, while its orthogonality ensures strict preservation of the local structure of the embeddings. Our method, termed $\overline{\mathrm{L}}$EOPARD, achieves state-of-the-art performance in nonlinear erasure of a discrete attribute on classic natural language pr...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12337v1" target="_blank">MExplore: an entity-based visual analytics approach for medical expertise acquisition</a></h3>
+                    <p><strong>Authors:</strong> Xiao Pang, Yan Huang, Chang Liu, JiYuan Liu, MingYou Liu</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.HC</p>
+                    <p><strong>Summary:</strong> Acquiring medical expertise is a critical component of medical education and professional development. While existing studies focus primarily on constructing medical knowledge bases or developing learning tools based on the structured, private healthcare data, they often lack methods for extracting expertise from unstructured medical texts. These texts constitute a significant portion of medical literature and offer greater flexibility and detail compared to structured data formats. Furthermore, many studies fail to provide explicit analytical and learning pathways in this context. This paper introduces MExplore, an interactive visual analytics system designed to support the acquisition of medical expertise. To address the challenges of the inconsistencies and confidentiality concerns inherent in unstructured medical texts, we propose a workflow that employs a fine-tuned BERT-based model to extract medical entities (MEs) from them. We then present a novel multilevel visual analysis fra...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12336v1" target="_blank">Unsupervised Monocular 3D Keypoint Discovery from Multi-View Diffusion Priors</a></h3>
+                    <p><strong>Authors:</strong> Subin Jeon, In Cho, Junyoung Hong, Seon Joo Kim</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CV</p>
+                    <p><strong>Summary:</strong> This paper introduces KeyDiff3D, a framework for unsupervised monocular 3D keypoints estimation that accurately predicts 3D keypoints from a single image. While previous methods rely on manual annotations or calibrated multi-view images, both of which are expensive to collect, our method enables monocular 3D keypoints estimation using only a collection of single-view images. To achieve this, we leverage powerful geometric priors embedded in a pretrained multi-view diffusion model. In our framework, this model generates multi-view images from a single image, serving as a supervision signal to provide 3D geometric cues to our model. We also use the diffusion model as a powerful 2D multi-view feature extractor and construct 3D feature volumes from its intermediate representations. This transforms implicit 3D priors learned by the diffusion model into explicit 3D features. Beyond accurate keypoints estimation, we further introduce a pipeline that enables manipulation of 3D objects generate...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12331v1" target="_blank">Causality analysis of electricity market liberalization on electricity price using novel Machine Learning methods</a></h3>
+                    <p><strong>Authors:</strong> Orr Shahar, Stefan Lessmann, Daniel Traian Pele</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> econ.GN, q-fin.EC</p>
+                    <p><strong>Summary:</strong> Relationships between the energy and the finance markets are increasingly important. Understanding these relationships is vital for policymakers and other stakeholders as the world faces challenges such as satisfying humanitys increasing need for energy and the effects of climate change. In this paper, we investigate the causal effect of electricity market liberalization on the electricity price in the US. By performing this analysis, we aim to provide new insights into the ongoing debate about the benefits of electricity market liberalization. We introduce Causal Machine Learning as a new approach for interventions in the energy-finance field. The development of machine learning in recent years opened the door for a new branch of machine learning models for causality impact, with the ability to extract complex patterns and relationships from the data. We discuss the advantages of causal ML methods and compare the performance of ML-based models to shed light on the applicability of cau...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12329v1" target="_blank">Neural Polar Decoders for Deletion Channels</a></h3>
+                    <p><strong>Authors:</strong> Ziv Aharoni, Henry D. Pfister</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.IT, cs.AI, cs.LG, math.IT</p>
+                    <p><strong>Summary:</strong> This paper introduces a neural polar decoder (NPD) for deletion channels with a constant deletion rate. Existing polar decoders for deletion channels exhibit high computational complexity of $O(N^4)$, where $N$ is the block length. This limits the application of polar codes for deletion channels to short-to-moderate block lengths. In this work, we demonstrate that employing NPDs for deletion channels can reduce the computational complexity. First, we extend the architecture of the NPD to support deletion channels. Specifically, the NPD architecture consists of four neural networks (NNs), each replicating fundamental successive cancellation (SC) decoder operations. To support deletion channels, we change the architecture of only one. The computational complexity of the NPD is $O(AN\log N)$, where the parameter $A$ represents a computational budget determined by the user and is independent of the channel. We evaluate the new extended NPD for deletion channels with deletion rates $\delta\...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12318v1" target="_blank">Compositional Discrete Latent Code for High Fidelity, Productive Diffusion Models</a></h3>
+                    <p><strong>Authors:</strong> Samuel Lavoie, Michael Noukhovitch, Aaron Courville</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CV, cs.AI, cs.LG</p>
+                    <p><strong>Summary:</strong> We argue that diffusion models success in modeling complex distributions is, for the most part, coming from their input conditioning. This paper investigates the representation used to condition diffusion models from the perspective that ideal representations should improve sample fidelity, be easy to generate, and be compositional to allow out-of-training samples generation. We introduce Discrete Latent Code (DLC), an image representation derived from Simplicial Embeddings trained with a self-supervised learning objective. DLCs are sequences of discrete tokens, as opposed to the standard continuous image embeddings. They are easy to generate and their compositionality enables sampling of novel images beyond the training distribution. Diffusion models trained with DLCs have improved generation fidelity, establishing a new state-of-the-art for unconditional image generation on ImageNet. Additionally, we show that composing DLCs allows the image generator to produce out-of-distribution s...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12314v1" target="_blank">Thought Purity: Defense Paradigm For Chain-of-Thought Attack</a></h3>
+                    <p><strong>Authors:</strong> Zihao Xue, Zhen Bi, Long Ma, Zhenlin Hu, Yan Wang, Zhenfang Liu, Qing Sheng, Jie Xiao, Jungang Lou</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.LG, cs.AI, cs.CE, cs.CR</p>
+                    <p><strong>Summary:</strong> While reinforcement learning-trained Large Reasoning Models (LRMs, e.g., Deepseek-R1) demonstrate advanced reasoning capabilities in the evolving Large Language Models (LLMs) domain, their susceptibility to security threats remains a critical vulnerability. This weakness is particularly evident in Chain-of-Thought (CoT) generation processes, where adversarial methods like backdoor prompt attacks can systematically subvert the models core reasoning mechanisms. The emerging Chain-of-Thought Attack (CoTA) reveals this vulnerability through exploiting prompt controllability, simultaneously degrading both CoT safety and task performance with low-cost interventions. To address this compounded security-performance vulnerability, we propose Thought Purity (TP): a defense paradigm that systematically strengthens resistance to malicious content while preserving operational efficacy. Our solution achieves this through three synergistic components: (1) a safety-optimized data processing pipeline (...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12312v1" target="_blank">When $B_2$ is Not Enough: Evaluating Simple Metrics for Predicting Phase Separation of Intrinsically Disordered Proteins</a></h3>
+                    <p><strong>Authors:</strong> Wesley W. Oliver, William M. Jacobs, Michael A. Webb</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cond-mat.soft, cond-mat.stat-mech, q-bio.QM</p>
+                    <p><strong>Summary:</strong> Understanding and predicting the phase behavior of intrinsically disordered proteins (IDPs) is of significant interest due to their role in many biological processes. However, effectively characterizing phase behavior and its complex dependence on protein primary sequence remains challenging. In this study, we evaluate the efficacy of several simple computational metrics to quantify the propensity of single-component IDP solutions to phase separate; specific metrics considered include the single-chain radius of gyration, the second virial coefficient, and a newly proposed quantity termed the expenditure density. Each metric is computed using coarse-grained molecular dynamics simulations for 2,034 IDP sequences. Using machine learning, we analyze this data to understand how sequence features correlate with the predictive performance of each metric and to develop insight into their respective strengths and limitations. The expenditure density is determined to be a broadly useful metric t...</p>
+                
+            
+                
+                    <h3><a href="http://dx.doi.org/10.1145/3670474.3685966" target="_blank">Chain-of-Descriptions: Improving Code LLMs for VHDL Code Generation and Summarization</a></h3>
+                    <p><strong>Authors:</strong> Prashanth Vijayaraghavan, Apoorva Nitsure, Charles Mackin, Luyao Shi, Stefano Ambrogio, Arvind Haran, Viresh Paruthi, Ali Elzein, Dan Coops, David Beymer, Tyler Baldwin, Ehsan Degan</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CL, cs.AI, cs.AR</p>
+                    <p><strong>Summary:</strong> Large Language Models (LLMs) have become widely used across diverse NLP tasks and domains, demonstrating their adaptability and effectiveness. In the realm of Electronic Design Automation (EDA), LLMs show promise for tasks like Register-Transfer Level (RTL) code generation and summarization. However, despite the proliferation of LLMs for general code-related tasks, theres a dearth of research focused on evaluating and refining these models for hardware description languages (HDLs), notably VHDL. In this study, we evaluate the performance of existing code LLMs for VHDL code generation and summarization using various metrics and two datasets -- VHDL-Eval and VHDL-Xform. The latter, an in-house dataset, aims to gauge LLMs understanding of functionally equivalent code. Our findings reveal consistent underperformance of these models across different metrics, underscoring a significant gap in their suitability for this domain. To address this challenge, we propose Chain-of-Descriptions (CoDe...</p>
                 
             
         
