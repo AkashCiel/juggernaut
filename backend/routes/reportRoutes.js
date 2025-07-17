@@ -457,6 +457,54 @@ router.post('/test/summary',
     })
 );
 
+// Daily reports trigger endpoint (for GitHub Actions)
+router.post('/trigger-daily-reports',
+    asyncHandler(async (req, res) => {
+        const { triggered_by } = req.body;
+        
+        logger.info('🚀 Daily reports triggered', { 
+            triggered_by: triggered_by || 'manual',
+            timestamp: new Date().toISOString()
+        });
+        
+        try {
+            // Import and use the daily report service
+            const DailyReportService = require('../services/dailyReportService');
+            const dailyReportService = new DailyReportService();
+            
+            // Generate daily reports for all active users
+            const result = await dailyReportService.generateDailyReports();
+            
+            logger.info('✅ Daily reports generation completed', {
+                usersProcessed: result.usersProcessed,
+                usersSucceeded: result.usersSucceeded,
+                usersFailed: result.usersFailed,
+                duration: result.duration
+            });
+            
+            res.json({
+                success: true,
+                message: result.message,
+                data: {
+                    usersProcessed: result.usersProcessed,
+                    usersSucceeded: result.usersSucceeded,
+                    usersFailed: result.usersFailed,
+                    errors: result.errors,
+                    duration: result.duration,
+                    timestamp: new Date().toISOString()
+                }
+            });
+        } catch (error) {
+            logger.error('❌ Daily reports generation failed:', error.message);
+            res.status(500).json({
+                success: false,
+                error: 'Failed to generate daily reports',
+                message: error.message
+            });
+        }
+    })
+);
+
 // User registration endpoint
 router.post('/register-user',
     validateUserRegistration,
