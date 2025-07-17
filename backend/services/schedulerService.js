@@ -20,6 +20,15 @@ class SchedulerService {
     }
 
     /**
+     * Initialize email service
+     */
+    initializeEmailService() {
+        validateApiKey(process.env.MAILGUN_API_KEY, 'Mailgun');
+        validateApiKey(process.env.MAILGUN_DOMAIN, 'Mailgun Domain');
+        this.emailService.initialize(process.env.MAILGUN_API_KEY, process.env.MAILGUN_DOMAIN);
+    }
+
+    /**
      * Generate daily reports for all active users
      */
     async generateDailyReports() {
@@ -42,12 +51,8 @@ class SchedulerService {
                 return;
             }
 
-            // Initialize email service if not in demo mode
-            if (!isDemoMode) {
-                validateApiKey(process.env.MAILGUN_API_KEY, 'Mailgun');
-                validateApiKey(process.env.MAILGUN_DOMAIN, 'Mailgun Domain');
-                this.emailService.initialize(process.env.MAILGUN_API_KEY, process.env.MAILGUN_DOMAIN);
-            }
+            // Initialize email service
+            this.initializeEmailService();
 
             // Generate reports for each user
             const results = [];
@@ -99,6 +104,9 @@ class SchedulerService {
         try {
             logger.info(`📝 Generating report for user: ${user.email} (${user.userId})`);
             logger.info(`🔍 Topics: ${user.topics.join(', ')}`);
+
+            // Initialize email service
+            this.initializeEmailService();
 
             // Step 1: Fetch papers from ArXiv (with retry)
             const sanitizedTopics = sanitizeTopics(user.topics);
