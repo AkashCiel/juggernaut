@@ -2,12 +2,14 @@ const fs = require('fs');
 const path = require('path');
 const { logger } = require('../utils/logger');
 const { generateUserId: generateUserIdUtil } = require('../utils/userUtils');
+const GitHubService = require('./githubService');
 
 class UserService {
     constructor() {
         this.dataDir = path.join(__dirname, '../data');
         this.usersFile = path.join(this.dataDir, 'users.json');
         this.ensureDataDirectory();
+        this.githubService = new GitHubService();
     }
 
     ensureDataDirectory() {
@@ -41,6 +43,19 @@ class UserService {
         try {
             fs.writeFileSync(this.usersFile, JSON.stringify(users, null, 2));
             logger.info(`✅ Saved ${users.length} users to storage`);
+            // Also push to GitHub main branch
+            const githubToken = process.env.GITHUB_TOKEN;
+            if (githubToken) {
+                this.githubService.uploadUserData(users, githubToken, 'Update user data (registration or update)')
+                    .then(result => {
+                        logger.info('✅ Synced users.json to GitHub main branch');
+                    })
+                    .catch(err => {
+                        logger.error('❌ Failed to sync users.json to GitHub:', err.message);
+                    });
+            } else {
+                logger.warn('⚠️ GITHUB_TOKEN not set, skipping GitHub sync for users.json');
+            }
         } catch (error) {
             logger.error('❌ Error saving users:', error.message);
             throw error;
