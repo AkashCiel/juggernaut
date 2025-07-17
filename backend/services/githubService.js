@@ -6,6 +6,9 @@ const { generateUserIdFromRecipients } = require('../utils/userUtils');
 const { uploadReportViaPR } = require('./githubPullRequestUploader');
 const { uploadReportDirect } = require('./githubDirectUploader');
 
+// Path to user data JSON in the GitHub repository (relative to repo root)
+const USER_JSON_GITHUB_PATH = 'backend/data/users.json';
+
 // GitHub Service for uploading reports to GitHub Pages
 class GitHubService {
     constructor() {
@@ -124,7 +127,7 @@ class GitHubService {
      * @returns {Promise<Object>} Upload result
      */
     async uploadUserData(usersData, githubToken, commitMessage = 'Update user data') {
-        const filePath = 'data/users.json';
+        const filePath = USER_JSON_GITHUB_PATH;
         const content = JSON.stringify(usersData, null, 2);
         const useDirectUpload = process.env.GITHUB_DIRECT_UPLOAD === 'true';
         const branch = this.branch;
@@ -163,6 +166,71 @@ class GitHubService {
             });
             return uploadResult;
         }
+    }
+
+    /**
+     * Uploads or updates a single user in data/users.json in the repository
+     * @param {Object} userData - The user object to add or update
+     * @param {string} githubToken - GitHub personal access token
+     * @param {string} [commitMessage] - Optional commit message
+     * @returns {Promise<Object>} Upload result
+     */
+    async uploadOrUpdateUserInJson(userData, githubToken, commitMessage = 'Update user data') {
+        const filePath = USER_JSON_GITHUB_PATH;
+        let users = [];
+        let sha = undefined;
+        try {
+            // Try to read the existing users.json from GitHub
+            const response = await this.githubApiRequest(
+                `/repos/${this.repoOwner}/${this.repoName}/contents/${filePath}?ref=${this.branch}`,
+                'GET',
+                githubToken
+            );
+            const existingContent = Buffer.from(response.content, 'base64').toString('utf8');
+            users = JSON.parse(existingContent);
+            sha = response.sha;
+        } catch (err) {
+            if (err.message.includes('404')) {
+                // File does not exist yet, start with empty array
+                users = [];
+            } else {
+                throw err;
+            }
+        }
+        // Merge: update if exists, else append
+        const idx = users.findIndex(u => u.userId === userData.userId);
+        if (idx >= 0) {
+            users[idx] = { ...users[idx], ...userData };
+        } else {
+            users.push(userData);
+        }
+        // Prepare content
+        const content = JSON.stringify(users, null, 2);
+        const fileContent = Buffer.from(content).toString('base64');
+        // Prepare payload
+        const payload = {
+            message: commitMessage,
+            content: fileContent,
+            branch: this.branch
+        };
+        if (sha) payload.sha = sha;
+        // Upload to GitHub
+        const putResponse = await this.githubApiRequest(
+            `/repos/${this.repoOwner}/${this.repoName}/contents/${filePath}`,
+            'PUT',
+            githubToken,
+            payload
+        );
+        const fileUrl = `https://github.com/${this.repoOwner}/${this.repoName}/blob/${this.branch}/${filePath}`;
+        logApiCall('github', 'uploadOrUpdateUserInJson', {
+            filePath,
+            fileUrl,
+            usersCount: users.length
+        });
+        return {
+            fileUrl,
+            sha: putResponse.content.sha
+        };
     }
 
 
@@ -487,6 +555,69 @@ class GitHubService {
             });
 
             req.write(data);
+            req.end();
+        });
+    }
+
+    async githubApiRequest(path, method = 'GET', githubToken, payload = {}) {
+        return new Promise((resolve, reject) => {
+            const options = {
+                hostname: 'api.github.com',
+                port: 443,
+                path: path,
+                method: method,
+                headers: {
+                    'Authorization': `token ${githubToken}`,
+                    'User-Agent': 'AI-News-Agent',
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            };
+
+            if (method === 'POST' || method === 'PUT') {
+                options.headers['Content-Type'] = 'application/json';
+                options.headers['Content-Length'] = Buffer.byteLength(JSON.stringify(payload));
+            }
+
+            const timeout = setTimeout(() => {
+                req.destroy();
+                reject(new Error('GitHub request timeout'));
+            }, 30000);
+
+            const req = https.request(options, (res) => {
+                clearTimeout(timeout);
+                
+                logger.info(`🔧 GitHub API response status: ${res.statusCode}`);
+                
+                let responseData = '';
+                
+                res.on('data', (chunk) => {
+                    responseData += chunk;
+                });
+                
+                res.on('end', () => {
+                    try {
+                        const response = JSON.parse(responseData);
+                        
+                        if (res.statusCode >= 200 && res.statusCode < 300) {
+                            resolve(response);
+                        } else {
+                            logger.error(`❌ GitHub API error status: ${res.statusCode}`);
+                            reject(new Error(`GitHub API returned status ${res.statusCode}: ${response.message || 'Unknown error'}`));
+                        }
+                    } catch (error) {
+                        reject(new Error(`Failed to parse GitHub response: ${error.message}`));
+                    }
+                });
+            });
+
+            req.on('error', (error) => {
+                clearTimeout(timeout);
+                reject(new Error(`GitHub request failed: ${error.message}`));
+            });
+
+            if (method === 'POST' || method === 'PUT') {
+                req.write(JSON.stringify(payload));
+            }
             req.end();
         });
     }
