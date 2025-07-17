@@ -1,0 +1,45 @@
+name: Daily AI Research Reports
+
+on:
+  schedule:
+    # 4 PM Amsterdam time (UTC+1 in winter, UTC+2 in summer)
+    # Using 3 PM UTC to account for both timezones
+    - cron: '0 15 * * *'
+  workflow_dispatch: # Allow manual trigger for testing
+
+jobs:
+  generate-reports:
+    runs-on: ubuntu-latest
+    name: Generate Daily AI Research Reports
+    
+    steps:
+      - name: Trigger Daily Reports
+        run: |
+          echo "🚀 Triggering daily AI research reports..."
+          
+          # Get backend URL from environment or use default
+          BACKEND_URL="${BACKEND_URL:-https://juggernaut-37yk.onrender.com}"
+          
+          echo "📡 Calling backend at: $BACKEND_URL"
+          
+          # Make HTTP request to trigger daily reports
+          response=$(curl -s -w "\n%{http_code}" -X POST \
+            "$BACKEND_URL/api/trigger-daily-reports" \
+            -H "Content-Type: application/json" \
+            -H "X-GitHub-Action: daily-reports" \
+            -d '{"triggered_by": "github-actions"}')
+          
+          # Extract response body and status code
+          http_code=$(echo "$response" | tail -n1)
+          response_body=$(echo "$response" | head -n -1)
+          
+          echo "📊 Response Status: $http_code"
+          echo "📄 Response Body: $response_body"
+          
+          # Check if request was successful
+          if [ "$http_code" -eq 200 ]; then
+            echo "✅ Daily reports triggered successfully!"
+          else
+            echo "❌ Failed to trigger daily reports. Status: $http_code"
+            exit 1
+          fi 
