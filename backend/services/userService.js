@@ -43,17 +43,22 @@ class UserService {
         try {
             fs.writeFileSync(this.usersFile, JSON.stringify(users, null, 2));
             logger.info(`✅ Saved ${users.length} users to storage`);
+            
             // Also push to GitHub main branch
             const githubToken = process.env.GITHUB_TOKEN;
+            logger.info(`🔍 GITHUB_TOKEN status: ${githubToken ? 'Present' : 'Missing'}`);
+            
             if (githubToken) {
-                // Only upload the last user (added or updated)
-                const lastUser = users[users.length - 1];
-                this.githubService.uploadOrUpdateUserInJson(lastUser, githubToken, 'Add or update user via registration')
+                logger.info(`📤 Uploading complete users.json with ${users.length} users to GitHub`);
+                
+                this.githubService.uploadUsersJsonFile(users, githubToken, 'Update users.json via registration')
                     .then(result => {
                         logger.info('✅ Synced users.json to GitHub main branch');
+                        logger.info(`🔗 GitHub file URL: ${result.fileUrl}`);
                     })
                     .catch(err => {
                         logger.error('❌ Failed to sync users.json to GitHub:', err.message);
+                        logger.error('❌ Error stack:', err.stack);
                     });
             } else {
                 logger.warn('⚠️ GITHUB_TOKEN not set, skipping GitHub sync for users.json');

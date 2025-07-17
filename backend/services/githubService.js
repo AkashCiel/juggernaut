@@ -169,6 +169,77 @@ class GitHubService {
     }
 
     /**
+     * Uploads the complete users.json file to GitHub (overwrites entire file)
+     * @param {Array} users - The complete array of users to upload
+     * @param {string} githubToken - GitHub personal access token
+     * @param {string} [commitMessage] - Optional commit message
+     * @returns {Promise<Object>} Upload result
+     */
+    async uploadUsersJsonFile(users, githubToken, commitMessage = 'Update users.json') {
+        logger.info(`🚀 Starting uploadUsersJsonFile with ${users.length} users`);
+        const filePath = USER_JSON_GITHUB_PATH;
+        logger.info(`📁 Target file path: ${filePath}`);
+        
+        // Prepare content
+        const content = JSON.stringify(users, null, 2);
+        const fileContent = Buffer.from(content).toString('base64');
+        logger.info(`📦 Prepared content with ${users.length} users`);
+        
+        // Get current SHA if file exists
+        let sha = undefined;
+        try {
+            logger.info('📖 Checking if file exists on GitHub...');
+            const response = await this.githubApiRequest(
+                `/repos/${this.repoOwner}/${this.repoName}/contents/${filePath}?ref=${this.branch}`,
+                'GET',
+                githubToken
+            );
+            sha = response.sha;
+            logger.info(`🔑 Found existing file with SHA: ${sha.substring(0, 8)}...`);
+        } catch (err) {
+            if (err.message.includes('404')) {
+                logger.info('🆕 File does not exist, will create new file');
+            } else {
+                logger.error('❌ Error checking file existence:', err.message);
+                throw err;
+            }
+        }
+        
+        // Prepare payload
+        const payload = {
+            message: commitMessage,
+            content: fileContent,
+            branch: this.branch
+        };
+        if (sha) {
+            payload.sha = sha;
+            logger.info(`🔑 Using existing SHA: ${sha.substring(0, 8)}...`);
+        }
+        
+        logger.info('📤 Making PUT request to GitHub API...');
+        // Upload to GitHub
+        const putResponse = await this.githubApiRequest(
+            `/repos/${this.repoOwner}/${this.repoName}/contents/${filePath}`,
+            'PUT',
+            githubToken,
+            payload
+        );
+        
+        const fileUrl = `https://github.com/${this.repoOwner}/${this.repoName}/blob/${this.branch}/${filePath}`;
+        logger.info(`✅ Successfully uploaded to GitHub: ${fileUrl}`);
+        
+        logApiCall('github', 'uploadUsersJsonFile', {
+            filePath,
+            fileUrl,
+            usersCount: users.length
+        });
+        return {
+            fileUrl,
+            sha: putResponse.content.sha
+        };
+    }
+
+    /**
      * Uploads or updates a single user in data/users.json in the repository
      * @param {Object} userData - The user object to add or update
      * @param {string} githubToken - GitHub personal access token
@@ -176,10 +247,14 @@ class GitHubService {
      * @returns {Promise<Object>} Upload result
      */
     async uploadOrUpdateUserInJson(userData, githubToken, commitMessage = 'Update user data') {
+        logger.info(`🚀 Starting uploadOrUpdateUserInJson for user: ${userData.email}`);
         const filePath = USER_JSON_GITHUB_PATH;
+        logger.info(`📁 Target file path: ${filePath}`);
+        
         let users = [];
         let sha = undefined;
         try {
+            logger.info('📖 Attempting to read existing users.json from GitHub...');
             // Try to read the existing users.json from GitHub
             const response = await this.githubApiRequest(
                 `/repos/${this.repoOwner}/${this.repoName}/contents/${filePath}?ref=${this.branch}`,
@@ -189,31 +264,47 @@ class GitHubService {
             const existingContent = Buffer.from(response.content, 'base64').toString('utf8');
             users = JSON.parse(existingContent);
             sha = response.sha;
+            logger.info(`📖 Successfully read ${users.length} existing users from GitHub`);
         } catch (err) {
             if (err.message.includes('404')) {
                 // File does not exist yet, start with empty array
                 users = [];
+                logger.info('📝 No existing users.json found, starting with empty array');
             } else {
+                logger.error('❌ Failed to read existing users from GitHub:', err.message);
                 throw err;
             }
         }
+        
         // Merge: update if exists, else append
         const idx = users.findIndex(u => u.userId === userData.userId);
         if (idx >= 0) {
             users[idx] = { ...users[idx], ...userData };
+            logger.info(`🔄 Updated existing user at index ${idx}`);
         } else {
             users.push(userData);
+            logger.info(`➕ Added new user to array`);
         }
+        
         // Prepare content
         const content = JSON.stringify(users, null, 2);
         const fileContent = Buffer.from(content).toString('base64');
+        logger.info(`📦 Prepared content with ${users.length} users`);
+        
         // Prepare payload
         const payload = {
             message: commitMessage,
             content: fileContent,
             branch: this.branch
         };
-        if (sha) payload.sha = sha;
+        if (sha) {
+            payload.sha = sha;
+            logger.info(`🔑 Using existing SHA: ${sha.substring(0, 8)}...`);
+        } else {
+            logger.info('🆕 No existing SHA, creating new file');
+        }
+        
+        logger.info('📤 Making PUT request to GitHub API...');
         // Upload to GitHub
         const putResponse = await this.githubApiRequest(
             `/repos/${this.repoOwner}/${this.repoName}/contents/${filePath}`,
@@ -221,7 +312,10 @@ class GitHubService {
             githubToken,
             payload
         );
+        
         const fileUrl = `https://github.com/${this.repoOwner}/${this.repoName}/blob/${this.branch}/${filePath}`;
+        logger.info(`✅ Successfully uploaded to GitHub: ${fileUrl}`);
+        
         logApiCall('github', 'uploadOrUpdateUserInJson', {
             filePath,
             fileUrl,

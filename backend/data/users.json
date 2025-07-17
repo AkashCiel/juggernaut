@@ -5,11 +5,13 @@
     "topics": [
       "artificial intelligence",
       "machine learning",
-      "robotics"
+      "neural networks",
+      "computer science"
     ],
     "isActive": true,
     "createdAt": "2025-07-17T16:35:03.377Z",
-    "lastReportDate": null
+    "lastReportDate": null,
+    "updatedAt": "2025-07-17T22:34:15.497Z"
   },
   {
     "userId": "813ecbe8",
