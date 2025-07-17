@@ -1,0 +1,366 @@
+const https = require('https');
+const { logger, logApiCall } = require('../utils/logger');
+const { handleGitHubError } = require('../utils/errorHandler');
+const { sanitizeText, sanitizeHtml } = require('../utils/sanitizer');
+
+// GitHub Service for uploading reports to GitHub Pages
+class GitHubService {
+    constructor() {
+        this.repository = 'AkashCiel/juggernaut';
+        // Get branch from environment variable, default to 'main'
+        this.branch = process.env.GITHUB_BRANCH || 'main';
+    }
+
+    async uploadReport(reportData, githubToken) {
+        logger.info('📤 Uploading report to GitHub...');
+        logger.info(`🔧 Using branch: ${this.branch}`);
+        
+        try {
+            // Create report HTML
+            const reportHtml = this.generateReportHtml(reportData);
+            
+            // Upload to GitHub
+            const uploadResult = await this.uploadFileToGitHub(reportHtml, reportData.date, githubToken);
+            
+            logApiCall('github', 'uploadReport', { 
+                reportDate: reportData.date,
+                pagesUrl: uploadResult.pagesUrl 
+            });
+            
+            return {
+                pagesUrl: uploadResult.pagesUrl,
+                sha: uploadResult.sha
+            };
+        } catch (error) {
+            logger.error(`❌ GitHub upload error: ${error.message}`);
+            handleGitHubError(error);
+        }
+    }
+
+    generateReportHtml(reportData) {
+        const papersHtml = reportData.papers.map((paper, index) => {
+            const authors = Array.isArray(paper.authors) ? paper.authors.join(', ') : paper.authors;
+            const publishedDate = new Date(paper.published).toLocaleDateString();
+            const title = sanitizeText(paper.title || '', 200);
+            const summary = sanitizeText(paper.summary || '', 1000);
+            const link = sanitizeText(paper.link || '', 500);
+            const categories = Array.isArray(paper.categories) 
+                ? paper.categories.map(cat => sanitizeText(cat, 50)).join(', ')
+                : '';
+            
+            return `
+                <div class="paper">
+                    <h3><a href="${link}" target="_blank">${title}</a></h3>
+                    <p><strong>Authors:</strong> ${authors}</p>
+                    <p><strong>Published:</strong> ${publishedDate}</p>
+                    <p><strong>Categories:</strong> ${categories}</p>
+                    <p><strong>Summary:</strong> ${summary}</p>
+                </div>
+            `;
+        }).join('');
+
+        const aiSummarySection = reportData.aiSummary ? `
+            <div class="ai-summary">
+                <h2>🤖 AI Summary</h2>
+                <p>${sanitizeText(reportData.aiSummary, 3000)}</p>
+            </div>
+        ` : '';
+
+        const topicsStr = sanitizeText(reportData.topics.join(', '), 200);
+
+        return sanitizeHtml(`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Research Report - ${reportData.date}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .ai-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+        }
+        .paper {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+        .paper h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .paper a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .paper a:hover {
+            text-decoration: underline;
+        }
+        .meta {
+            color: #666;
+            font-size: 14px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI Research Report</h1>
+        <div class="meta">
+            <strong>Date:</strong> ${reportData.date}<br>
+            <strong>Topics:</strong> ${topicsStr}<br>
+            <strong>Papers Found:</strong> ${reportData.papers.length}
+        </div>
+        
+        ${aiSummarySection}
+        
+        <h2>📚 Research Papers</h2>
+        ${papersHtml}
+        
+        <div class="meta">
+            <p><em>Generated by AI News Agent</em></p>
+        </div>
+    </div>
+</body>
+</html>`);
+    }
+
+    async uploadFileToGitHub(content, date, githubToken) {
+        return new Promise((resolve, reject) => {
+            const fileName = `report-${date}.html`;
+            const filePath = `reports/${fileName}`;
+            
+            const data = JSON.stringify({
+                message: `Add AI research report for ${date}`,
+                content: Buffer.from(content).toString('base64'),
+                branch: this.branch
+            });
+
+            const options = {
+                hostname: 'api.github.com',
+                port: 443,
+                path: `/repos/${this.repository}/contents/${filePath}`,
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `token ${githubToken}`,
+                    'User-Agent': 'AI-News-Agent',
+                    'Content-Length': Buffer.byteLength(data)
+                }
+            };
+
+            const timeout = setTimeout(() => {
+                req.destroy();
+                reject(new Error('GitHub request timeout'));
+            }, 30000);
+
+            const req = https.request(options, (res) => {
+                clearTimeout(timeout);
+                
+                logger.info(`🔧 GitHub API response status: ${res.statusCode}`);
+                
+                let responseData = '';
+                
+                res.on('data', (chunk) => {
+                    responseData += chunk;
+                });
+                
+                res.on('end', () => {
+                    try {
+                        const response = JSON.parse(responseData);
+                        
+                        logger.info(`🔧 GitHub response message: ${response.message || 'No message'}`);
+                        
+                        if (res.statusCode === 422 && response.message && response.message.includes('sha')) {
+                            logger.info('🔄 File exists, getting SHA and retrying...');
+                            // File exists but SHA wasn't provided, get the SHA and retry
+                            this.getFileSha(filePath, githubToken)
+                                .then(sha => this.updateExistingFile(content, date, githubToken, sha))
+                                .then(resolve)
+                                .catch(reject);
+                        } else if (res.statusCode !== 200 && res.statusCode !== 201) {
+                            logger.error(`❌ GitHub API error status: ${res.statusCode}`);
+                            reject(new Error(`GitHub API returned status ${res.statusCode}`));
+                        } else if (response.content && response.content.sha) {
+                            // Successfully uploaded
+                            const pagesUrl = `https://akashciel.github.io/juggernaut/reports/${fileName}`;
+                            resolve({
+                                pagesUrl,
+                                sha: response.content.sha
+                            });
+                        } else {
+                            reject(new Error(`GitHub API Error: ${response.message || 'Unknown error'}`));
+                        }
+                    } catch (error) {
+                        reject(new Error(`Failed to parse GitHub response: ${error.message}`));
+                    }
+                });
+            });
+
+            req.on('error', (error) => {
+                clearTimeout(timeout);
+                reject(new Error(`GitHub request failed: ${error.message}`));
+            });
+
+            req.write(data);
+            req.end();
+        });
+    }
+
+    async getFileSha(filePath, githubToken) {
+        return new Promise((resolve, reject) => {
+            const options = {
+                hostname: 'api.github.com',
+                port: 443,
+                path: `/repos/${this.repository}/contents/${filePath}?ref=${this.branch}`,
+                method: 'GET',
+                headers: {
+                    'Authorization': `token ${githubToken}`,
+                    'User-Agent': 'AI-News-Agent'
+                }
+            };
+
+            const timeout = setTimeout(() => {
+                req.destroy();
+                reject(new Error('GitHub request timeout'));
+            }, 30000);
+
+            const req = https.request(options, (res) => {
+                clearTimeout(timeout);
+                
+                if (res.statusCode !== 200) {
+                    reject(new Error(`GitHub API returned status ${res.statusCode}`));
+                    return;
+                }
+                
+                let responseData = '';
+                
+                res.on('data', (chunk) => {
+                    responseData += chunk;
+                });
+                
+                res.on('end', () => {
+                    try {
+                        const response = JSON.parse(responseData);
+                        
+                        if (response.sha) {
+                            resolve(response.sha);
+                        } else {
+                            reject(new Error('Could not get file SHA'));
+                        }
+                    } catch (error) {
+                        reject(new Error(`Failed to parse GitHub response: ${error.message}`));
+                    }
+                });
+            });
+
+            req.on('error', (error) => {
+                clearTimeout(timeout);
+                reject(new Error(`GitHub request failed: ${error.message}`));
+            });
+
+            req.end();
+        });
+    }
+
+    async updateExistingFile(content, date, githubToken, sha) {
+        return new Promise((resolve, reject) => {
+            const fileName = `report-${date}.html`;
+            const filePath = `reports/${fileName}`;
+            
+            const data = JSON.stringify({
+                message: `Update AI research report for ${date}`,
+                content: Buffer.from(content).toString('base64'),
+                sha: sha,
+                branch: this.branch
+            });
+
+            const options = {
+                hostname: 'api.github.com',
+                port: 443,
+                path: `/repos/${this.repository}/contents/${filePath}`,
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `token ${githubToken}`,
+                    'User-Agent': 'AI-News-Agent',
+                    'Content-Length': Buffer.byteLength(data)
+                }
+            };
+
+            const timeout = setTimeout(() => {
+                req.destroy();
+                reject(new Error('GitHub request timeout'));
+            }, 30000);
+
+            const req = https.request(options, (res) => {
+                clearTimeout(timeout);
+                
+                if (res.statusCode !== 200 && res.statusCode !== 201) {
+                    reject(new Error(`GitHub API returned status ${res.statusCode}`));
+                    return;
+                }
+                
+                let responseData = '';
+                
+                res.on('data', (chunk) => {
+                    responseData += chunk;
+                });
+                
+                res.on('end', () => {
+                    try {
+                        const response = JSON.parse(responseData);
+                        
+                        if (response.content && response.content.sha) {
+                            const pagesUrl = `https://akashciel.github.io/juggernaut/reports/${fileName}`;
+                            resolve({
+                                pagesUrl,
+                                sha: response.content.sha
+                            });
+                        } else {
+                            reject(new Error(`GitHub API Error: ${response.message || 'Unknown error'}`));
+                        }
+                    } catch (error) {
+                        reject(new Error(`Failed to parse GitHub response: ${error.message}`));
+                    }
+                });
+            });
+
+            req.on('error', (error) => {
+                clearTimeout(timeout);
+                reject(new Error(`GitHub request failed: ${error.message}`));
+            });
+
+            req.write(data);
+            req.end();
+        });
+    }
+}
+
+module.exports = GitHubService; 
