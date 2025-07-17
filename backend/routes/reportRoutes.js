@@ -6,6 +6,7 @@ const ArxivService = require('../services/arxivService');
 const SummaryService = require('../services/summaryService');
 const EmailService = require('../services/emailService');
 const GitHubService = require('../services/githubService');
+const UserService = require('../services/userService');
 
 // Import middleware
 const { validateReportRequest, validateArxivTest, validateSummaryTest, handleValidationErrors } = require('../middleware/validation');
@@ -19,6 +20,7 @@ const arxivService = new ArxivService();
 const summaryService = new SummaryService();
 const emailService = new EmailService();
 const githubService = new GitHubService();
+const userService = new UserService();
 
 /**
  * Generate complete HTML report
@@ -438,6 +440,66 @@ router.post('/test/summary',
             res.json({ success: true, summary });
         } catch (error) {
             handleOpenAIError(error);
+        }
+    })
+);
+
+// User registration endpoint
+router.post('/register-user',
+    asyncHandler(async (req, res) => {
+        const { email, topics = ['artificial intelligence', 'machine learning'] } = req.body;
+        
+        if (!email || !email.includes('@')) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid email address'
+            });
+        }
+        
+        try {
+            const sanitizedTopics = sanitizeTopics(topics);
+            const user = await userService.registerUser(email, sanitizedTopics);
+            
+            logger.info(`✅ User registered: ${email} (${user.userId})`);
+            
+            res.json({
+                success: true,
+                message: 'User registered successfully for daily reports',
+                data: {
+                    userId: user.userId,
+                    email: user.email,
+                    topics: user.topics,
+                    isActive: user.isActive
+                }
+            });
+        } catch (error) {
+            logger.error('❌ User registration failed:', error.message);
+            res.status(500).json({
+                success: false,
+                error: 'Failed to register user'
+            });
+        }
+    })
+);
+
+// Get scheduler status
+router.get('/scheduler/status',
+    asyncHandler(async (req, res) => {
+        try {
+            const SchedulerService = require('../services/schedulerService');
+            const schedulerService = new SchedulerService();
+            const status = await schedulerService.getStatus();
+            
+            res.json({
+                success: true,
+                data: status
+            });
+        } catch (error) {
+            logger.error('❌ Failed to get scheduler status:', error.message);
+            res.status(500).json({
+                success: false,
+                error: 'Failed to get scheduler status'
+            });
         }
     })
 );
