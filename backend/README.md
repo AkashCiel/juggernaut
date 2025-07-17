@@ -140,6 +140,7 @@ OPENAI_API_KEY=your_openai_api_key
 MAILGUN_API_KEY=your_mailgun_api_key
 MAILGUN_DOMAIN=your_mailgun_domain
 GITHUB_TOKEN=your_github_token
+GITHUB_BRANCH=main
 
 # Security
 API_KEY=mvp-api-key-2024

@@ -42,11 +42,16 @@ class EmailService {
         
         try {
             const messageData = {
-                from: `AI News Agent <noreply@${this.domain}>`,
+                from: `AI News Agent <your-personal-news@${this.domain}>`,
                 to: recipients,
                 subject: subject,
                 html: emailContent
             };
+
+            logger.info('📧 Attempting to send email with Mailgun...');
+            logger.info(`📧 From: ${messageData.from}`);
+            logger.info(`📧 To: ${recipients.join(', ')}`);
+            logger.info(`📧 Domain: ${this.domain}`);
 
             const response = await this.mailgunClient.messages.create(this.domain, messageData);
             logger.info('✅ Email sent successfully:', response.id);
@@ -58,6 +63,11 @@ class EmailService {
             
             return { success: true, messageId: response.id };
         } catch (error) {
+            logger.error('❌ Mailgun error details:', {
+                message: error.message,
+                statusCode: error.statusCode,
+                details: error.details || 'No details available'
+            });
             handleMailgunError(error);
         }
     }

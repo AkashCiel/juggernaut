@@ -7,11 +7,13 @@ const { sanitizeText, sanitizeHtml } = require('../utils/sanitizer');
 class GitHubService {
     constructor() {
         this.repository = 'AkashCiel/juggernaut';
-        this.branch = 'main';
+        // Get branch from environment variable, default to 'main'
+        this.branch = process.env.GITHUB_BRANCH || 'main';
     }
 
     async uploadReport(reportData, githubToken) {
         logger.info('📤 Uploading report to GitHub...');
+        logger.info(`🔧 Using branch: ${this.branch}`);
         
         try {
             // Create report HTML
@@ -30,6 +32,7 @@ class GitHubService {
                 sha: uploadResult.sha
             };
         } catch (error) {
+            logger.error(`❌ GitHub upload error: ${error.message}`);
             handleGitHubError(error);
         }
     }
@@ -180,10 +183,7 @@ class GitHubService {
             const req = https.request(options, (res) => {
                 clearTimeout(timeout);
                 
-                if (res.statusCode !== 200 && res.statusCode !== 201) {
-                    reject(new Error(`GitHub API returned status ${res.statusCode}`));
-                    return;
-                }
+                logger.info(`🔧 GitHub API response status: ${res.statusCode}`);
                 
                 let responseData = '';
                 
@@ -195,12 +195,18 @@ class GitHubService {
                     try {
                         const response = JSON.parse(responseData);
                         
+                        logger.info(`🔧 GitHub response message: ${response.message || 'No message'}`);
+                        
                         if (res.statusCode === 422 && response.message && response.message.includes('sha')) {
+                            logger.info('🔄 File exists, getting SHA and retrying...');
                             // File exists but SHA wasn't provided, get the SHA and retry
                             this.getFileSha(filePath, githubToken)
                                 .then(sha => this.updateExistingFile(content, date, githubToken, sha))
                                 .then(resolve)
                                 .catch(reject);
+                        } else if (res.statusCode !== 200 && res.statusCode !== 201) {
+                            logger.error(`❌ GitHub API error status: ${res.statusCode}`);
+                            reject(new Error(`GitHub API returned status ${res.statusCode}`));
                         } else if (response.content && response.content.sha) {
                             // Successfully uploaded
                             const pagesUrl = `https://akashciel.github.io/juggernaut/reports/${fileName}`;
@@ -232,7 +238,7 @@ class GitHubService {
             const options = {
                 hostname: 'api.github.com',
                 port: 443,
-                path: `/repos/${this.repository}/contents/${filePath}`,
+                path: `/repos/${this.repository}/contents/${filePath}?ref=${this.branch}`,
                 method: 'GET',
                 headers: {
                     'Authorization': `token ${githubToken}`,

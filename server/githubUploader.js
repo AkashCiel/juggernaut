@@ -133,10 +133,13 @@ async function uploadFileToGitHub(content, date, githubToken) {
         const fileName = `report-${date}.html`;
         const filePath = `reports/${fileName}`;
         
+        // Get branch from environment variable, default to 'main'
+        const branch = process.env.GITHUB_BRANCH || 'main';
+        
         const data = JSON.stringify({
             message: `Add AI research report for ${date}`,
             content: Buffer.from(content).toString('base64'),
-            branch: 'main'
+            branch: branch
         });
 
         const options = {
@@ -242,11 +245,14 @@ async function updateExistingFile(content, date, githubToken, sha) {
         const fileName = `report-${date}.html`;
         const filePath = `reports/${fileName}`;
         
+        // Get branch from environment variable, default to 'main'
+        const branch = process.env.GITHUB_BRANCH || 'main';
+        
         const data = JSON.stringify({
             message: `Update AI research report for ${date}`,
             content: Buffer.from(content).toString('base64'),
             sha: sha,
-            branch: 'main'
+            branch: branch
         });
 
         const options = {
