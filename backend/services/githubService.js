@@ -116,6 +116,54 @@ class GitHubService {
         }
     }
 
+    /**
+     * Uploads or updates the data/users.json file in the repository
+     * @param {Object} usersData - The full users array/object to upload
+     * @param {string} githubToken - GitHub personal access token
+     * @param {string} [commitMessage] - Optional commit message
+     * @returns {Promise<Object>} Upload result
+     */
+    async uploadUserData(usersData, githubToken, commitMessage = 'Update user data') {
+        const filePath = 'data/users.json';
+        const content = JSON.stringify(usersData, null, 2);
+        const useDirectUpload = process.env.GITHUB_DIRECT_UPLOAD === 'true';
+        const branch = this.branch;
+        const repoOwner = this.repoOwner;
+        const repoName = this.repoName;
+
+        if (useDirectUpload) {
+            // Use direct upload logic
+            const uploadResult = await uploadReportDirect(
+                { html: content, date: 'users', filePathOverride: filePath, commitMessage },
+                githubToken,
+                branch,
+                repoOwner,
+                repoName,
+                null // userId not needed
+            );
+            logApiCall('github', 'uploadUserDataDirect', {
+                filePath,
+                fileUrl: uploadResult.fileUrl
+            });
+            return uploadResult;
+        } else {
+            // Use PR-based upload logic
+            const uploadResult = await uploadReportViaPR(
+                { html: content, date: 'users', filePathOverride: filePath, commitMessage },
+                githubToken,
+                branch,
+                repoOwner,
+                repoName,
+                null // userId not needed
+            );
+            logApiCall('github', 'uploadUserDataViaPR', {
+                filePath,
+                prUrl: uploadResult.prUrl,
+                branchName: uploadResult.branchName
+            });
+            return uploadResult;
+        }
+    }
 
 
     generateReportHtml(reportData) {
