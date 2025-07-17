@@ -1,0 +1,428 @@
+
+    
+        <h1>🤖 AI Research Report</h1>
+        
+            <strong>Date:</strong> 2025-07-17<br>
+            <strong>Topics:</strong> artificial intelligence, machine learning<br>
+            <strong>Papers Found:</strong> 50
+        
+        
+        
+            
+                <h2>🤖 AI Summary</h2>
+                <p>The recent batch of AI research papers highlights several pivotal trends and breakthroughs in the field, particularly in language models, 3D tracking, medical imaging, and reinforcement learning, among others. One notable trend is the emphasis on optimizing pretraining data for language models to align more closely with target tasks, as demonstrated by the BETR method, which enhances model performance by selecting pretraining documents similar to benchmark examples. This aligns with the broader shift towards data-centric AI, where the quality and relevance of training data are prioritized to improve model outcomes.
+
+Another significant trend is the integration of interpretability and domain-specific applications in AI models. For instance, CytoSAE applies sparse autoencoders to hematology for interpretable cell embeddings, enabling the identification of morphologically relevant concepts across diverse datasets. Similarly, RadGazeIntent leverages deep learning to interpret radiologists intentions from eye movements, enhancing the understanding of diagnostic processes. These works underscore the growing importance of interpretability in AI, especially in fields like healthcare, where understanding decision-making processes is crucial.
+
+Moreover, advancements in model efficiency and robustness continue to be a focal point. SpatialTrackerV2 showcases significant improvements in 3D point tracking by unifying key processes such as point tracking, monocular depth, and camera pose estimation into a single architecture, outperforming existing methods while being computationally efficient. In reinforcement learning, new approaches such as local approximation aim to improve sample efficiency by leveraging the interdependencies of state values, offering sharper PAC bounds in infinite-horizon MDP settings. These innovations reflect ongoing efforts to enhance the practical applicability and scalability of AI models across various domains. Overall, these papers illustrate the dynamic nature of AI research, with ongoing efforts to refine model accuracy, interpretability, and efficiency to open new frontiers in AI applications.</p>
+            
+        
+        
+        <h2>📚 Research Papers</h2>
+        
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12466v1" target="_blank">Language Models Improve When Pretraining Data Matches Target Tasks</a></h3>
+                    <p><strong>Authors:</strong> David Mizrahi, Anders Boesen Lindbo Larsen, Jesse Allardice, Suzie Petryk, Yuri Gorokhov, Jeffrey Li, Alex Fang, Josh Gardner, Tom Gunter, Afshin Dehghan</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CL, cs.LG</p>
+                    <p><strong>Summary:</strong> Every data selection method inherently has a target. In practice, these targets often emerge implicitly through benchmark-driven iteration: researchers develop selection strategies, train models, measure benchmark performance, then refine accordingly. This raises a natural question: what happens when we make this optimization explicit? To explore this, we propose benchmark-targeted ranking (BETR), a simple method that selects pretraining documents based on similarity to benchmark training examples. BETR embeds benchmark examples and a sample of pretraining documents in a shared space, scores this sample by similarity to benchmarks, then trains a lightweight classifier to predict these scores for the full corpus. We compare data selection methods by training over 500 models spanning $10^{19}$ to $10^{22}$ FLOPs and fitting scaling laws to them. From this, we find that simply aligning pretraining data to evaluation benchmarks using BETR achieves a 2.1x compute multiplier over DCLM-Baseli...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12464v1" target="_blank">CytoSAE: Interpretable Cell Embeddings for Hematology</a></h3>
+                    <p><strong>Authors:</strong> Muhammed Furkan Dasdelen, Hyesu Lim, Michele Buck, Katharina S. Götze, Carsten Marr, Steffen Schneider</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CV, cs.LG, q-bio.QM</p>
+                    <p><strong>Summary:</strong> Sparse autoencoders (SAEs) emerged as a promising tool for mechanistic interpretability of transformer-based foundation models. Very recently, SAEs were also adopted for the visual domain, enabling the discovery of visual concepts and their patch-wise attribution to tokens in the transformer model. While a growing number of foundation models emerged for medical imaging, tools for explaining their inferences are still lacking. In this work, we show the applicability of SAEs for hematology. We propose CytoSAE, a sparse autoencoder which is trained on over 40,000 peripheral blood single-cell images. CytoSAE generalizes to diverse and out-of-domain datasets, including bone marrow cytology, where it identifies morphologically relevant concepts which we validated with medical experts. Furthermore, we demonstrate scenarios in which CytoSAE can generate patient-specific and disease-specific concepts, enabling the detection of pathognomonic cells and localized cellular abnormalities at the patc...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12462v1" target="_blank">SpatialTrackerV2: 3D Point Tracking Made Easy</a></h3>
+                    <p><strong>Authors:</strong> Yuxi Xiao, Jianyuan Wang, Nan Xue, Nikita Karaev, Yuri Makarov, Bingyi Kang, Xing Zhu, Hujun Bao, Yujun Shen, Xiaowei Zhou</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CV</p>
+                    <p><strong>Summary:</strong> We present SpatialTrackerV2, a feed-forward 3D point tracking method for monocular videos. Going beyond modular pipelines built on off-the-shelf components for 3D tracking, our approach unifies the intrinsic connections between point tracking, monocular depth, and camera pose estimation into a high-performing and feedforward 3D point tracker. It decomposes world-space 3D motion into scene geometry, camera ego-motion, and pixel-wise object motion, with a fully differentiable and end-to-end architecture, allowing scalable training across a wide range of datasets, including synthetic sequences, posed RGB-D videos, and unlabeled in-the-wild footage. By learning geometry and motion jointly from such heterogeneous data, SpatialTrackerV2 outperforms existing 3D tracking methods by 30%, and matches the accuracy of leading dynamic 3D reconstruction approaches while running 50$\times$ faster.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12461v1" target="_blank">Interpreting Radiologists Intention from Eye Movements in Chest X-ray Diagnosis</a></h3>
+                    <p><strong>Authors:</strong> Trong-Thang Pham, Anh Nguyen, Zhigang Deng, Carol C. Wu, Hien Van Nguyen, Ngan Le</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CV, cs.AI</p>
+                    <p><strong>Summary:</strong> Radiologists rely on eye movements to navigate and interpret medical images. A trained radiologist possesses knowledge about the potential diseases that may be present in the images and, when searching, follows a mental checklist to locate them using their gaze. This is a key observation, yet existing models fail to capture the underlying intent behind each fixation. In this paper, we introduce a deep learning-based approach, RadGazeIntent, designed to model this behavior: having an intention to find something and actively searching for it. Our transformer-based architecture processes both the temporal and spatial dimensions of gaze data, transforming fine-grained fixation features into coarse, meaningful representations of diagnostic intent to interpret radiologists goals. To capture the nuances of radiologists varied intention-driven behaviors, we process existing medical eye-tracking datasets to create three intention-labeled subsets: RadSeq (Systematic Sequential Search), RadExplor...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12455v1" target="_blank">Mitigating Object Hallucinations via Sentence-Level Early Intervention</a></h3>
+                    <p><strong>Authors:</strong> Shangpin Peng, Senqiao Yang, Li Jiang, Zhuotao Tian</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CV</p>
+                    <p><strong>Summary:</strong> Multimodal large language models (MLLMs) have revolutionized cross-modal understanding but continue to struggle with hallucinations - fabricated content contradicting visual inputs. Existing hallucination mitigation methods either incur prohibitive computational costs or introduce distribution mismatches between training data and model outputs. We identify a critical insight: hallucinations predominantly emerge at the early stages of text generation and propagate through subsequent outputs. To address this, we propose **SENTINEL** (**S**entence-level **E**arly i**N**tervention **T**hrough **IN**-domain pr**E**ference **L**earning), a framework that eliminates dependency on human annotations. Specifically, we first bootstrap high-quality in-domain preference pairs by iteratively sampling model outputs, validating object existence through cross-checking with two open-vocabulary detectors, and classifying sentences into hallucinated/non-hallucinated categories. Subsequently, we use contex...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12453v1" target="_blank">Cost-aware Stopping for Bayesian Optimization</a></h3>
+                    <p><strong>Authors:</strong> Qian Xie, Linda Cai, Alexander Terenin, Peter I. Frazier, Ziv Scully</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.LG</p>
+                    <p><strong>Summary:</strong> In automated machine learning, scientific discovery, and other applications of Bayesian optimization, deciding when to stop evaluating expensive black-box functions is an important practical consideration. While several adaptive stopping rules have been proposed, in the cost-aware setting they lack guarantees ensuring they stop before incurring excessive function evaluation costs. We propose a cost-aware stopping rule for Bayesian optimization that adapts to varying evaluation costs and is free of heuristic tuning. Our rule is grounded in a theoretical connection to state-of-the-art cost-aware acquisition functions, namely the Pandoras Box Gittins Index (PBGI) and log expected improvement per cost. We prove a theoretical guarantee bounding the expected cumulative evaluation cost incurred by our stopping rule when paired with these two acquisition functions. In experiments on synthetic and empirical tasks, including hyperparameter optimization and neural architecture size search, we sho...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12451v1" target="_blank">S2WTM: Spherical Sliced-Wasserstein Autoencoder for Topic Modeling</a></h3>
+                    <p><strong>Authors:</strong> Suman Adhya, Debarshi Kumar Sanyal</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CL, cs.AI, cs.LG</p>
+                    <p><strong>Summary:</strong> Modeling latent representations in a hyperspherical space has proven effective for capturing directional similarities in high-dimensional text data, benefiting topic modeling. Variational autoencoder-based neural topic models (VAE-NTMs) commonly adopt the von Mises-Fisher prior to encode hyperspherical structure. However, VAE-NTMs often suffer from posterior collapse, where the KL divergence term in the objective function highly diminishes, leading to ineffective latent representations. To mitigate this issue while modeling hyperspherical structure in the latent space, we propose the Spherical Sliced Wasserstein Autoencoder for Topic Modeling (S2WTM). S2WTM employs a prior distribution supported on the unit hypersphere and leverages the Spherical Sliced-Wasserstein distance to align the aggregated posterior distribution with the prior. Experimental results demonstrate that S2WTM outperforms state-of-the-art topic models, generating more coherent and diverse topics while improving perfo...</p>
+                
+            
+                
+                    <h3><a href="http://dx.doi.org/10.1109/HPCA57654.2024.00062" target="_blank">BitWave: Exploiting Column-Based Bit-Level Sparsity for Deep Learning Acceleration</a></h3>
+                    <p><strong>Authors:</strong> Man Shi, Vikram Jain, Antony Joseph, Maurice Meijer, Marian Verhelst</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> eess.SY, cs.SY</p>
+                    <p><strong>Summary:</strong> Bit-serial computation facilitates bit-wise sequential data processing, offering numerous benefits, such as a reduced area footprint and dynamically-adaptive computational precision. It has emerged as a prominent approach, particularly in leveraging bit-level sparsity in Deep Neural Networks (DNNs). However, existing bit-serial accelerators exploit bit-level sparsity to reduce computations by skipping zero bits, but they suffer from inefficient memory accesses due to the irregular indices of the non-zero bits. As memory accesses typically are the dominant contributor to DNN accelerator performance, this paper introduces a novel computing approach called bit-column-serial and a compatible architecture design named BitWave. BitWave harnesses the advantages of the bit-column-serial approach, leveraging structured bit-level sparsity in combination with dynamic dataflow techniques. This achieves a reduction in computations and memory footprints through redundant computation skipping and wei...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12443v1" target="_blank">LLM-Based Config Synthesis requires Disambiguation</a></h3>
+                    <p><strong>Authors:</strong> Rajdeep Mondal, Nikolaj Bjorner, Todd Millstein, Alan Tang, George Varghese</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.NI, cs.AI, cs.HC, cs.PL</p>
+                    <p><strong>Summary:</strong> Beyond hallucinations, another problem in program synthesis using LLMs is ambiguity in user intent. We illustrate the ambiguity problem in a networking context for LLM-based incremental configuration synthesis of route-maps and ACLs. These structures frequently overlap in header space, making the relative priority of actions impossible for the LLM to infer without user interaction. Measurements in a large cloud identify complex ACLs with 100s of overlaps, showing ambiguity is a real problem. We propose a prototype system, Clarify, which uses an LLM augmented with a new module called a Disambiguator that helps elicit user intent. On a small synthetic workload, Clarify incrementally synthesizes routing policies after disambiguation and then verifies them. Our treatment of ambiguities is useful more generally when the intent of updates can be correctly synthesized by LLMs, but their integration is ambiguous and can lead to different global behaviors.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12442v1" target="_blank">Characterizing State Space Model (SSM) and SSM-Transformer Hybrid Language Model Performance with Long Context Length</a></h3>
+                    <p><strong>Authors:</strong> Saptarshi Mitra, Rachid Karami, Haocheng Xu, Sitao Huang, Hyoukjun Kwon</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.AR, cs.AI, cs.LG, cs.SY, eess.SY</p>
+                    <p><strong>Summary:</strong> The demand for machine intelligence capable of processing continuous, long-context inputs on local devices is growing rapidly. However, the quadratic complexity and memory requirements of traditional Transformer architectures make them inefficient and often unusable for these tasks. This has spurred a paradigm shift towards new architectures like State Space Models (SSMs) and hybrids, which promise near-linear scaling. While most current research focuses on the accuracy and theoretical throughput of these models, a systematic performance characterization on practical consumer hardware is critically needed to guide system-level optimization and unlock new applications. To address this gap, we present a comprehensive, comparative benchmarking of carefully selected Transformer, SSM, and hybrid models specifically for long-context inference on consumer and embedded GPUs. Our analysis reveals that SSMs are not only viable but superior for this domain, capable of processing sequences up to 2...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12441v1" target="_blank">Describe Anything Model for Visual Question Answering on Text-rich Images</a></h3>
+                    <p><strong>Authors:</strong> Yen-Linh Vu, Dinh-Thang Duong, Truong-Binh Duong, Anh-Khoi Nguyen, Thanh-Huy Nguyen, Le Thien Phuc Nguyen, Jianhua Xing, Xingjian Li, Tianyang Wang, Ulas Bagci, Min Xu</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CV, cs.LG</p>
+                    <p><strong>Summary:</strong> Recent progress has been made in region-aware vision-language modeling, particularly with the emergence of the Describe Anything Model (DAM). DAM is capable of generating detailed descriptions of any specific image areas or objects without the need for additional localized image-text alignment supervision. We hypothesize that such region-level descriptive capability is beneficial for the task of Visual Question Answering (VQA), especially in challenging scenarios involving images with dense text. In such settings, the fine-grained extraction of textual information is crucial to producing correct answers. Motivated by this, we introduce DAM-QA, a framework with a tailored evaluation protocol, developed to investigate and harness the region-aware capabilities from DAM for the text-rich VQA problem that requires reasoning over text-based information within images. DAM-QA incorporates a mechanism that aggregates answers from multiple regional views of image content, enabling more effective...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12440v1" target="_blank">EgoVLA: Learning Vision-Language-Action Models from Egocentric Human Videos</a></h3>
+                    <p><strong>Authors:</strong> Ruihan Yang, Qinxi Yu, Yecheng Wu, Rui Yan, Borui Li, An-Chieh Cheng, Xueyan Zou, Yunhao Fang, Hongxu Yin, Sifei Liu, Song Han, Yao Lu, Xiaolong Wang</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.RO, cs.AI, cs.CV, cs.LG</p>
+                    <p><strong>Summary:</strong> Real robot data collection for imitation learning has led to significant advancements in robotic manipulation. However, the requirement for robot hardware in the process fundamentally constrains the scale of the data. In this paper, we explore training Vision-Language-Action (VLA) models using egocentric human videos. The benefit of using human videos is not only for their scale but more importantly for the richness of scenes and tasks. With a VLA trained on human video that predicts human wrist and hand actions, we can perform Inverse Kinematics and retargeting to convert the human actions to robot actions. We fine-tune the model using a few robot manipulation demonstrations to obtain the robot policy, namely EgoVLA. We propose a simulation benchmark called Isaac Humanoid Manipulation Benchmark, where we design diverse bimanual manipulation tasks with demonstrations. We fine-tune and evaluate EgoVLA with Isaac Humanoid Manipulation Benchmark and show significant improvements over base...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12439v1" target="_blank">A Bayesian Incentive Mechanism for Poison-Resilient Federated Learning</a></h3>
+                    <p><strong>Authors:</strong> Daniel Commey, Rebecca A. Sarpong, Griffith S. Klogo, Winful Bagyl-Bac, Garth V. Crosby</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.LG, cs.CR, cs.GT</p>
+                    <p><strong>Summary:</strong> Federated learning (FL) enables collaborative model training across decentralized clients while preserving data privacy. However, its open-participation nature exposes it to data-poisoning attacks, in which malicious actors submit corrupted model updates to degrade the global model. Existing defenses are often reactive, relying on statistical aggregation rules that can be computationally expensive and that typically assume an honest majority. This paper introduces a proactive, economic defense: a lightweight Bayesian incentive mechanism that makes malicious behavior economically irrational. Each training round is modeled as a Bayesian game of incomplete information in which the server, acting as the principal, uses a small, private validation dataset to verify update quality before issuing payments. The design satisfies Individual Rationality (IR) for benevolent clients, ensuring their participation is profitable, and Incentive Compatibility (IC), making poisoning an economically domin...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12435v1" target="_blank">Targeted Deep Architectures: A TMLE-Based Framework for Robust Causal Inference in Neural Networks</a></h3>
+                    <p><strong>Authors:</strong> Yi Li, David Mccoy, Nolan Gunter, Kaitlyn Lee, Alejandro Schuler, Mark van der Laan</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.LG</p>
+                    <p><strong>Summary:</strong> Modern deep neural networks are powerful predictive tools yet often lack valid inference for causal parameters, such as treatment effects or entire survival curves. While frameworks like Double Machine Learning (DML) and Targeted Maximum Likelihood Estimation (TMLE) can debias machine-learning fits, existing neural implementations either rely on targeted losses that do not guarantee solving the efficient influence function equation or computationally expensive post-hoc fluctuations for multi-parameter settings. We propose Targeted Deep Architectures (TDA), a new framework that embeds TMLE directly into the networks parameter space with no restrictions on the backbone architecture. Specifically, TDA partitions model parameters - freezing all but a small targeting subset - and iteratively updates them along a targeting gradient, derived from projecting the influence functions onto the span of the gradients of the loss with respect to weights. This procedure yields plug-in estimates that ...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12432v1" target="_blank">Energy-based models for inverse imaging problems</a></h3>
+                    <p><strong>Authors:</strong> Andreas Habring, Martin Holler, Thomas Pock, Martin Zach</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> eess.IV</p>
+                    <p><strong>Summary:</strong> In this chapter we provide a thorough overview of the use of energy-based models (EBMs) in the context of inverse imaging problems. EBMs are probability distributions modeled via Gibbs densities $p(x) \propto \exp{-E(x)}$ with an appropriate energy functional $E$. Within this chapter we present a rigorous theoretical introduction to Bayesian inverse problems that includes results on well-posedness and stability in the finite-dimensional and infinite-dimensional setting. Afterwards we discuss the use of EBMs for Bayesian inverse problems and explain the most relevant techniques for learning EBMs from data. As a crucial part of Bayesian inverse problems, we cover several popular algorithms for sampling from EBMs, namely the Metropolis-Hastings algorithm, Gibbs sampling, Langevin Monte Carlo, and Hamiltonian Monte Carlo. Moreover, we present numerical results for the resolution of several inverse imaging problems obtained by leveraging an EBM that allows for the explicit verification of t...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12428v1" target="_blank">Can We Predict Alignment Before Models Finish Thinking? Towards Monitoring Misaligned Reasoning Models</a></h3>
+                    <p><strong>Authors:</strong> Yik Siu Chan, Zheng-Xin Yong, Stephen H. Bach</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CL, cs.AI, cs.LG</p>
+                    <p><strong>Summary:</strong> Open-weights reasoning language models generate long chains-of-thought (CoTs) before producing a final response, which improves performance but introduces additional alignment risks, with harmful content often appearing in both the CoTs and the final outputs. In this work, we investigate if we can use CoTs to predict final response misalignment. We evaluate a range of monitoring approaches, including humans, highly-capable large language models, and text classifiers, using either CoT text or activations. First, we find that a simple linear probe trained on CoT activations can significantly outperform all text-based methods in predicting whether a final response will be safe or unsafe. CoT texts are often unfaithful and can mislead humans and classifiers, while model latents (i.e., CoT activations) offer a more reliable predictive signal. Second, the probe makes accurate predictions before reasoning completes, achieving strong performance even when applied to early CoT segments. These f...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12427v1" target="_blank">Unit-Based Histopathology Tissue Segmentation via Multi-Level Feature Representation</a></h3>
+                    <p><strong>Authors:</strong> Ashkan Shakarami, Azade Farshad, Yousef Yeganeh, Lorenzo Nicole, Peter Schuffler, Stefano Ghidoni, Nassir Navab</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> eess.IV, cs.AI, cs.CV, cs.LG</p>
+                    <p><strong>Summary:</strong> We propose UTS, a unit-based tissue segmentation framework for histopathology that classifies each fixed-size 32 * 32 tile, rather than each pixel, as the segmentation unit. This approach reduces annotation effort and improves computational efficiency without compromising accuracy. To implement this approach, we introduce a Multi-Level Vision Transformer (L-ViT), which benefits the multi-level feature representation to capture both fine-grained morphology and global tissue context. Trained to segment breast tissue into three categories (infiltrating tumor, non-neoplastic stroma, and fat), UTS supports clinically relevant tasks such as tumor-stroma quantification and surgical margin assessment. Evaluated on 386,371 tiles from 459 HE-stained regions, it outperforms U-Net variants and transformer-based baselines. Code and Dataset will be available at GitHub.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12425v1" target="_blank">Advancing Retrieval-Augmented Generation for Structured Enterprise and Internal Data</a></h3>
+                    <p><strong>Authors:</strong> Chandana Cheerla</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CL, cs.AI, cs.CE, cs.IR</p>
+                    <p><strong>Summary:</strong> Organizations increasingly rely on proprietary enterprise data, including HR records, structured reports, and tabular documents, for critical decision-making. While Large Language Models (LLMs) have strong generative capabilities, they are limited by static pretraining, short context windows, and challenges in processing heterogeneous data formats. Conventional Retrieval-Augmented Generation (RAG) frameworks address some of these gaps but often struggle with structured and semi-structured data. This work proposes an advanced RAG framework that combines hybrid retrieval strategies using dense embeddings (all-mpnet-base-v2) and BM25, enhanced by metadata-aware filtering with SpaCy NER and cross-encoder reranking. The framework applies semantic chunking to maintain textual coherence and retains tabular data structures to preserve row-column integrity. Quantized indexing optimizes retrieval efficiency, while human-in-the-loop feedback and conversation memory improve adaptability. Experimen...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12419v1" target="_blank">Mixture of Raytraced Experts</a></h3>
+                    <p><strong>Authors:</strong> Andrea Perin, Giacomo Lagomarsini, Claudio Gallicchio, Giuseppe Nuti</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.LG, cs.AI</p>
+                    <p><strong>Summary:</strong> We introduce a Mixture of Raytraced Experts, a stacked Mixture of Experts (MoE) architecture which can dynamically select sequences of experts, producing computational graphs of variable width and depth. Existing MoE architectures generally require a fixed amount of computation for a given sample. Our approach, in contrast, yields predictions with increasing accuracy as the computation cycles through the experts sequence. We train our model by iteratively sampling from a set of candidate experts, unfolding the sequence akin to how Recurrent Neural Networks are trained. Our method does not require load-balancing mechanisms, and preliminary experiments show a reduction in training epochs of 10\% to 40\% with a comparable/higher accuracy. These results point to new research directions in the field of MoEs, allowing the design of potentially faster and more expressive models. The code is available at https://github.com/nutig/RayTracing</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12416v1" target="_blank">QuRe: Query-Relevant Retrieval through Hard Negative Sampling in Composed Image Retrieval</a></h3>
+                    <p><strong>Authors:</strong> Jaehyun Kwak, Ramahdani Muhammad Izaaz Inhar, Se-Young Yun, Sung-Ju Lee</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CV, cs.AI</p>
+                    <p><strong>Summary:</strong> Composed Image Retrieval (CIR) retrieves relevant images based on a reference image and accompanying text describing desired modifications. However, existing CIR methods only focus on retrieving the target image and disregard the relevance of other images. This limitation arises because most methods employing contrastive learning-which treats the target image as positive and all other images in the batch as negatives-can inadvertently include false negatives. This may result in retrieving irrelevant images, reducing user satisfaction even when the target image is retrieved. To address this issue, we propose Query-Relevant Retrieval through Hard Negative Sampling (QuRe), which optimizes a reward model objective to reduce false negatives. Additionally, we introduce a hard negative sampling strategy that selects images positioned between two steep drops in relevance scores following the target image, to effectively filter false negatives. In order to evaluate CIR models on their alignment...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12414v1" target="_blank">AutoVDC: Automated Vision Data Cleaning Using Vision-Language Models</a></h3>
+                    <p><strong>Authors:</strong> Santosh Vasa, Aditi Ramadwar, Jnana Rama Krishna Darabattula, Md Zafar Anwar, Stanislaw Antol, Andrei Vatavu, Thomas Monninger, Sihao Ding</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CV, cs.AI, cs.LG, cs.RO</p>
+                    <p><strong>Summary:</strong> Training of autonomous driving systems requires extensive datasets with precise annotations to attain robust performance. Human annotations suffer from imperfections, and multiple iterations are often needed to produce high-quality datasets. However, manually reviewing large datasets is laborious and expensive. In this paper, we introduce AutoVDC (Automated Vision Data Cleaning) framework and investigate the utilization of Vision-Language Models (VLMs) to automatically identify erroneous annotations in vision datasets, thereby enabling users to eliminate these errors and enhance data quality. We validate our approach using the KITTI and nuImages datasets, which contain object detection benchmarks for autonomous driving. To test the effectiveness of AutoVDC, we create dataset variants with intentionally injected erroneous annotations and observe the error detection rate of our approach. Additionally, we compare the detection rates using different VLMs and explore the impact of VLM fine-...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12412v1" target="_blank">NOCTA: Non-Greedy Objective Cost-Tradeoff Acquisition for Longitudinal Data</a></h3>
+                    <p><strong>Authors:</strong> Dzung Dinh, Boqi Chen, Marc Niethammer, Junier Oliva</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.LG, cs.AI</p>
+                    <p><strong>Summary:</strong> In many critical applications, resource constraints limit the amount of information that can be gathered to make predictions. For example, in healthcare, patient data often spans diverse features ranging from lab tests to imaging studies. Each feature may carry different information and must be acquired at a respective cost of time, money, or risk to the patient. Moreover, temporal prediction tasks, where both instance features and labels evolve over time, introduce additional complexity in deciding when or what information is important. In this work, we propose NOCTA, a Non-Greedy Objective Cost-Tradeoff Acquisition method that sequentially acquires the most informative features at inference time while accounting for both temporal dynamics and acquisition cost. We first introduce a cohesive estimation target for our NOCTA setting, and then develop two complementary estimators: 1) a non-parametric method based on nearest neighbors to guide the acquisition (NOCTA-NP), and 2) a parametri...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12404v1" target="_blank">Neural Network-Guided Symbolic Regression for Interpretable Descriptor Discovery in Perovskite Catalysts</a></h3>
+                    <p><strong>Authors:</strong> Yeming Xian, Xiaoming Wang, Yanfa Yan</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> physics.data-an, cond-mat.mtrl-sci, cs.LG, physics.comp-ph</p>
+                    <p><strong>Summary:</strong> Understanding and predicting the activity of oxide perovskite catalysts for the oxygen evolution reaction (OER) requires descriptors that are both accurate and physically interpretable. While symbolic regression (SR) offers a path to discover such formulas, its performance degrades with high-dimensional inputs and small datasets. We present a two-phase framework that combines neural networks (NN), feature importance analysis, and symbolic regression (SR) to discover interpretable descriptors for OER activity in oxide perovskites. In Phase I, using a small dataset and seven structural features, we reproduce and improve the known {\mu}/t descriptor by engineering composite features and applying symbolic regression, achieving training and validation MAEs of 22.8 and 20.8 meV, respectively. In Phase II, we expand to 164 features, reduce dimensionality, and identify LUMO energy as a key electronic descriptor. A final formula using {\mu}/t, {\mu}/RA, and LUMO energy achieves improved accurac...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12399v1" target="_blank">ROC-n-reroll: How verifier imperfection affects test-time scaling</a></h3>
+                    <p><strong>Authors:</strong> Florian E. Dorner, Yatong Chen, André F. Cruz, Fanny Yang</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.LG, stat.ML</p>
+                    <p><strong>Summary:</strong> Test-time scaling aims to improve language model performance by leveraging additional compute during inference. While many works have empirically studied techniques like Best-of-N (BoN) and rejection sampling that make use of a verifier to enable test-time scaling, there is little theoretical understanding of how verifier imperfection affects performance. In this work, we address this gap. Specifically, we prove how instance-level accuracy of these methods is precisely characterized by the geometry of the verifiers ROC curve. Interestingly, while scaling is determined by the local geometry of the ROC curve for rejection sampling, it depends on global properties of the ROC curve for BoN. As a consequence when the ROC curve is unknown, it is impossible to extrapolate the performance of rejection sampling based on the low-compute regime. Furthermore, while rejection sampling outperforms BoN for fixed compute, in the infinite-compute limit both methods converge to the same level of accurac...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12388v1" target="_blank">Revealing the impact of chemical short-range order on radiation damage in MoNbTaVW high-entropy alloys using a machine-learning potential</a></h3>
+                    <p><strong>Authors:</strong> Jiahui Liu, Shuo Cao, Yanzhou Wang, Zheyong Fan, Guocai Lv, Ping Qian, Yanjing Su</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cond-mat.mtrl-sci</p>
+                    <p><strong>Summary:</strong> The effect of chemical short-range order (CSRO) on primary radiation damage in MoNbTaVW high-entropy alloys is investigated using hybrid Monte Carlo/molecular dynamics simulations with a machine-learned potential. We show that CSRO enhances radiation tolerance by promoting interstitial diffusion while suppressing vacancy migration, thereby increasing defect recombination efficiency during recovery stage. However, CSRO is rapidly degraded under cumulative irradiation, with Warren-Cowley parameters dropping below 0.3 at a dose of only 0.03~dpa. This loss of ordering reduces the long-term enhancement of CSRO on radiation resistance. Our results highlight that while CSRO can effectively improve the radiation tolerance of MoNbTaVW, its stability under irradiation is critical to realizing and sustaining this benefit.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12384v1" target="_blank">Trustworthy Tree-based Machine Learning by $MoS_2$ Flash-based Analog CAM with Inherent Soft Boundaries</a></h3>
+                    <p><strong>Authors:</strong> Bo Wen, Guoyun Gao, Zhicheng Xu, Ruibin Mao, Xiaojuan Qi, X. Sharon Hu, Xunzhao Yin, Can Li</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.LG, cs.ET</p>
+                    <p><strong>Summary:</strong> The rapid advancement of artificial intelligence has raised concerns regarding its trustworthiness, especially in terms of interpretability and robustness. Tree-based models like Random Forest and XGBoost excel in interpretability and accuracy for tabular data, but scaling them remains computationally expensive due to poor data locality and high data dependence. Previous efforts to accelerate these models with analog content addressable memory (CAM) have struggled, due to the fact that the difficult-to-implement sharp decision boundaries are highly susceptible to device variations, which leads to poor hardware performance and vulnerability to adversarial attacks. This work presents a novel hardware-software co-design approach using $MoS_2$ Flash-based analog CAM with inherent soft boundaries, enabling efficient inference with soft tree-based models. Our soft tree model inference experiments on $MoS_2$ analog CAM arrays show this method achieves exceptional robustness against device var...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12383v1" target="_blank">Improving Reinforcement Learning Sample-Efficiency using Local Approximation</a></h3>
+                    <p><strong>Authors:</strong> Mohit Prashant, Arvind Easwaran</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.LG</p>
+                    <p><strong>Summary:</strong> In this study, we derive Probably Approximately Correct (PAC) bounds on the asymptotic sample-complexity for RL within the infinite-horizon Markov Decision Process (MDP) setting that are sharper than those in existing literature. The premise of our study is twofold: firstly, the further two states are from each other, transition-wise, the less relevant the value of the first state is when learning the $\epsilon$-optimal value of the second; secondly, the amount of effort, sample-complexity-wise, expended in learning the $\epsilon$-optimal value of a state is independent of the number of samples required to learn the $\epsilon$-optimal value of a second state that is a sufficient number of transitions away from the first. Inversely, states within each others vicinity have values that are dependent on each other and will require a similar number of samples to learn. By approximating the original MDP using smaller MDPs constructed using subsets of the originals state-space, we are able to...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12380v1" target="_blank">Heat Kernel Goes Topological</a></h3>
+                    <p><strong>Authors:</strong> Maximilian Krahn, Vikas Garg</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.LG</p>
+                    <p><strong>Summary:</strong> Topological neural networks have emerged as powerful successors of graph neural networks. However, they typically involve higher-order message passing, which incurs significant computational expense. We circumvent this issue with a novel topological framework that introduces a Laplacian operator on combinatorial complexes (CCs), enabling efficient computation of heat kernels that serve as node descriptors. Our approach captures multiscale information and enables permutation-equivariant representations, allowing easy integration into modern transformer-based architectures. Theoretically, the proposed method is maximally expressive because it can distinguish arbitrary non-isomorphic CCs. Empirically, it significantly outperforms existing topological methods in terms of computational efficiency. Besides demonstrating competitive performance with the state-of-the-art descriptors on standard molecular datasets, it exhibits superior capability in distinguishing complex topological structures...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12379v1" target="_blank">Probing for Arithmetic Errors in Language Models</a></h3>
+                    <p><strong>Authors:</strong> Yucheng Sun, Alessandro Stolfo, Mrinmaya Sachan</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CL, cs.AI</p>
+                    <p><strong>Summary:</strong> We investigate whether internal activations in language models can be used to detect arithmetic errors. Starting with a controlled setting of 3-digit addition, we show that simple probes can accurately decode both the models predicted output and the correct answer from hidden states, regardless of whether the models output is correct. Building on this, we train lightweight error detectors that predict model correctness with over 90% accuracy. We then extend our analysis to structured chain-of-thought traces on addition-only GSM8K problems and find that probes trained on simple arithmetic generalize well to this more complex setting, revealing consistent internal representations. Finally, we demonstrate that these probes can guide selective re-prompting of erroneous reasoning steps, improving task accuracy with minimal disruption to correct outputs. Our findings suggest that arithmetic errors can be anticipated from internal activations alone, and that simple probes offer a viable path ...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12373v1" target="_blank">Emerging Paradigms in the Energy Sector: Forecasting and System Control Optimisation</a></h3>
+                    <p><strong>Authors:</strong> Dariush Pourkeramati, Gareth Wadge, Rachel Hassall, Charlotte Mitchell, Anish Khadka, Shiwang Jaiswal, Andrew Duncan, Rossella Arcucci</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.ET, eess.SP</p>
+                    <p><strong>Summary:</strong> The energy sector is experiencing rapid transformation due to increasing renewable energy integration, decentralisation of power systems, and a heightened focus on efficiency and sustainability. With energy demand becoming increasingly dynamic and generation sources more variable, advanced forecasting and optimisation strategies are crucial for maintaining grid stability, cost-effectiveness, and environmental sustainability. This paper explores emerging paradigms in energy forecasting and management, emphasizing four critical domains: Energy Demand Forecasting integrated with Weather Data, Building Energy Optimisation, Heat Network Optimisation, and Energy Management System (EMS) Optimisation within a System of Systems (SoS) framework. Leveraging machine learning techniques and Model Predictive Control (MPC), the study demonstrates substantial enhancements in energy efficiency across scales -- from individual buildings to complex interconnected energy networks. Weather-informed demand ...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12369v1" target="_blank">Catching Bid-rigging Cartels with Graph Attention Neural Networks</a></h3>
+                    <p><strong>Authors:</strong> David Imhof, Emanuel W Viklund, Martin Huber</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> econ.EM</p>
+                    <p><strong>Summary:</strong> We propose a novel application of graph attention networks (GATs), a type of graph neural network enhanced with attention mechanisms, to develop a deep learning algorithm for detecting collusive behavior, leveraging predictive features suggested in prior research. We test our approach on a large dataset covering 13 markets across seven countries. Our results show that predictive models based on GATs, trained on a subset of the markets, can be effectively transferred to other markets, achieving accuracy rates between 80\% and 90\%, depending on the hyperparameter settings. The best-performing configuration, applied to eight markets from Switzerland and the Japanese region of Okinawa, yields an average accuracy of 91% for cross-market prediction. When extended to 12 markets, the method maintains a strong performance with an average accuracy of 84\%, surpassing traditional ensemble approaches in machine learning. These results suggest that GAT-based detection methods offer a promising too...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12367v1" target="_blank">GitChameleon: Evaluating AI Code Generation Against Python Library Version Incompatibilities</a></h3>
+                    <p><strong>Authors:</strong> Diganta Misra, Nizar Islah, Victor May, Brice Rauby, Zihan Wang, Justine Gehring, Antonio Orvieto, Muawiz Chaudhary, Eilif B. Muller, Irina Rish, Samira Ebrahimi Kahou, Massimo Caccia</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.SE, cs.AI, cs.PL</p>
+                    <p><strong>Summary:</strong> The rapid evolution of software libraries poses a considerable hurdle for code generation, necessitating continuous adaptation to frequent version updates while preserving backward compatibility. While existing code evolution benchmarks provide valuable insights, they typically lack execution-based evaluation for generating code compliant with specific library versions. To address this, we introduce GitChameleon, a novel, meticulously curated dataset comprising 328 Python code completion problems, each conditioned on specific library versions and accompanied by executable unit tests. GitChameleon rigorously evaluates the capacity of contemporary large language models (LLMs), LLM-powered agents, code assistants, and RAG systems to perform version-conditioned code generation that demonstrates functional accuracy through execution. Our extensive evaluations indicate that state-of-the-art systems encounter significant challenges with this task; enterprise models achieving baseline success ...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12366v1" target="_blank">FactorHD: A Hyperdimensional Computing Model for Multi-Object Multi-Class Representation and Factorization</a></h3>
+                    <p><strong>Authors:</strong> Yifei Zhou, Xuchu Huang, Chenyu Ni, Min Zhou, Zheyu Yan, Xunzhao Yin, Cheng Zhuo</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.SC, cs.AI, cs.CV</p>
+                    <p><strong>Summary:</strong> Neuro-symbolic artificial intelligence (neuro-symbolic AI) excels in logical analysis and reasoning. Hyperdimensional Computing (HDC), a promising brain-inspired computational model, is integral to neuro-symbolic AI. Various HDC models have been proposed to represent class-instance and class-class relations, but when representing the more complex class-subclass relation, where multiple objects associate different levels of classes and subclasses, they face challenges for factorization, a crucial task for neuro-symbolic AI systems. In this article, we propose FactorHD, a novel HDC model capable of representing and factorizing the complex class-subclass relation efficiently. FactorHD features a symbolic encoding method that embeds an extra memorization clause, preserving more information for multiple objects. In addition, it employs an efficient factorization algorithm that selectively eliminates redundant classes by identifying the memorization clause of the target class. Such model sig...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12364v1" target="_blank">Rethinking the confidential cloud through a unified low-level abstraction for composable isolation</a></h3>
+                    <p><strong>Authors:</strong> Adrien Ghosn, Charly Castes, Neelu S. Kalani, Yuchen Qian, Marios Kogias, Edouard Bugnion</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CR, cs.OS</p>
+                    <p><strong>Summary:</strong> Securing sensitive cloud workloads requires composing confidential virtual machines (CVMs) with nested enclaves or sandboxes. Unfortunately, each new isolation boundary adds ad-hoc access control mechanisms, hardware extensions, and trusted software. This escalating complexity bloats the TCB, complicates end-to-end attestation, and leads to fragmentation across platforms and cloud service providers (CSPs). We introduce a unified isolation model that delegates enforceable, composable, and attestable isolation to a single trusted security monitor: Tyche. Tyche provides an API for partitioning, sharing, attesting, and reclaiming resources through its core abstraction, trust domains (TDs). To provide fine-grain isolation, TDs can recursively create and manage sub-TDs. Tyche captures these relationships in attestations, allowing cloud tenants to reason about end-to-end security. TDs serve as the building blocks for constructing composable enclaves, sandboxes, and CVMs. Tyche runs on commodi...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12363v1" target="_blank">Using deep learning to characterize single-exposure double-line spectroscopic binaries</a></h3>
+                    <p><strong>Authors:</strong> Avraham Binnenfeld, Samuel Lilek, Rami Nasser, Raja Giryes, Shay Zucker</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> astro-ph.IM, astro-ph.SR</p>
+                    <p><strong>Summary:</strong> Distinguishing the component spectra of double-line spectroscopic binaries (SB2s) and extracting their stellar parameters is a complex and computationally intensive task that usually requires observations spanning several epochs that represent various orbital phases. This poses an especially significant challenge for large surveys such as Gaia or LAMOST, where the number of available spectra per target is often not enough for a proper spectral disentangling. We present a new approach for characterizing SB2 components from single-exposure spectroscopic observations. The proposed tool uses deep neural networks to extract the stellar parameters of the individual component spectra that comprise the single exposure, without explicitly disentangling them or extracting their radial velocities. The neural networks were trained, tested, and validated using simulated data resembling Gaia RVS spectra, which will be made available to the community in the coming Gaia data releases. We expect our to...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12359v1" target="_blank">Cluster Contrast for Unsupervised Visual Representation Learning</a></h3>
+                    <p><strong>Authors:</strong> Nikolaos Giakoumoglou, Tania Stathaki</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CV, cs.AI</p>
+                    <p><strong>Summary:</strong> We introduce Cluster Contrast (CueCo), a novel approach to unsupervised visual representation learning that effectively combines the strengths of contrastive learning and clustering methods. Inspired by recent advancements, CueCo is designed to simultaneously scatter and align feature representations within the feature space. This method utilizes two neural networks, a query and a key, where the key network is updated through a slow-moving average of the query outputs. CueCo employs a contrastive loss to push dissimilar features apart, enhancing inter-class separation, and a clustering objective to pull together features of the same cluster, promoting intra-class compactness. Our method achieves 91.40% top-1 classification accuracy on CIFAR-10, 68.56% on CIFAR-100, and 78.65% on ImageNet-100 using linear evaluation with a ResNet-18 backbone. By integrating contrastive learning with clustering, CueCo sets a new direction for advancing unsupervised visual representation learning.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12358v1" target="_blank">Surrogate modeling for uncertainty quantification in nonlinear dynamics</a></h3>
+                    <p><strong>Authors:</strong> S. Marelli, S. Schär, B. Sudret</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> stat.CO, stat.AP, stat.ML</p>
+                    <p><strong>Summary:</strong> Predicting the behavior of complex systems in engineering often involves significant uncertainty about operating conditions, such as external loads, environmental effects, and manufacturing variability. As a result, uncertainty quantification (UQ) has become a critical tool in modeling-based engineering, providing methods to identify, characterize, and propagate uncertainty through computational models. However, the stochastic nature of UQ typically requires numerous evaluations of these models, which can be computationally expensive and limit the scope of feasible analyses. To address this, surrogate models, i.e., efficient functional approximations trained on a limited set of simulations, have become central in modern UQ practice. This book chapter presents a concise review of surrogate modeling techniques for UQ, with a focus on the particularly challenging task of capturing the full time-dependent response of dynamical systems. It introduces a classification of time-dependent probl...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12347v1" target="_blank">Threshold sensing yields optimal path formation in Physarum polycephalum -- but the mould does not know</a></h3>
+                    <p><strong>Authors:</strong> Daniele Proverbio, Giulia Giordano</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> physics.bio-ph, nlin.AO, q-bio.CB</p>
+                    <p><strong>Summary:</strong> A circuital network model for the foraging behaviour of Physarum polycephalum proves that threshold sensing yields the emergence of optimal paths that connect food sources and solve mazes. These findings are in agreement with the experimental evidence of emergent problem solving by P. polycephalum and provide insight into the evolution of primitive intelligence. Our results can also inspire the development of threshold-based algorithms for computing applications.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12344v1" target="_blank">Improving Lightweight Weed Detection via Knowledge Distillation</a></h3>
+                    <p><strong>Authors:</strong> Ahmet Oğuz Saltık, Max Voigt, Sourav Modak, Mike Beckworth, Anthony Stein</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CV</p>
+                    <p><strong>Summary:</strong> Weed detection is a critical component of precision agriculture, facilitating targeted herbicide application and reducing environmental impact. However, deploying accurate object detection models on resource-limited platforms remains challenging, particularly when differentiating visually similar weed species commonly encountered in plant phenotyping applications. In this work, we investigate Channel-wise Knowledge Distillation (CWD) and Masked Generative Distillation (MGD) to enhance the performance of lightweight models for real-time smart spraying systems. Utilizing YOLO11x as the teacher model and YOLO11n as both reference and student, both CWD and MGD effectively transfer knowledge from the teacher to the student model. Our experiments, conducted on a real-world dataset comprising sugar beet crops and four weed types (Cirsium, Convolvulus, Fallopia, and Echinochloa), consistently show increased AP50 across all classes. The distilled CWD student model achieves a notable improvement...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12341v1" target="_blank">Nonlinear Concept Erasure: a Density Matching Approach</a></h3>
+                    <p><strong>Authors:</strong> Antoine Saillenfest, Pirmin Lemberger</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.LG, cs.CL</p>
+                    <p><strong>Summary:</strong> Ensuring that neural models used in real-world applications cannot infer sensitive information, such as demographic attributes like gender or race, from text representations is a critical challenge when fairness is a concern. We address this issue through concept erasure, a process that removes information related to a specific concept from distributed representations while preserving as much of the remaining semantic information as possible. Our approach involves learning an orthogonal projection in the embedding space, designed to make the class-conditional feature distributions of the discrete concept to erase indistinguishable after projection. By adjusting the rank of the projector, we control the extent of information removal, while its orthogonality ensures strict preservation of the local structure of the embeddings. Our method, termed $\overline{\mathrm{L}}$EOPARD, achieves state-of-the-art performance in nonlinear erasure of a discrete attribute on classic natural language pr...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12337v1" target="_blank">MExplore: an entity-based visual analytics approach for medical expertise acquisition</a></h3>
+                    <p><strong>Authors:</strong> Xiao Pang, Yan Huang, Chang Liu, JiYuan Liu, MingYou Liu</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.HC</p>
+                    <p><strong>Summary:</strong> Acquiring medical expertise is a critical component of medical education and professional development. While existing studies focus primarily on constructing medical knowledge bases or developing learning tools based on the structured, private healthcare data, they often lack methods for extracting expertise from unstructured medical texts. These texts constitute a significant portion of medical literature and offer greater flexibility and detail compared to structured data formats. Furthermore, many studies fail to provide explicit analytical and learning pathways in this context. This paper introduces MExplore, an interactive visual analytics system designed to support the acquisition of medical expertise. To address the challenges of the inconsistencies and confidentiality concerns inherent in unstructured medical texts, we propose a workflow that employs a fine-tuned BERT-based model to extract medical entities (MEs) from them. We then present a novel multilevel visual analysis fra...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12336v1" target="_blank">Unsupervised Monocular 3D Keypoint Discovery from Multi-View Diffusion Priors</a></h3>
+                    <p><strong>Authors:</strong> Subin Jeon, In Cho, Junyoung Hong, Seon Joo Kim</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CV</p>
+                    <p><strong>Summary:</strong> This paper introduces KeyDiff3D, a framework for unsupervised monocular 3D keypoints estimation that accurately predicts 3D keypoints from a single image. While previous methods rely on manual annotations or calibrated multi-view images, both of which are expensive to collect, our method enables monocular 3D keypoints estimation using only a collection of single-view images. To achieve this, we leverage powerful geometric priors embedded in a pretrained multi-view diffusion model. In our framework, this model generates multi-view images from a single image, serving as a supervision signal to provide 3D geometric cues to our model. We also use the diffusion model as a powerful 2D multi-view feature extractor and construct 3D feature volumes from its intermediate representations. This transforms implicit 3D priors learned by the diffusion model into explicit 3D features. Beyond accurate keypoints estimation, we further introduce a pipeline that enables manipulation of 3D objects generate...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12331v1" target="_blank">Causality analysis of electricity market liberalization on electricity price using novel Machine Learning methods</a></h3>
+                    <p><strong>Authors:</strong> Orr Shahar, Stefan Lessmann, Daniel Traian Pele</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> econ.GN, q-fin.EC</p>
+                    <p><strong>Summary:</strong> Relationships between the energy and the finance markets are increasingly important. Understanding these relationships is vital for policymakers and other stakeholders as the world faces challenges such as satisfying humanitys increasing need for energy and the effects of climate change. In this paper, we investigate the causal effect of electricity market liberalization on the electricity price in the US. By performing this analysis, we aim to provide new insights into the ongoing debate about the benefits of electricity market liberalization. We introduce Causal Machine Learning as a new approach for interventions in the energy-finance field. The development of machine learning in recent years opened the door for a new branch of machine learning models for causality impact, with the ability to extract complex patterns and relationships from the data. We discuss the advantages of causal ML methods and compare the performance of ML-based models to shed light on the applicability of cau...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12329v1" target="_blank">Neural Polar Decoders for Deletion Channels</a></h3>
+                    <p><strong>Authors:</strong> Ziv Aharoni, Henry D. Pfister</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.IT, cs.AI, cs.LG, math.IT</p>
+                    <p><strong>Summary:</strong> This paper introduces a neural polar decoder (NPD) for deletion channels with a constant deletion rate. Existing polar decoders for deletion channels exhibit high computational complexity of $O(N^4)$, where $N$ is the block length. This limits the application of polar codes for deletion channels to short-to-moderate block lengths. In this work, we demonstrate that employing NPDs for deletion channels can reduce the computational complexity. First, we extend the architecture of the NPD to support deletion channels. Specifically, the NPD architecture consists of four neural networks (NNs), each replicating fundamental successive cancellation (SC) decoder operations. To support deletion channels, we change the architecture of only one. The computational complexity of the NPD is $O(AN\log N)$, where the parameter $A$ represents a computational budget determined by the user and is independent of the channel. We evaluate the new extended NPD for deletion channels with deletion rates $\delta\...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12318v1" target="_blank">Compositional Discrete Latent Code for High Fidelity, Productive Diffusion Models</a></h3>
+                    <p><strong>Authors:</strong> Samuel Lavoie, Michael Noukhovitch, Aaron Courville</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CV, cs.AI, cs.LG</p>
+                    <p><strong>Summary:</strong> We argue that diffusion models success in modeling complex distributions is, for the most part, coming from their input conditioning. This paper investigates the representation used to condition diffusion models from the perspective that ideal representations should improve sample fidelity, be easy to generate, and be compositional to allow out-of-training samples generation. We introduce Discrete Latent Code (DLC), an image representation derived from Simplicial Embeddings trained with a self-supervised learning objective. DLCs are sequences of discrete tokens, as opposed to the standard continuous image embeddings. They are easy to generate and their compositionality enables sampling of novel images beyond the training distribution. Diffusion models trained with DLCs have improved generation fidelity, establishing a new state-of-the-art for unconditional image generation on ImageNet. Additionally, we show that composing DLCs allows the image generator to produce out-of-distribution s...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12314v1" target="_blank">Thought Purity: Defense Paradigm For Chain-of-Thought Attack</a></h3>
+                    <p><strong>Authors:</strong> Zihao Xue, Zhen Bi, Long Ma, Zhenlin Hu, Yan Wang, Zhenfang Liu, Qing Sheng, Jie Xiao, Jungang Lou</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.LG, cs.AI, cs.CE, cs.CR</p>
+                    <p><strong>Summary:</strong> While reinforcement learning-trained Large Reasoning Models (LRMs, e.g., Deepseek-R1) demonstrate advanced reasoning capabilities in the evolving Large Language Models (LLMs) domain, their susceptibility to security threats remains a critical vulnerability. This weakness is particularly evident in Chain-of-Thought (CoT) generation processes, where adversarial methods like backdoor prompt attacks can systematically subvert the models core reasoning mechanisms. The emerging Chain-of-Thought Attack (CoTA) reveals this vulnerability through exploiting prompt controllability, simultaneously degrading both CoT safety and task performance with low-cost interventions. To address this compounded security-performance vulnerability, we propose Thought Purity (TP): a defense paradigm that systematically strengthens resistance to malicious content while preserving operational efficacy. Our solution achieves this through three synergistic components: (1) a safety-optimized data processing pipeline (...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12312v1" target="_blank">When $B_2$ is Not Enough: Evaluating Simple Metrics for Predicting Phase Separation of Intrinsically Disordered Proteins</a></h3>
+                    <p><strong>Authors:</strong> Wesley W. Oliver, William M. Jacobs, Michael A. Webb</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cond-mat.soft, cond-mat.stat-mech, q-bio.QM</p>
+                    <p><strong>Summary:</strong> Understanding and predicting the phase behavior of intrinsically disordered proteins (IDPs) is of significant interest due to their role in many biological processes. However, effectively characterizing phase behavior and its complex dependence on protein primary sequence remains challenging. In this study, we evaluate the efficacy of several simple computational metrics to quantify the propensity of single-component IDP solutions to phase separate; specific metrics considered include the single-chain radius of gyration, the second virial coefficient, and a newly proposed quantity termed the expenditure density. Each metric is computed using coarse-grained molecular dynamics simulations for 2,034 IDP sequences. Using machine learning, we analyze this data to understand how sequence features correlate with the predictive performance of each metric and to develop insight into their respective strengths and limitations. The expenditure density is determined to be a broadly useful metric t...</p>
+                
+            
+                
+                    <h3><a href="http://dx.doi.org/10.1145/3670474.3685966" target="_blank">Chain-of-Descriptions: Improving Code LLMs for VHDL Code Generation and Summarization</a></h3>
+                    <p><strong>Authors:</strong> Prashanth Vijayaraghavan, Apoorva Nitsure, Charles Mackin, Luyao Shi, Stefano Ambrogio, Arvind Haran, Viresh Paruthi, Ali Elzein, Dan Coops, David Beymer, Tyler Baldwin, Ehsan Degan</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.CL, cs.AI, cs.AR</p>
+                    <p><strong>Summary:</strong> Large Language Models (LLMs) have become widely used across diverse NLP tasks and domains, demonstrating their adaptability and effectiveness. In the realm of Electronic Design Automation (EDA), LLMs show promise for tasks like Register-Transfer Level (RTL) code generation and summarization. However, despite the proliferation of LLMs for general code-related tasks, theres a dearth of research focused on evaluating and refining these models for hardware description languages (HDLs), notably VHDL. In this study, we evaluate the performance of existing code LLMs for VHDL code generation and summarization using various metrics and two datasets -- VHDL-Eval and VHDL-Xform. The latter, an in-house dataset, aims to gauge LLMs understanding of functionally equivalent code. Our findings reveal consistent underperformance of these models across different metrics, underscoring a significant gap in their suitability for this domain. To address this challenge, we propose Chain-of-Descriptions (CoDe...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12305v1" target="_blank">PROL : Rehearsal Free Continual Learning in Streaming Data via Prompt Online Learning</a></h3>
+                    <p><strong>Authors:</strong> M. Anwar Masum, Mahardhika Pratama, Savitha Ramasamy, Lin Liu, Habibullah Habibullah, Ryszard Kowalczyk</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> cs.LG, cs.AI, cs.CV</p>
+                    <p><strong>Summary:</strong> The data privacy constraint in online continual learning (OCL), where the data can be seen only once, complicates the catastrophic forgetting problem in streaming data. A common approach applied by the current SOTAs in OCL is with the use of memory saving exemplars or features from previous classes to be replayed in the current task. On the other hand, the prompt-based approach performs excellently in continual learning but with the cost of a growing number of trainable parameters. The first approach may not be applicable in practice due to data openness policy, while the second approach has the issue of throughput associated with the streaming data. In this study, we propose a novel prompt-based method for online continual learning that includes 4 main components: (1) single light-weight prompt generator as a general knowledge, (2) trainable scaler-and-shifter as specific knowledge, (3) pre-trained model (PTM) generalization preserving, and (4) hard-soft updates mechanism. Our propose...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.12301v1" target="_blank">Leveraging Bi-Directional Channel Reciprocity for Robust Ultra-Low-Rate Implicit CSI Feedback with Deep Learning</a></h3>
+                    <p><strong>Authors:</strong> Zhenyu Liu, Yi Ma, Rahim Tafazolli, Zhi Ding</p>
+                    <p><strong>Published:</strong> 7/16/2025</p>
+                    <p><strong>Categories:</strong> eess.SP, cs.IT, math.IT</p>
+                    <p><strong>Summary:</strong> Deep learning-based implicit channel state information (CSI) feedback has been introduced to enhance spectral efficiency in massive MIMO systems. Existing methods often show performance degradation in ultra-low-rate scenarios and inadaptability across diverse environments. In this paper, we propose Dual-ImRUNet, an efficient uplink-assisted deep implicit CSI feedback framework incorporating two novel plug-in preprocessing modules to achieve ultra-low feedback rates while maintaining high environmental robustness. First, a novel bi-directional correlation enhancement module is proposed to strengthen the correlation between uplink and downlink CSI eigenvector matrices. This module projects highly correlated uplink and downlink channel matrices into their respective eigenspaces, effectively reducing redundancy for ultra-low-rate feedback. Second, an innovative input format alignment module is designed to maintain consistent data distributions at both encoder and decoder sides without extr...</p>
+                
+            
+        
+        
+            <p><em>Generated by AI News Agent</em></p>
+        
+    
+
