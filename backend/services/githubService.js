@@ -2,6 +2,8 @@ const https = require('https');
 const { logger, logApiCall } = require('../utils/logger');
 const { handleGitHubError } = require('../utils/errorHandler');
 const { sanitizeText, sanitizeHtml } = require('../utils/sanitizer');
+const { uploadReportViaPR } = require('./githubPullRequestUploader');
+const { uploadReportDirect } = require('./githubDirectUploader');
 
 // GitHub Service for uploading reports to GitHub Pages
 class GitHubService {
@@ -9,32 +11,131 @@ class GitHubService {
         this.repository = 'AkashCiel/juggernaut';
         // Get branch from environment variable, default to 'main'
         this.branch = process.env.GITHUB_BRANCH || 'main';
+        this.repoOwner = 'AkashCiel';
+        this.repoName = 'juggernaut';
     }
 
-    async uploadReport(reportData, githubToken) {
-        logger.info('📤 Uploading report to GitHub...');
-        logger.info(`🔧 Using branch: ${this.branch}`);
+    /**
+     * Uploads a report to GitHub using either direct upload or pull request method
+     * @param {Object} reportData - The report data to upload
+     * @param {string} githubToken - GitHub personal access token
+     * @param {string[]} recipients - Array of email recipients for user ID generation
+     * @returns {Promise<Object>} Upload result with different properties based on method:
+     *   - Direct upload: {pagesUrl, sha, userId}
+     *   - Pull request: {pagesUrl, prUrl, branchName, userId}
+     */
+    async uploadReport(reportData, githubToken, recipients = []) {
+        // Generate userId from recipients
+        const userId = this.generateUserIdFromRecipients(recipients);
+        
+        // Check if we should use direct upload (when branch protection is disabled)
+        const useDirectUpload = process.env.GITHUB_DIRECT_UPLOAD === 'true';
+        
+        if (useDirectUpload) {
+            logger.info('📤 Uploading report directly to GitHub (branch protection disabled)...');
+            logger.info(`🔧 Using branch: ${this.branch}`);
+            logger.info(`👤 User ID: ${userId}`);
+        } else {
+            logger.info('📤 Uploading report to GitHub via Pull Request...');
+            logger.info(`🔧 Using base branch: ${this.branch}`);
+            logger.info(`👤 User ID: ${userId}`);
+        }
         
         try {
             // Create report HTML
             const reportHtml = this.generateReportHtml(reportData);
             
-            // Upload to GitHub
-            const uploadResult = await this.uploadFileToGitHub(reportHtml, reportData.date, githubToken);
-            
-            logApiCall('github', 'uploadReport', { 
-                reportDate: reportData.date,
-                pagesUrl: uploadResult.pagesUrl 
-            });
-            
-            return {
-                pagesUrl: uploadResult.pagesUrl,
-                sha: uploadResult.sha
+            // Prepare report data with HTML content
+            const reportDataWithHtml = {
+                ...reportData,
+                html: reportHtml
             };
+            
+            let uploadResult;
+            
+            if (useDirectUpload) {
+                // Upload directly to main branch
+                uploadResult = await uploadReportDirect(
+                    reportDataWithHtml, 
+                    githubToken, 
+                    this.branch, 
+                    this.repoOwner, 
+                    this.repoName,
+                    userId
+                );
+                
+                logApiCall('github', 'uploadReportDirect', { 
+                    reportDate: reportData.date,
+                    fileUrl: uploadResult.fileUrl,
+                    userId: userId
+                });
+                
+                return {
+                    pagesUrl: uploadResult.fileUrl,
+                    sha: uploadResult.sha,
+                    userId: userId
+                };
+            } else {
+                // Upload via Pull Request
+                uploadResult = await uploadReportViaPR(
+                    reportDataWithHtml, 
+                    githubToken, 
+                    this.branch, 
+                    this.repoOwner, 
+                    this.repoName,
+                    userId
+                );
+                
+                logApiCall('github', 'uploadReportViaPR', { 
+                    reportDate: reportData.date,
+                    prUrl: uploadResult.prUrl,
+                    branchName: uploadResult.branchName,
+                    userId: userId
+                });
+                
+                return {
+                    pagesUrl: uploadResult.fileUrl,
+                    prUrl: uploadResult.prUrl,
+                    branchName: uploadResult.branchName,
+                    userId: userId
+                };
+            }
         } catch (error) {
             logger.error(`❌ GitHub upload error: ${error.message}`);
             handleGitHubError(error);
+            throw error;
         }
+    }
+
+    /**
+     * Generate a user ID from email recipients
+     * @param {string[]} recipients - Array of email addresses
+     * @returns {string} - User ID (email hash or 'public')
+     */
+    generateUserIdFromRecipients(recipients) {
+        if (!recipients || recipients.length === 0) {
+            logger.info('👤 No recipients provided, using public user ID');
+            return 'public';
+        }
+        
+        // Use the first recipient's email to generate a user ID
+        const primaryEmail = recipients[0];
+        
+        // Create a simple hash of the email for consistent user ID
+        let hash = 0;
+        for (let i = 0; i < primaryEmail.length; i++) {
+            const char = primaryEmail.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32-bit integer
+        }
+        
+        // Convert to positive hex string and take first 8 characters
+        const userId = Math.abs(hash).toString(16).substring(0, 8);
+        
+        logger.info(`👤 Generated user ID '${userId}' from email: ${primaryEmail}`);
+        logger.info(`📁 Reports will be stored in: reports/${userId === 'public' ? 'public' : `user-${userId}`}/`);
+        
+        return userId;
     }
 
     generateReportHtml(reportData) {
