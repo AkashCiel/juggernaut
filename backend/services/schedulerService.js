@@ -1,6 +1,7 @@
 const { logger, logApiCall } = require('../utils/logger');
 const { handleArxivError, handleOpenAIError, handleGitHubError, handleMailgunError, validateEnvironment, validateApiKey } = require('../utils/errorHandler');
 const { sanitizeTopics, sanitizePapers } = require('../utils/sanitizer');
+const { retry, RETRY_CONFIGS } = require('../utils/retryUtils');
 
 // Import services
 const UserService = require('./userService');
@@ -99,7 +100,7 @@ class SchedulerService {
             logger.info(`📝 Generating report for user: ${user.email} (${user.userId})`);
             logger.info(`🔍 Topics: ${user.topics.join(', ')}`);
 
-            // Step 1: Fetch papers from ArXiv
+            // Step 1: Fetch papers from ArXiv (with retry)
             const sanitizedTopics = sanitizeTopics(user.topics);
             const maxPapers = 50; // Default for daily reports
             
@@ -112,7 +113,10 @@ class SchedulerService {
             
             let papers = [];
             try {
-                papers = await this.arxivService.fetchPapers(sanitizedTopics, maxPapers);
+                papers = await retry(
+                    () => this.arxivService.fetchPapers(sanitizedTopics, maxPapers),
+                    RETRY_CONFIGS.arxiv
+                );
                 papers = sanitizePapers(papers);
             } catch (error) {
                 handleArxivError(error, sanitizedTopics.join(', '));
@@ -128,7 +132,10 @@ class SchedulerService {
                 logger.info('🤖 Generating AI summary...');
                 try {
                     validateApiKey(process.env.OPENAI_API_KEY, 'OpenAI');
-                    aiSummary = await this.summaryService.generateSummary(papers, process.env.OPENAI_API_KEY);
+                    aiSummary = await retry(
+                        () => this.summaryService.generateSummary(papers, process.env.OPENAI_API_KEY),
+                        RETRY_CONFIGS.openai
+                    );
                     logApiCall('openai', 'generateSummary', { 
                         papersCount: papers.length,
                         userId: user.userId 
@@ -155,10 +162,13 @@ class SchedulerService {
                 logger.info('📤 Uploading report to GitHub...');
                 try {
                     validateApiKey(process.env.GITHUB_TOKEN, 'GitHub');
-                    uploadResult = await this.githubService.uploadReport(
-                        reportData, 
-                        process.env.GITHUB_TOKEN, 
-                        [user.email] // Pass user's email for user ID generation
+                    uploadResult = await retry(
+                        () => this.githubService.uploadReport(
+                            reportData, 
+                            process.env.GITHUB_TOKEN, 
+                            [user.email] // Pass user's email for user ID generation
+                        ),
+                        RETRY_CONFIGS.github
                     );
                     logApiCall('github', 'uploadReport', { 
                         reportDate,
@@ -176,11 +186,14 @@ class SchedulerService {
             if (!isDemoMode) {
                 logger.info('📧 Sending email to user...');
                 try {
-                    emailResult = await this.emailService.sendEmail(
-                        reportData, 
-                        sanitizedTopics, 
-                        [user.email], 
-                        new Date()
+                    emailResult = await retry(
+                        () => this.emailService.sendEmail(
+                            reportData, 
+                            sanitizedTopics, 
+                            [user.email], 
+                            new Date()
+                        ),
+                        RETRY_CONFIGS.email
                     );
                     logApiCall('mailgun', 'sendEmail', { 
                         recipientsCount: 1,

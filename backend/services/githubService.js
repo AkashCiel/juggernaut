@@ -2,6 +2,7 @@ const https = require('https');
 const { logger, logApiCall } = require('../utils/logger');
 const { handleGitHubError } = require('../utils/errorHandler');
 const { sanitizeText, sanitizeHtml } = require('../utils/sanitizer');
+const { generateUserIdFromRecipients } = require('../utils/userUtils');
 const { uploadReportViaPR } = require('./githubPullRequestUploader');
 const { uploadReportDirect } = require('./githubDirectUploader');
 
@@ -26,7 +27,15 @@ class GitHubService {
      */
     async uploadReport(reportData, githubToken, recipients = []) {
         // Generate userId from recipients
-        const userId = this.generateUserIdFromRecipients(recipients);
+        const userId = generateUserIdFromRecipients(recipients);
+        
+        // Log user ID generation
+        if (recipients && recipients.length > 0) {
+            logger.info(`👤 Generated user ID '${userId}' from email: ${recipients[0]}`);
+        } else {
+            logger.info('👤 No recipients provided, using public user ID');
+        }
+        logger.info(`📁 Reports will be stored in: reports/${userId === 'public' ? 'public' : `user-${userId}`}/`);
         
         // Check if we should use direct upload (when branch protection is disabled)
         const useDirectUpload = process.env.GITHUB_DIRECT_UPLOAD === 'true';
@@ -107,36 +116,7 @@ class GitHubService {
         }
     }
 
-    /**
-     * Generate a user ID from email recipients
-     * @param {string[]} recipients - Array of email addresses
-     * @returns {string} - User ID (email hash or 'public')
-     */
-    generateUserIdFromRecipients(recipients) {
-        if (!recipients || recipients.length === 0) {
-            logger.info('👤 No recipients provided, using public user ID');
-            return 'public';
-        }
-        
-        // Use the first recipient's email to generate a user ID
-        const primaryEmail = recipients[0];
-        
-        // Create a simple hash of the email for consistent user ID
-        let hash = 0;
-        for (let i = 0; i < primaryEmail.length; i++) {
-            const char = primaryEmail.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash; // Convert to 32-bit integer
-        }
-        
-        // Convert to positive hex string and take first 8 characters
-        const userId = Math.abs(hash).toString(16).substring(0, 8);
-        
-        logger.info(`👤 Generated user ID '${userId}' from email: ${primaryEmail}`);
-        logger.info(`📁 Reports will be stored in: reports/${userId === 'public' ? 'public' : `user-${userId}`}/`);
-        
-        return userId;
-    }
+
 
     generateReportHtml(reportData) {
         const papersHtml = reportData.papers.map((paper, index) => {

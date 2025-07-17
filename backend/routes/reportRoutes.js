@@ -9,11 +9,12 @@ const GitHubService = require('../services/githubService');
 const UserService = require('../services/userService');
 
 // Import middleware
-const { validateReportRequest, validateArxivTest, validateSummaryTest, handleValidationErrors } = require('../middleware/validation');
+const { validateReportRequest, validateUserRegistration, validateArxivTest, validateSummaryTest, handleValidationErrors } = require('../middleware/validation');
 const { reportGenerationLimiter, optionalAuth } = require('../middleware/security');
 const { sanitizeTopics, sanitizeEmails, sanitizePapers } = require('../utils/sanitizer');
 const { asyncHandler, handleArxivError, handleOpenAIError, handleMailgunError, handleGitHubError, validateEnvironment, validateApiKey } = require('../utils/errorHandler');
 const { logger, logApiCall, logReportGeneration } = require('../utils/logger');
+const { retry, RETRY_CONFIGS } = require('../utils/retryUtils');
 
 // Initialize services
 const arxivService = new ArxivService();
@@ -286,13 +287,16 @@ router.post('/generate-report',
             logger.warn('⚠️ Running in demo mode - some features will be limited');
         }
 
-        // Step 1: Fetch papers from ArXiv
+        // Step 1: Fetch papers from ArXiv (with retry)
         logger.info('📚 Fetching papers from ArXiv...');
         logApiCall('arxiv', 'fetchPapers', { topics: sanitizedTopics, maxPapers: sanitizedMaxPapers });
         
         let papers = [];
         try {
-            papers = await arxivService.fetchPapers(sanitizedTopics, sanitizedMaxPapers);
+            papers = await retry(
+                () => arxivService.fetchPapers(sanitizedTopics, sanitizedMaxPapers),
+                RETRY_CONFIGS.arxiv
+            );
             papers = sanitizePapers(papers);
         } catch (error) {
             handleArxivError(error, sanitizedTopics.join(', '));
@@ -308,7 +312,10 @@ router.post('/generate-report',
             logger.info('🤖 Generating AI summary...');
             try {
                 validateApiKey(process.env.OPENAI_API_KEY, 'OpenAI');
-                aiSummary = await summaryService.generateSummary(papers, process.env.OPENAI_API_KEY);
+                aiSummary = await retry(
+                    () => summaryService.generateSummary(papers, process.env.OPENAI_API_KEY),
+                    RETRY_CONFIGS.openai
+                );
                 logApiCall('openai', 'generateSummary', { papersCount: papers.length });
             } catch (error) {
                 handleOpenAIError(error);
@@ -335,7 +342,10 @@ router.post('/generate-report',
             logger.info('📤 Uploading report to GitHub via Pull Request...');
             try {
                 validateApiKey(process.env.GITHUB_TOKEN, 'GitHub');
-                uploadResult = await githubService.uploadReport(reportData, process.env.GITHUB_TOKEN, sanitizedRecipients);
+                uploadResult = await retry(
+                    () => githubService.uploadReport(reportData, process.env.GITHUB_TOKEN, sanitizedRecipients),
+                    RETRY_CONFIGS.github
+                );
                 reportData.pagesUrl = uploadResult.pagesUrl;
                 reportData.prUrl = uploadResult.prUrl;
                 reportData.userId = uploadResult.userId;
@@ -360,7 +370,10 @@ router.post('/generate-report',
                 logger.info(`📧 Mailgun Domain: ${process.env.MAILGUN_DOMAIN || 'Missing'}`);
                 
                 emailService.initialize(process.env.MAILGUN_API_KEY, process.env.MAILGUN_DOMAIN);
-                emailResult = await emailService.sendEmail(reportData, sanitizedTopics, sanitizedRecipients, new Date());
+                emailResult = await retry(
+                    () => emailService.sendEmail(reportData, sanitizedTopics, sanitizedRecipients, new Date()),
+                    RETRY_CONFIGS.email
+                );
                 logApiCall('mailgun', 'sendEmail', { recipientsCount: sanitizedRecipients.length });
             } catch (error) {
                 logger.error('❌ Email service error:', {
@@ -446,15 +459,10 @@ router.post('/test/summary',
 
 // User registration endpoint
 router.post('/register-user',
+    validateUserRegistration,
+    handleValidationErrors,
     asyncHandler(async (req, res) => {
         const { email, topics = ['artificial intelligence', 'machine learning'] } = req.body;
-        
-        if (!email || !email.includes('@')) {
-            return res.status(400).json({
-                success: false,
-                error: 'Invalid email address'
-            });
-        }
         
         try {
             const sanitizedTopics = sanitizeTopics(topics);

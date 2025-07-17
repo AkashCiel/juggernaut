@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { logger } = require('../utils/logger');
+const { generateUserId: generateUserIdUtil } = require('../utils/userUtils');
 
 class UserService {
     constructor() {
@@ -47,18 +48,12 @@ class UserService {
     }
 
     /**
-     * Generate user ID from email (consistent with GitHub service)
+     * Generate user ID from email (delegates to centralized utility)
      * @param {string} email - User's email address
      * @returns {string} User ID hash
      */
     generateUserId(email) {
-        let hash = 0;
-        for (let i = 0; i < email.length; i++) {
-            const char = email.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash; // Convert to 32-bit integer
-        }
-        return Math.abs(hash).toString(16).substring(0, 8);
+        return generateUserIdUtil(email);
     }
 
     /**
