@@ -1,0 +1,430 @@
+
+    
+        <h1>🤖 AI Research Report</h1>
+        
+            <strong>Date:</strong> 2025-07-17<br>
+            <strong>Topics:</strong> AI Ethics and Safety, Robotics and Automation, Quantum Computing<br>
+            <strong>Papers Found:</strong> 50
+        
+        
+        
+            
+                <h2>🤖 AI Summary</h2>
+                <p>The collection of research papers covers a wide array of AI and computational advancements, highlighting significant trends and breakthroughs across various domains. In vision-based depth estimation, the development of depth foundation models is motivated by scaling laws and foundation models established in other domains. These models aim to overcome the limitations of traditional sensor-based methods, offering strong zero-shot generalization capabilities for applications like 3D reconstruction and autonomous driving. This reflects a broader trend towards leveraging large datasets and powerful model architectures to improve generalization and application robustness in AI systems.
+
+In the realm of natural language processing, the paper on instruction-following capabilities of large language models (LLMs) reveals challenges as model performance degrades with increasing instruction density. By introducing the IFScale benchmark, researchers identify the limitations of current LLMs, emphasizing the need for more effective model designs to handle instruction-dense prompts. Similarly, the DrafterBench initiative for civil engineering tasks underscores the push for domain-specific benchmarks that can evaluate AI systems capabilities in real-world applications, particularly in technical fields.
+
+In quantum computing, the paper on Koopman-von Neumann field theory bridges classical many-body problems with quantum field theory, potentially enhancing quantum algorithms for classical statistical mechanics. Meanwhile, the study on quantum QC-LDPC codes highlights advancements in error-rate transitions, suggesting avenues for reducing error floors in quantum communication. These developments underscore the growing convergence of quantum information theory with practical applications, aiming to enhance computational efficiency and robustness.
+
+Overall, these papers demonstrate AIs expanding influence across diverse fields, from enhancing the fidelity of digital simulations and enabling more nuanced NLP capabilities to integrating quantum computing methodologies into classical problems. This reflects a continuous push towards more sophisticated, versatile, and application-specific AI models, highlighting the importance of interdisciplinary approaches in advancing technology and addressing complex, real-world challenges.</p>
+            
+        
+        
+        <h2>📚 Research Papers</h2>
+        
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11540v1" target="_blank">Towards Depth Foundation Model: Recent Trends in Vision-Based Depth Estimation</a></h3>
+                    <p><strong>Authors:</strong> Zhen Xu, Hongyu Zhou, Sida Peng, Haotong Lin, Haoyu Guo, Jiahao Shao, Peishan Yang, Qinglin Yang, Sheng Miao, Xingyi He, Yifan Wang, Yue Wang, Ruizhen Hu, Yiyi Liao, Xiaowei Zhou, Hujun Bao</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> cs.CV</p>
+                    <p><strong>Summary:</strong> Depth estimation is a fundamental task in 3D computer vision, crucial for applications such as 3D reconstruction, free-viewpoint rendering, robotics, autonomous driving, and AR/VR technologies. Traditional methods relying on hardware sensors like LiDAR are often limited by high costs, low resolution, and environmental sensitivity, limiting their applicability in real-world scenarios. Recent advances in vision-based methods offer a promising alternative, yet they face challenges in generalization and stability due to either the low-capacity model architectures or the reliance on domain-specific and small-scale datasets. The emergence of scaling laws and foundation models in other domains has inspired the development of depth foundation models: deep neural networks trained on large datasets with strong zero-shot generalization capabilities. This paper surveys the evolution of deep learning architectures and paradigms for depth estimation across the monocular, stereo, multi-view, and mono...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11541v1" target="_blank">Koopman-von Neumann Field Theory</a></h3>
+                    <p><strong>Authors:</strong> James Stokes</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> quant-ph, cond-mat.stat-mech, hep-th</p>
+                    <p><strong>Summary:</strong> The classical many-body problem is reformulated as a bosonic quantum field theory. Quantum field operators evolve unitarily in the Heisenberg picture so that a quantum Vlasov equation is satisfied as an operator identity. The formalism enables the direct transfer of techniques from quantum information and quantum many-body field theory to classical nonequilibrium statistical mechanics. Implications for quantum algorithms are discussed.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11539v1" target="_blank">Streaming 4D Visual Geometry Transformer</a></h3>
+                    <p><strong>Authors:</strong> Dong Zhuo, Wenzhao Zheng, Jiahe Guo, Yuqi Wu, Jie Zhou, Jiwen Lu</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> cs.CV, cs.AI, cs.LG</p>
+                    <p><strong>Summary:</strong> Perceiving and reconstructing 4D spatial-temporal geometry from videos is a fundamental yet challenging computer vision task. To facilitate interactive and real-time applications, we propose a streaming 4D visual geometry transformer that shares a similar philosophy with autoregressive large language models. We explore a simple and efficient design and employ a causal transformer architecture to process the input sequence in an online manner. We use temporal causal attention and cache the historical keys and values as implicit memory to enable efficient streaming long-term 4D reconstruction. This design can handle real-time 4D reconstruction by incrementally integrating historical information while maintaining high-quality spatial consistency. For efficient training, we propose to distill knowledge from the dense bidirectional visual geometry grounded transformer (VGGT) to our causal model. For inference, our model supports the migration of optimized efficient attention operator (e.g.,...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11538v1" target="_blank">How Many Instructions Can LLMs Follow at Once?</a></h3>
+                    <p><strong>Authors:</strong> Daniel Jaroslawicz, Brendan Whiting, Parth Shah, Karime Maamari</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> cs.AI</p>
+                    <p><strong>Summary:</strong> Production-grade LLM systems require robust adherence to dozens or even hundreds of instructions simultaneously. However, the instruction-following capabilities of LLMs at high instruction densities have not yet been characterized, as existing benchmarks only evaluate models on tasks with a single or few instructions. We introduce IFScale, a simple benchmark of 500 keyword-inclusion instructions for a business report writing task to measure how instruction-following performance degrades as instruction density increases. We evaluate 20 state-of-the-art models across seven major providers and find that even the best frontier models only achieve 68% accuracy at the max density of 500 instructions. Our analysis reveals model size and reasoning capability to correlate with 3 distinct performance degradation patterns, bias towards earlier instructions, and distinct categories of instruction-following errors. Our insights can help inform design of instruction-dense prompts in real-world appli...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11537v1" target="_blank">KPZ equation from open ASEP with general boundary asymmetry</a></h3>
+                    <p><strong>Authors:</strong> Kevin Yang</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> math.PR</p>
+                    <p><strong>Summary:</strong> We consider generalizations of open ASEP in the interval and half-space, where the speed of the reservoir dynamics can depend on the local particle configuration. We show that their height functions have a continuum limit given by the open KPZ equation. This removes the assumption of Liggetts condition in Corwin-Shen 18 and Parekh 19, thus answering a question of Corwin, and it also removes the assumption of product invariant measures in Goncalves-Perkowski-Simon 20.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11536v1" target="_blank">Understanding Quantum Information and Computation</a></h3>
+                    <p><strong>Authors:</strong> John Watrous</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> quant-ph</p>
+                    <p><strong>Summary:</strong> This is a course on the theory of quantum computing. It consists of 16 lessons, each with a video and written component, covering the basics of quantum information, quantum algorithms (including query algorithms, Shors algorithm for integer factorization, and Grovers algorithm), the general formulation of quantum information (including density matrices, quantum channels, and general measurements), and quantum error correction (including the basics, the stabilizer formalism, CSS codes, the toric code, and fault-tolerant quantum computation).</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11535v1" target="_blank">Canonical Bayesian Linear System Identification</a></h3>
+                    <p><strong>Authors:</strong> Andrey Bryutkin, Matthew E. Levine, Iñigo Urteaga, Youssef Marzouk</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> stat.ML, cs.LG, cs.SY, eess.SY, stat.CO</p>
+                    <p><strong>Summary:</strong> Standard Bayesian approaches for linear time-invariant (LTI) system identification are hindered by parameter non-identifiability; the resulting complex, multi-modal posteriors make inference inefficient and impractical. We solve this problem by embedding canonical forms of LTI systems within the Bayesian framework. We rigorously establish that inference in these minimal parameterizations fully captures all invariant system dynamics (e.g., transfer functions, eigenvalues, predictive distributions of system outputs) while resolving identifiability. This approach unlocks the use of meaningful, structure-aware priors (e.g., enforcing stability via eigenvalues) and ensures conditions for a Bernstein--von Mises theorem -- a link between Bayesian and frequentist large-sample asymptotics that is broken in standard forms. Extensive simulations with modern MCMC methods highlight advantages over standard parameterizations: canonical forms achieve higher computational efficiency, generate interpre...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11534v1" target="_blank">Sharp Error-Rate Transitions in Quantum QC-LDPC Codes under Joint BP Decoding</a></h3>
+                    <p><strong>Authors:</strong> Daiki Komoto, Kenta Kasai</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> quant-ph, cs.IT, math.IT</p>
+                    <p><strong>Summary:</strong> In this study, we report that quantum quasi-cyclic low-density parity-check codes decoded via joint belief propagation (BP) exhibit steep error-rate curves, despite the presence of error floors. To the best of our knowledge, this is the first observation of such threshold-like behavior for quantum codes with non-vanishing coding rate, excluding those decoded with non-binary BP decoders. Moreover, we find that dominant error events contributing to the error floor typically involve only a small number of bits. These findings suggest that the error floor is caused by trapping sets -- specific subgraph structures in the Tanner graph -- and indicate that identifying and avoiding such structures may lead to further reduction of the error floor.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11533v1" target="_blank">CharaConsist: Fine-Grained Consistent Character Generation</a></h3>
+                    <p><strong>Authors:</strong> Mengyu Wang, Henghui Ding, Jianing Peng, Yao Zhao, Yunpeng Chen, Yunchao Wei</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> cs.CV</p>
+                    <p><strong>Summary:</strong> In text-to-image generation, producing a series of consistent contents that preserve the same identity is highly valuable for real-world applications. Although a few works have explored training-free methods to enhance the consistency of generated subjects, we observe that they suffer from the following problems. First, they fail to maintain consistent background details, which limits their applicability. Furthermore, when the foreground character undergoes large motion variations, inconsistencies in identity and clothing details become evident. To address these problems, we propose CharaConsist, which employs point-tracking attention and adaptive token merge along with decoupled control of the foreground and background. CharaConsist enables fine-grained consistency for both foreground and background, supporting the generation of one character in continuous shots within a fixed scene or in discrete shots across different scenes. Moreover, CharaConsist is the first consistent generation...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11532v1" target="_blank">Critical and super-critical scatterings in baryogenesis and leptogenesis</a></h3>
+                    <p><strong>Authors:</strong> Marcos M. Flores, Kalliopi Petraki, Anna Socha</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> hep-ph</p>
+                    <p><strong>Summary:</strong> In many theories, matter-antimatter asymmetries originate from out-of-equilibrium decays and scatterings of heavy particles. While decays remain efficient, scattering rates typically drop below the Hubble rate as the universe expands. We point out the possibility of scatterings between non-relativistic particles and the relativistic bath whose cross-sections grow with decreasing temperature, leading to scattering rates that track or exceed the Hubble rate at late times. This results in soaring asymmetry generation, even at low scales and with small CP- or baryon/lepton-violating couplings.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11531v1" target="_blank">Langevin Flows for Modeling Neural Latent Dynamics</a></h3>
+                    <p><strong>Authors:</strong> Yue Song, T. Anderson Keller, Yisong Yue, Pietro Perona, Max Welling</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> cs.LG, q-bio.NC</p>
+                    <p><strong>Summary:</strong> Neural populations exhibit latent dynamical structures that drive time-evolving spiking activities, motivating the search for models that capture both intrinsic network dynamics and external unobserved influences. In this work, we introduce LangevinFlow, a sequential Variational Auto-Encoder where the time evolution of latent variables is governed by the underdamped Langevin equation. Our approach incorporates physical priors -- such as inertia, damping, a learned potential function, and stochastic forces -- to represent both autonomous and non-autonomous processes in neural systems. Crucially, the potential function is parameterized as a network of locally coupled oscillators, biasing the model toward oscillatory and flow-like behaviors observed in biological neural populations. Our model features a recurrent encoder, a one-layer Transformer decoder, and Langevin dynamics in the latent space. Empirically, our method outperforms state-of-the-art baselines on synthetic neural population...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11530v1" target="_blank">Intrinsic alignment demographics for next-generation lensing: Revealing galaxy property trends with DESI Y1 direct measurements</a></h3>
+                    <p><strong>Authors:</strong> J. Siegel, J. McCullough, A. Amon, C. Lamman, N. Jeffrey, B. Joachimi, H. Hoekstra, S. Heydenreich, A. J. Ross, J. Aguilar, S. Ahlen, D. Bianchi, C. Blake, D. Brooks, F. J. Castander, T. Claybaugh, A. de la Macorra, J. DeRose, P. Doel, N. Emas, S. Ferraro, A. Font-Ribera, J. E. Forero-Romero, E. Gaztañaga, S. Gontcho A Gontcho, G. Gutierrez, K. Honscheid, M. Ishak, S. Joudaki, R. Kehoe, D. Kirkby, T. Kisner, A. Krolewski, O. Lahav, A. Lambert, M. Landriau, L. Le Guillou, M. E. Levi, M. Manera, A. Meisner, R. Miquel, J. Moustakas, S. Nadathur, J. A. Newman, G. Niz, N. Palanque-Delabrouille, W. J. Percival, A. Porredon, F. Prada, I. Pérez-Ràfols, G. Rossi, E. Sanchez, C. Saulder, D. Schlegel, M. Schubnell, A. Semenaite, J. Silber, D. Sprayberry, Z. Sun, G. Tarlé, B. A. Weaver, R. Zhou, H. Zou</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> astro-ph.CO, astro-ph.GA</p>
+                    <p><strong>Summary:</strong> We present direct measurements of the intrinsic alignments (IA) of over 2 million spectroscopic galaxies using DESI Data Release 1 and imaging from four lensing surveys: DES, HSC, KiDS, and SDSS. In this uniquely data-rich regime, we take initial steps towards a more tailored IA modelling approach by building a library of IA measurements across colour, luminosity, stellar mass, and redshift. We map the dependence between galaxy type -- in terms of rest-frame colour, strength of the 4000 Angstrom break, and specific star formation rate -- and IA amplitude; the bluest galaxies have an alignment consistent with zero, across low (0.05z0.5) and high (0.8z1.55) redshifts. In order to construct cosmic shear samples that are minimally impacted by IA but maintain maximum sample size and statistical power, we map the dependence of alignment with colour purity. Red, quenched galaxies are strongly aligned and the amplitude of the signal increases with luminosity, which is tightly correlated with s...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11529v1" target="_blank">Dam breaks in the discrete nonlinear Schrödinger equation</a></h3>
+                    <p><strong>Authors:</strong> Shrohan Mohapatra, Panayotis G. Kevrekidis, Su Yang, Sathyanarayanan Chandramouli</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> nlin.PS, 35Q55, 35Q51</p>
+                    <p><strong>Summary:</strong> In the present work we study the nucleation of Dispersive shock waves (DSW) in the {defocusing}, discrete nonlinear Schr{\o}dinger equation (DNLS), a model of wide relevance to nonlinear optics and atomic condensates. Here, we study the dynamics of so-called dam break problems with step-initial data characterized by two-parameters, one of which corresponds to the lattice spacing, while the other being the right hydrodynamic background. Our analysis bridges the anti-continuum limit of vanishing coupling strength with the well-established continuum integrable one. To shed light on the transition between the extreme limits, we theoretically deploy Whitham modulation theory, various quasi-continuum asymptotic reductions of the DNLS and existence and stability analysis and connect our findings with systematic numerical computations. Our work unveils a sharp threshold in the discretization across which qualitatively continuum dynamics from the dam breaks are observed. Furthermore, we observe...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11528v1" target="_blank">FlexCAST: Enabling Flexible Scientific Data Analyses</a></h3>
+                    <p><strong>Authors:</strong> Benjamin Nachman, Dennis Noll</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> hep-ex, hep-ph, physics.data-an</p>
+                    <p><strong>Summary:</strong> The development of scientific data analyses is a resource-intensive process that often yields results with untapped potential for reuse and reinterpretation. In many cases, a developed analysis can be used to measure more than it was designed for, by changing its input data or parametrization. Existing reinterpretation frameworks, such as RECAST, enable analysis reinterpretation by preserving the analysis implementation to allow for changes of particular parts of the input data. We introduce FlexCAST, which generalizes this concept by preserving the analysis design itself, supporting changes to the entire input data and analysis parametrization. FlexCAST is based on three core principles: modularity, validity, and robustness. Modularity enables a change of the input data and parametrization, while validity ensures that the obtained results remain meaningful, and robustness ensures that as many configurations as possible yield meaningful results. While not being limited to data-driven m...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11527v1" target="_blank">DrafterBench: Benchmarking Large Language Models for Tasks Automation in Civil Engineering</a></h3>
+                    <p><strong>Authors:</strong> Yinsheng Li, Zhen Dong, Yi Shao</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> cs.AI, cs.CE</p>
+                    <p><strong>Summary:</strong> Large Language Model (LLM) agents have shown great potential for solving real-world problems and promise to be a solution for tasks automation in industry. However, more benchmarks are needed to systematically evaluate automation agents from an industrial perspective, for example, in Civil Engineering. Therefore, we propose DrafterBench for the comprehensive evaluation of LLM agents in the context of technical drawing revision, a representation task in civil engineering. DrafterBench contains twelve types of tasks summarized from real-world drawing files, with 46 customized functions/tools and 1920 tasks in total. DrafterBench is an open-source benchmark to rigorously test AI agents proficiency in interpreting intricate and long-context instructions, leveraging prior knowledge, and adapting to dynamic instruction quality via implicit policy awareness. The toolkit comprehensively assesses distinct capabilities in structured data comprehension, function execution, instruction following, ...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11526v1" target="_blank">Gravitational wave propagation in bigravity in the late universe</a></h3>
+                    <p><strong>Authors:</strong> David Brizuela, Marco de Cesare, Araceli Soler Oficial</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> gr-qc, hep-th</p>
+                    <p><strong>Summary:</strong> We carry out a detailed analytical investigation of the propagation of gravitational waves in bimetric gravity in a late-time de Sitter epoch. In this regime, the dynamical equations for the massless and massive graviton modes can be decoupled and solved exactly. We provide uniform approximations for the modes in terms of elementary functions, which are valid on all scales and for all viable mass windows. We identify different dynamical regimes for the system, depending on the propagation properties of the massive graviton, and whether the massless and massive components of the signal can be temporally resolved or not. In each regime, we compute the gravitational-wave luminosity distance as a function of redshift and study the propagation of wave packets. Further, by an explicit computation, we show that the massless and massive components of the signal retain their coherence also in the regime where they can be temporally resolved, even when couplings to incoherent matter degrees of f...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11525v1" target="_blank">LLM-based ambiguity detection in natural language instructions for collaborative surgical robots</a></h3>
+                    <p><strong>Authors:</strong> Ana Davila, Jacinto Colan, Yasuhisa Hasegawa</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> cs.RO, cs.HC</p>
+                    <p><strong>Summary:</strong> Ambiguity in natural language instructions poses significant risks in safety-critical human-robot interaction, particularly in domains such as surgery. To address this, we propose a framework that uses Large Language Models (LLMs) for ambiguity detection specifically designed for collaborative surgical scenarios. Our method employs an ensemble of LLM evaluators, each configured with distinct prompting techniques to identify linguistic, contextual, procedural, and critical ambiguities. A chain-of-thought evaluator is included to systematically analyze instruction structure for potential issues. Individual evaluator assessments are synthesized through conformal prediction, which yields non-conformity scores based on comparison to a labeled calibration dataset. Evaluating Llama 3.2 11B and Gemma 3 12B, we observed classification accuracy exceeding 60% in differentiating ambiguous from unambiguous surgical instructions. Our approach improves the safety and reliability of human-robot collab...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11524v1" target="_blank">Quantum modified inertia: an application to galaxy rotation curves</a></h3>
+                    <p><strong>Authors:</strong> Jonathan Gillot</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> gr-qc</p>
+                    <p><strong>Summary:</strong> This study explores the field of modified inertia through a novel model involving maximal and minimal acceleration bounds. A principle of dynamics is developed within special relativity and has direct implications in astrophysics, especially for galaxy rotation curves. The presence of a minimal acceleration significantly reduces the amount of dark matter required to account for these curves. The model presented here is however conceptually different from fiduciary Modified Newtonian Dynamics (MOND). The modified inertia with the minimal acceleration bound closely matches with many observed galaxy rotation curves and the radial acceleration relation, showing a better agreement than MOND in the $10^{-10}$ m s$^{-2}$ regime. Additionally, the minimal acceleration is predicted to evolve with redshift.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11523v1" target="_blank">Precision Spatio-Temporal Feature Fusion for Robust Remote Sensing Change Detection</a></h3>
+                    <p><strong>Authors:</strong> Buddhi Wijenayake, Athulya Ratnayake, Praveen Sumanasekara, Nichula Wasalathilaka, Mathivathanan Piratheepan, Roshan Godaliyadda, Mervyn Ekanayake, Vijitha Herath</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> eess.IV</p>
+                    <p><strong>Summary:</strong> Remote sensing change detection is vital for monitoring environmental and urban transformations but faces challenges like manual feature extraction and sensitivity to noise. Traditional methods and early deep learning models, such as convolutional neural networks (CNNs), struggle to capture long-range dependencies and global context essential for accurate change detection in complex scenes. While Transformer-based models mitigate these issues, their computational complexity limits their applicability in high-resolution remote sensing. Building upon ChangeMamba architecture, which leverages state space models for efficient global context modeling, this paper proposes precision fusion blocks to capture channel-wise temporal variations and per-pixel differences for fine-grained change detection. An enhanced decoder pipeline, incorporating lightweight channel reduction mechanisms, preserves local details with minimal computational cost. Additionally, an optimized loss function combining Cr...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11522v1" target="_blank">CATVis: Context-Aware Thought Visualization</a></h3>
+                    <p><strong>Authors:</strong> Tariq Mehmood, Hamza Ahmad, Muhammad Haroon Shakeel, Murtaza Taj</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> cs.CV, cs.LG</p>
+                    <p><strong>Summary:</strong> EEG-based brain-computer interfaces (BCIs) have shown promise in various applications, such as motor imagery and cognitive state monitoring. However, decoding visual representations from EEG signals remains a significant challenge due to their complex and noisy nature. We thus propose a novel 5-stage framework for decoding visual representations from EEG signals: (1) an EEG encoder for concept classification, (2) cross-modal alignment of EEG and text embeddings in CLIP feature space, (3) caption refinement via re-ranking, (4) weighted interpolation of concept and caption embeddings for richer semantics, and (5) image generation using a pre-trained Stable Diffusion model. We enable context-aware EEG-to-image generation through cross-modal alignment and re-ranking. Experimental results demonstrate that our method generates high-quality images aligned with visual stimuli, outperforming SOTA approaches by 13.43% in Classification Accuracy, 15.21% in Generation Accuracy and reducing Fr\eche...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11521v1" target="_blank">Opinion dynamics: Statistical physics and beyond</a></h3>
+                    <p><strong>Authors:</strong> Michele Starnini, Fabian Baumann, Tobias Galla, David Garcia, Gerardo Iñiguez, Márton Karsai, Jan Lorenz, Katarzyna Sznajd-Weron</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> physics.soc-ph, cond-mat.stat-mech</p>
+                    <p><strong>Summary:</strong> Opinion dynamics, the study of how individual beliefs and collective public opinion evolve, is a fertile domain for applying statistical physics to complex social phenomena. Like physical systems, societies exhibit macroscopic regularities from localized interactions, leading to outcomes such as consensus or fragmentation. This field has grown significantly, attracting interdisciplinary methods and driven by a surge in large-scale behavioral data. This review covers its rapid progress, bridging the literature dispersion. We begin with essential concepts and definitions, encompassing the nature of opinions, microscopic and macroscopic dynamics. This foundation leads to an overview of empirical research, from lab experiments to large-scale data analysis, which informs and validates models of opinion dynamics. We then present individual-based models, categorized by their macroscopic phenomena (e.g., consensus, polarization, echo chambers) and microscopic mechanisms (e.g., homophily, assim...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11520v1" target="_blank">HIF: The hypergraph interchange format for higher-order networks</a></h3>
+                    <p><strong>Authors:</strong> Martín Coll, Cliff A. Joslyn, Nicholas W. Landry, Quintino Francesco Lotito, Audun Myers, Joshua Pickard, Brenda Praggastis, Przemysław Szufel</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> physics.soc-ph, cs.SI</p>
+                    <p><strong>Summary:</strong> Many empirical systems contain complex interactions of arbitrary size, representing, for example, chemical reactions, social groups, co-authorship relationships, and ecological dependencies. These interactions are known as higher-order interactions and the collection of these interactions comprise a higher-order network, or hypergraph. Hypergraphs have established themselves as a popular and versatile mathematical representation of such systems and a number of software packages written in various programming languages have been designed to analyze these networks. However, the ecosystem of higher-order network analysis software is fragmented due to specialization of each softwares programming interface and compatible data representations. To enable seamless data exchange between higher-order network analysis software packages, we introduce the Hypergraph Interchange Format (HIF), a standardized format for storing higher-order network data. HIF supports multiple types of higher-order net...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11519v1" target="_blank">Optimizing loading of cold cesium atoms into a hollow-core fiber using machine learning</a></h3>
+                    <p><strong>Authors:</strong> Paul Anderson, Sreesh Venuturumilli, Michal Bajcsy</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> physics.atom-ph</p>
+                    <p><strong>Summary:</strong> Experimental multi-parameter optimization can enhance the interfacing of cold atoms with waveguides and cavities. Recent implementations of machine learning (ML) algorithms demonstrate the optimization of complex cold atom ex perimental sequences in a multi-dimensional parameter space. Here, we report on the use of ML to optimize loading of cold atoms into a hollow-core fiber. We use Gaussian process machine learning in M-LOOP, an open-source online machine learning interface, to perform this optimization. This is implemented by iteratively adjusting experimental parameters based on feedback from an atom-counting measurement of optical bleaching. We test the effectiveness of ML, alongside a manual scan, to converge to optimal loading conditions. We survey multiple ML runs to auto matically access appreciable atom-loading conditions. In conjunction with experimental design choices, ML-assisted optimization holds promise in the implementation and maintenance of complex cold atom experime...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11518v1" target="_blank">Revisiting Cosmic Distance Duality with Megamasers and DESI DR2: Model Independent Constraints on Early-Late Calibration</a></h3>
+                    <p><strong>Authors:</strong> Brijesh Kanodia, Ujjwal Upadhyay, Yashi Tiwari</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> astro-ph.CO</p>
+                    <p><strong>Summary:</strong> The Cosmic Distance Duality Relation (CDDR) connects the angular diameter distance ($d_A$) and the luminosity distance ($d_L$) at a given redshift. This fundamental relation holds in any metric theory of gravity, provided that photon number is conserved and light propagates along null geodesics. A deviation from this relation could indicate new physics beyond the standard cosmological model. In this work, we test the validity of the CDDR at very low redshifts ($z  0.04$) by combining $d_A$ from the Megamaser Cosmology Project with $d_L$ from the Pantheon+ sample of Type Ia Supernovae (SNIa). We find the relation to be statistically consistent with the current data. We further incorporate high-redshift Baryon Acoustic Oscillation (BAO)-based $d_A$ measurements from DESI DR2 in combination with SNIa data, highlighting the critical role of the $r_d-M_b$ (early-late) calibration in testing the CDDR using these two probes. Assuming CDDR holds, we perform a Bayesian analysis to derive model-...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11517v1" target="_blank">Gaussian Noise Model of Nonlinear Distortions from Semiconductor Optical Amplifiers</a></h3>
+                    <p><strong>Authors:</strong> Hartmut Hafermann</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> physics.optics, eess.SP</p>
+                    <p><strong>Summary:</strong> A Gaussian Noise Model of the nonlinear noise power spectral density is developed for a semiconductor optical amplifier as described by the Agrawal model. A simple closed-form expression is obtained for the nonlinear noise-to-signal ratio of broadband wavelength-division multiplexed signals as a function of the Agrawal model parameters, the amplifier output power and the transmission bandwidth. The accuracy of the closed-form expression and its region of validity is assessed in numerical simulations. The error is smaller than 0.1 dB when the product of bandwidth and gain recovery time $B\times\tau_c$ exceeds 100.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11516v1" target="_blank">Inversions Tableaux</a></h3>
+                    <p><strong>Authors:</strong> Ilani Axelrod-Freed</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> math.CO</p>
+                    <p><strong>Summary:</strong> We introduce inversions tableaux, a new combinatorial model for Schubert polynomials and Stanley-symmetric that directly specialize to semi-standard Young tableaux in the Grassmannian case. They are a modification of the balanced staircase tableaux of Edelman and Greene. We explicitly describe inversions tableaux that correspond to the lexicographically minimal and maximal monomials in each Schubert polynomial and characterize the unique inversions tableau for dominant permutations. We also define tableaux skew Schubert polynomials $\mathfrak{S}^t_{w/u}$ and prove certain properties about them.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11515v1" target="_blank">AirLLM: Diffusion Policy-based Adaptive LoRA for Remote Fine-Tuning of LLM over the Air</a></h3>
+                    <p><strong>Authors:</strong> Shiyi Yang, Xiaoxue Yu, Rongpeng Li, Jianhang Zhu, Zhifeng Zhao, Honggang Zhang</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> cs.LG, cs.AI, cs.CL</p>
+                    <p><strong>Summary:</strong> Operating Large Language Models (LLMs) on edge devices is increasingly challenged by limited communication bandwidth and strained computational and memory costs. Thus, cloud-assisted remote fine-tuning becomes indispensable. Nevertheless, existing Low-Rank Adaptation (LoRA) approaches typically employ fixed or heuristic rank configurations, and the subsequent over-the-air transmission of all LoRA parameters could be rather inefficient. To address this limitation, we develop AirLLM, a hierarchical diffusion policy framework for communication-aware LoRA adaptation. Specifically, AirLLM models the rank configuration as a structured action vector that spans all LoRA-inserted projections. To solve the underlying high-dimensional sequential decision-making problem, a Proximal Policy Optimization (PPO) agent generates coarse-grained decisions by jointly observing wireless states and linguistic complexity, which are then refined via Denoising Diffusion Implicit Models (DDIM) to produce high-re...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11514v1" target="_blank">Density of solutions for systems of forms</a></h3>
+                    <p><strong>Authors:</strong> Amichai Lampert</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> math.NT, math.AG, 11D72, 11G25, 11G35, 11P55, 14G05</p>
+                    <p><strong>Summary:</strong> Let $K$ be a field of characteristic zero over which every diagonal form in sufficiently many variables admits a nontrivial solution. For example, $K$ may be a totally imaginary number field or a finite extension of a $p$-adic field. Suppose $f_1,\ldots,f_s$ are forms of degree $d$ over $K.$ Bik, Draisma and Snowden recently proved that there exists a constant $B = B(d,s,K)$ such that the rational solutions to the system of equations $f_1=\ldots=f_s = 0$ are Zariski dense, as long as the Birch rank of $f_1,\ldots,f_s$ is greater than $B.$ We establish an effective bound for this constant. Combined with results of Skinner, we obtain as a corollary a sufficient condition for the integer zeros of a system of forms over a number field to satisfy the Hardy-Littlewood asymptotic with a positive leading term. This corollary generalizes a seminal result proved by Schmidt for the rational numbers.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11513v1" target="_blank">Recursive Bound-Constrained AdaGrad with Applications to Multilevel and Domain Decomposition Minimization</a></h3>
+                    <p><strong>Authors:</strong> Serge Gratton, Alena Kopaničáková, Philippe Toint</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> math.OC, cs.AI, cs.NA, math.NA, 49K20, 65M55, 65Y20, 68Q25, 68T05, 90C26, 90C30, F.2.1; G.1.8; I.2.5</p>
+                    <p><strong>Summary:</strong> Two OFFO (Objective-Function Free Optimization) noise tolerant algorithms are presented that handle bound constraints, inexact gradients and use second-order information when available.The first is a multi-level method exploiting a hierarchical description of the problem and the second is a domain-decomposition method covering the standard addditive Schwarz decompositions. Both are generalizations of the first-order AdaGrad algorithm for unconstrained optimization. Because these algorithms share a common theoretical framework, a single convergence/complexity theory is provided which covers them both. Its main result is that, with high probability, both methods need at most $O(\epsilon^{-2})$ iterations and noisy gradient evaluations to compute an $\epsilon$-approximate first-order critical point of the bound-constrained problem. Extensive numerical experiments are discussed on applications ranging from PDE-based problems to deep neural network training, illustrating their remarkable co...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11512v1" target="_blank">Scaling the memory wall using mixed-precision -- HPG-MxP on an exascale machine</a></h3>
+                    <p><strong>Authors:</strong> Aditya Kashi, Nicholson Koukpaizan, Hao Lu, Michael Matheson, Sarp Oral, Feiyi Wang</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> cs.DC, cs.NA, cs.PF, math.NA, 65Y10, G.4; C.4</p>
+                    <p><strong>Summary:</strong> Mixed-precision algorithms have been proposed as a way for scientific computing to benefit from some of the gains seen for artificial intelligence (AI) on recent high performance computing (HPC) platforms. A few applications dominated by dense matrix operations have seen substantial speedups by utilizing low precision formats such as FP16. However, a majority of scientific simulation applications are memory bandwidth limited. Beyond preliminary studies, the practical gain from using mixed-precision algorithms on a given HPC system is largely unclear. The High Performance GMRES Mixed Precision (HPG-MxP) benchmark has been proposed to measure the useful performance of a HPC system on sparse matrix-based mixed-precision applications. In this work, we present a highly optimized implementation of the HPG-MxP benchmark for an exascale system and describe our algorithm enhancements. We show for the first time a speedup of 1.6x using a combination of double- and single-precision on modern GPU-...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11511v1" target="_blank">Demographic Distribution Matching between real world and virtual phantom population</a></h3>
+                    <p><strong>Authors:</strong> Dhrubajyoti Ghosh, Fakrul Islam Tushar, Lavsen Dahal, Liesbeth Vancoillie, Kyle J. Lafata, Ehsan Samei, Joseph Y. Lo, Sheng Luo</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> stat.AP</p>
+                    <p><strong>Summary:</strong> Virtual imaging trials (VITs) offer scalable and cost-effective tools for evaluating imaging systems and protocols. However, their translational impact depends on rigorous comparability between virtual and real-world populations. This study introduces DISTINCT (Distributional Subsampling for Covariate-Targeted Alignment), a statistical framework for selecting demographically aligned subsamples from large clinical datasets to support robust comparisons with virtual cohorts. We applied DISTINCT to the National Lung Screening Trial (NLST) and a companion virtual trial dataset (VLST). The algorithm jointly aligned typical continuous (age, BMI) and categorical (sex, race, ethnicity) variables by constructing multidimensional bins based on discretized covariates. For a given target size, DISTINCT samples individuals to match the joint demographic distribution of the reference population. We evaluated the demographic similarity between VLST and progressively larger NLST subsamples using Wasse...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11510v1" target="_blank">Plane-layer Rayleigh-Bénard convection up to $Ra=10^{11}$: Near-wall fluctuations and role of initial conditions</a></h3>
+                    <p><strong>Authors:</strong> Roshan J. Samuel, Jörg Schumacher</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> physics.flu-dyn</p>
+                    <p><strong>Summary:</strong> We study temperature and velocity fluctuations in turbulent Rayleigh-B\enard convection through direct numerical simulations in a three-dimensional plane layer of height $H$ with horizontal periodic boundary conditions and aspect ratio $4H\times 4H\times H$. The analysis is performed for Rayleigh numbers $10^5 \leq Ra \leq 10^{11}$ and Prandtl number $Pr=0.7$. First, the study systematically summarizes the height-dependent statistics of velocity and temperature fluctuations and reports corresponding scalings with the Rayleigh number. Secondly, we include an analysis on the role of coherent and incoherent flow regions near the wall for the global heat transfer. Thirdly, we investigate the dependence of turbulent heat and momentum transfer on additional finite-amplitude shear flow modes in the initial condition at time $t=0$, which either decay unforced with respect to time in a long transient or remain existent when a steady volume forcing in the momentum balance of the Boussinesq model...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11509v1" target="_blank">On the Complexity of the Optimal Correlated Equilibria in Extensive-Form Games</a></h3>
+                    <p><strong>Authors:</strong> Vincent Cheval, Florian Horn, Soumyajit Paul, Mahsa Shirmohammadi</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> cs.GT, cs.CC, F.2.0</p>
+                    <p><strong>Summary:</strong> A major open question in algorithmic game theory is whether normal-form correlated equilibria (NFCE) can be computed efficiently in succinct games such as extensive-form games [DFF+25,6PR24,FP23,HvS08,VSF08,PR08]. Motivated by this question, we study the associated Threshold problem: deciding whether there exists a correlated equilibrium whose value exceeds a given threshold. We prove that this problem is PSPACE-hard for NFCE in multiplayer extensive-form games with perfect recall, even for fixed thresholds. To contextualize this result, we also establish the complexity of the Threshold problem for Nash equilibria in this setting, showing it is ER-complete. These results uncover a surprising complexity reversal: while optimal correlated equilibria are computationally simpler than optimal Nash in normal-form games, the opposite holds in extensive-form games, where computing optimal correlated equilibria is provably harder. Building on this line of inquiry, we also address a related ques...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11508v1" target="_blank">Real-World Summarization: When Evaluation Reaches Its Limits</a></h3>
+                    <p><strong>Authors:</strong> Patrícia Schmidtová, Ondřej Dušek, Saad Mahamood</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> cs.CL</p>
+                    <p><strong>Summary:</strong> We examine evaluation of faithfulness to input data in the context of hotel highlights: brief LLM-generated summaries that capture unique features of accommodations. Through human evaluation campaigns involving categorical error assessment and span-level annotation, we compare traditional metrics, trainable methods, and LLM-as-a-judge approaches. Our findings reveal that simpler metrics like word overlap correlate surprisingly well with human judgments (Spearman correlation rank of 0.63), often outperforming more complex methods when applied to out-of-domain data. We further demonstrate that while LLMs can generate high-quality highlights, they prove unreliable for evaluation as they tend to severely under- or over-annotate. Our analysis of real-world business impacts shows incorrect and non-checkable information pose the greatest risks. We also highlight challenges in crowdsourced evaluations.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11507v1" target="_blank">MIRAGE: KV Cache Optimization through Parameter Remapping for Multi-tenant LLM Serving</a></h3>
+                    <p><strong>Authors:</strong> Ruihao Li, Shagnik Pal, Vineeth Narayan Pullu, Prasoon Sinha, Jeeho Ryoo, Lizy K. John, Neeraja J. Yadwadkar</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> cs.OS</p>
+                    <p><strong>Summary:</strong> KV cache accelerates LLM inference by avoiding redundant computation, at the expense of memory. To support larger KV caches, prior work extends GPU memory with CPU memory via CPU-offloading. This involves swapping KV cache between GPU and CPU memory. However, because the cache updates dynamically, such swapping incurs high CPU memory traffic. We make a key observation that model parameters remain constant during runtime, unlike the dynamically updated KV cache. Building on this, we introduce MIRAGE, which avoids KV cache swapping by remapping, and thereby repurposing, the memory allocated to model parameters for KV cache. This parameter remapping is especially beneficial in multi-tenant environments, where the memory used for the parameters of the inactive models can be more aggressively reclaimed. Exploiting the high CPU-GPU bandwidth offered by the modern hardware, such as the NVIDIA Grace Hopper Superchip, we show that MIRAGE significantly outperforms state-of-the-art solutions, ach...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11506v1" target="_blank">Elk: Exploring the Efficiency of Inter-core Connected AI Chips with Deep Learning Compiler Techniques</a></h3>
+                    <p><strong>Authors:</strong> Yiqi Liu, Yuqi Xue, Noelle Crawford, Jilong Xue, Jian Huang</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> cs.AR, cs.DC, cs.LG</p>
+                    <p><strong>Summary:</strong> To meet the increasing demand of deep learning (DL) models, AI chips are employing both off-chip memory (e.g., HBM) and high-bandwidth low-latency interconnect for direct inter-core data exchange. However, it is not easy to explore the efficiency of these inter-core connected AI (ICCA) chips, due to a fundamental tussle among compute (per-core execution), communication (inter-core data exchange), and I/O (off-chip data access). In this paper, we develop Elk, a DL compiler framework to maximize the efficiency of ICCA chips by jointly trading off all the three performance factors discussed above. Elk structures these performance factors into configurable parameters and forms a global trade-off space in the DL compiler. To systematically explore this space and maximize overall efficiency, Elk employs a new inductive operator scheduling policy and a cost-aware on-chip memory allocation algorithm. It generates globally optimized execution plans that best overlap off-chip data loading and on...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11505v1" target="_blank">TOPJoin: A Context-Aware Multi-Criteria Approach for Joinable Column Search</a></h3>
+                    <p><strong>Authors:</strong> Harsha Kokel, Aamod Khatiwada, Tejaswini Pedapati, Haritha Ananthakrishnan, Oktie Hassanzadeh, Horst Samulowitz, Kavitha Srinivas</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> cs.DB</p>
+                    <p><strong>Summary:</strong> One of the major challenges in enterprise data analysis is the task of finding joinable tables that are conceptually related and provide meaningful insights. Traditionally, joinable tables have been discovered through a search for similar columns, where two columns are considered similar syntactically if there is a set overlap or they are considered similar semantically if either the column embeddings or value embeddings are closer in the embedding space. However, for enterprise data lakes, column similarity is not sufficient to identify joinable columns and tables. The context of the query column is important. Hence, in this work, we first define context-aware column joinability. Then we propose a multi-criteria approach, called TOPJoin, for joinable column search. We evaluate TOPJoin against existing join search baselines over one academic and one real-world join search benchmark. Through experiments, we find that TOPJoin performs better on both benchmarks than the baselines.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11504v1" target="_blank">A Transiting Giant on a 7.7-Year Orbit Revealed by TTVs in the TOI-201 System</a></h3>
+                    <p><strong>Authors:</strong> Gracjan Maciejewski, Weronika Łoboda</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> astro-ph.EP</p>
+                    <p><strong>Summary:</strong> We report the detection and characterization of TOI-201 c, a long-period transiting companion to the warm Jupiter TOI-201 b. Its presence was first inferred from high-amplitude transit timing variations (TTVs) in TOI-201 b, pointing to a massive outer body on a $7.7^{+1.0}_{-0.6}$-year eccentric orbit. This prediction was confirmed when TESS observed a transit of TOI-201 c, precisely constraining its orbital geometry. A joint fit to TTVs, transit photometry, and archival radial velocities yields a mass of $14.2^{+1.0}_{-1.2}$ $M_{\rm Jup}$ and an eccentricity of $0.643^{+0.009}_{-0.021}$. The mutual inclination between planets b and c is $2.9^{+4.8}_{-4.4}$ degrees, indicating a nearly coplanar architecture. Long-term numerical integrations confirm dynamical stability over gigayear timescales and predict that transits of TOI-201 b will cease within a few thousand years. TOI-201 c ranks among the longest-period transiting planets with well-constrained properties. Its detection via TTVs,...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11503v1" target="_blank">Multiscale patterns of migration flows in Austria: regionalization, administrative barriers, and urban-rural divides</a></h3>
+                    <p><strong>Authors:</strong> Thomas Robiglio, Martina Contisciani, Márton Karsai, Tiago P. Peixoto</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> physics.soc-ph, physics.comp-ph, stat.AP, stat.ME</p>
+                    <p><strong>Summary:</strong> Migration is central in various societal problems related to socioeconomic development. While much of the existing research has focused on international migration, migration patterns within a single country remain relatively unexplored. In this work we study internal migration patterns in Austria for a period of over 20 years, obtained from open and high-granularity administrative records. We employ inferential network methods to characterize the flows between municipalities and extract their clustering according to similar target and destination rates. Our methodology reveals significant deviations from commonly assumed relocation patterns modeled by the gravity law. At the same time, we observe unexpected biases of internal migrations that leads to less frequent movements across boundaries at both district and state levels than predictions suggest. This leads to significant regionalization of migration at multiple geographical scales and augmented division between urban and rural are...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11501v1" target="_blank">Laser-driven few-cycle Terahertz sources with high average power</a></h3>
+                    <p><strong>Authors:</strong> Robin Löscher, Tim Vogel, Samira Mansourzadeh, Mohsen Khalili, Alan Omar, Yicheng Wang, Martin Hoffmann, Clara J. Saraceno</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> physics.optics</p>
+                    <p><strong>Summary:</strong> Ultrafast laser-driven terahertz sources are gaining in popularity in an increasingly wide range of scientific and technological applications. However, many fields continue to be severely limited by the typically low average power of these sources, which restricts speed, signal-to-noise ratio, and dynamic range in numerous measurements. Conversely, the past two decades have seen spectacular progress in high average power ultrafast laser technology based on Ytterbium lasers, rendering hundreds of watts to kilowatts of average power available to this community to drive THz sources. This has opened the young field of high-average-power laserdriven THz time-domain spectroscopy, which holds the potential to revolutionize the applications of THz time-domain systems. In this perspective article, we discuss this young field and emphasize recent advancements in broadband terahertz sources utilizing high-power Yb-based ultrafast lasers as drivers, which are nearing watt-level average power. We d...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11498v1" target="_blank">Robot Drummer: Learning Rhythmic Skills for Humanoid Drumming</a></h3>
+                    <p><strong>Authors:</strong> Asad Ali Shahid, Francesco Braghin, Loris Roveda</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> cs.RO</p>
+                    <p><strong>Summary:</strong> Humanoid robots have seen remarkable advances in dexterity, balance, and locomotion, yet their role in expressive domains, such as music performance, remains largely unexplored. Musical tasks, like drumming, present unique challenges, including split-second timing, rapid contacts, and multi-limb coordination over pieces lasting minutes. In this paper, we introduce Robot Drummer, a humanoid system capable of expressive, high-precision drumming across a diverse repertoire of songs. We formulate humanoid drumming as sequential fulfillment of timed-contacts and transform drum scores in to a Rhythmic Contact Chain. To handle the long-horizon nature of musical performance, we decompose each piece into fixed-length segments and train a single policy across all segments in parallel using reinforcement learning. Through extensive experiments on over thirty popular rock, metal, and jazz tracks, our results demonstrate that Robot Drummer consistently achieves high F1 scores. The learned behaviors...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11497v1" target="_blank">Photoemission Chronoscopy of the Iodoalkanes</a></h3>
+                    <p><strong>Authors:</strong> Christian A. Schröder, Maximilian Pollanka, Pascal Freisinger, Matthias Ostner, Maximilian Forster, Sven-Joachim Paul, Reinhard Kienberger</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> physics.chem-ph, physics.atom-ph, physics.optics</p>
+                    <p><strong>Summary:</strong> Time delays in photoemission are on the order of attoseconds and have been experimentally determined in atoms, molecules and solids. Their magnitude and energy dependence are expected to yield fundamental insights into the properties of the systems in which theyre measured. In a recent study Biswas \textsl{et al.} (Biswas, S., F\org, B., Ortmann, L. et al. Probing molecular environment through photoemission delays. Nat. Phys. 16, 778-783 (2020)) determined the absolute photoemission time of the I$4d$ level in iodoethane via attosecond streaking spectroscopy, finding the presence of a functional group to increase the photoemission time delay, suggesting a correlation between the size of the functional group and time delay based on a semi-classical calculation. Here we experimentally study the dependence of the I$4d$ photoemission time on the functional group in the iodoalkanes from iodomethane up to 2-iodobutane at three photon energies across the giant resonance in the I$4d\to\varepsil...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11496v1" target="_blank">Variants of a theorem of Macbeath in finite dimensional normed spaces</a></h3>
+                    <p><strong>Authors:</strong> Z. Lángi, S. Wang</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> math.MG, 52A21, 52A40, 52A27</p>
+                    <p><strong>Summary:</strong> A classical theorem of Macbeath states that for any integers $d \geq 2$, $n \geq d+1$, $d$-dimensional Euclidean balls are hardest to approximate, in terms of volume difference, by inscribed convex polytopes with $n$ vertices. In this paper we investigate normed variants of this problem: we intend to find the extremal values of the Busemann volume, Holmes-Thompson volume, Gromovs mass and Gromovs mass$^*$ of a largest volume convex polytope with $n$ vertices, inscribed in the unit ball of a $d$-dimensional normed space.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11495v1" target="_blank">Dihadron Fragmentation and the Confinement Transition in Energy Correlators</a></h3>
+                    <p><strong>Authors:</strong> Kyle Lee, Iain Stewart</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> hep-ph, hep-ex, nucl-th</p>
+                    <p><strong>Summary:</strong> In this letter, we relate the factorization for $e^+e^- \to h_1 h_2 X$ to the factorization for energy-energy correlators in the collinear limit. This enables us to give a nonperturbative proof of factorization for the energy correlators, relate the energy correlator jet function to transverse-momentum-sensitive dihadron fragmentation functions, and provide a rigorous description of the confinement transition region.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11494v1" target="_blank">Spin Relaxation Mechanisms and Nuclear Spin Entanglement of the V$_B^{-1}$ Center in hBN</a></h3>
+                    <p><strong>Authors:</strong> Chanaprom Cholsuk, Tobias Vogl, Viktor Ivády</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> quant-ph, cond-mat.mtrl-sci, physics.comp-ph</p>
+                    <p><strong>Summary:</strong> The negatively charged boron vacancy $V_B^-$ defect in hexagonal boron nitride (hBN) has recently emerged as a promising spin qubit for sensing due to its high-temperature spin control and versatile integration into van der Waals structures. While extensive experiments have explored their coherence properties, much less is known about the spin relaxation time $T_1$ and its control-parameter dependence. In this work, we develop a parameter-free spin dynamics model based on the cluster-expansion technique to investigate $T_1$ relaxation mechanisms at low temperature. Our results reveal that the $V_B^-$ center constitutes a strongly coupled electron spin-nuclear spin core, which necessitates the inclusion of the coherent dynamics and derived memory effects of the three nearest-neighbor nitrogen nuclear spins. Using this framework, this work closely reproduces the experimentally observed $T_1$ time at $B = 90\,\mathrm{G}$ and further predicts the $T_1$ dependence on external magnetic field...</p>
+                
+            
+                
+                    <h3><a href="http://dx.doi.org/10.3847/1538-4357/add926" target="_blank">Low-redshift analogues of cosmic noon galaxies as laboratories for clumpy star formation</a></h3>
+                    <p><strong>Authors:</strong> Jorge M. Santos-Junior, Thiago S. Goncalves, Luidhy Santana-Silva, Arianna Cortesi, Karin Menendez-Delmestre, Amanda E. de Araujo-Carvalho</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> astro-ph.GA</p>
+                    <p><strong>Summary:</strong> It has been established that a significant fraction of star formation at high-redshift occurs in clumpy galaxies. The properties of clumps and their formation mechanisms, however, remain highly debated. In this work we analyze a sample of 18 Supercompact Ultraviolet Luminous Galaxies observed with the OSIRIS spectrograph at the Keck Telescope, targeting their Pa-alpha emission. These galaxies, although at z~0.1-0.2, share many similar properties with star-forming galaxies at cosmic noon. We find a total of 84 star-forming clumps with typical sizes of a few hundred parsecs. The star-forming clumps exhibit low values of velocity shear (~12 km/s) and high velocity dispersion (~70 km/s). The dynamical masses of the clumps are typically higher than gas masses inferred from the measured star-formation rates of each clump. We also artificially redshift our data to emulate observations at z=2.2 and allow for a direct comparison with other galaxies at higher redshift. Our results indicate that,...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11491v1" target="_blank">Clapping propulsion and thin vortex rings: a computational study of vortex dynamics, energy equivalence, and core potential energy</a></h3>
+                    <p><strong>Authors:</strong> Suyog V. Mahulkar, Jaywant H. Arakeri</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> physics.flu-dyn</p>
+                    <p><strong>Summary:</strong> We present a numerical study on clapping propulsion using a body consisting of two rigid plates hinged at one end, with a 60-degree interplate cavity. The closing of the cavity generates a thrust-producing jet. Our previous experimental study (Mahulkar and Arakeri, PRF, 2024) compared the flow fields of the clapping body in two cases: free-moving (dynamic) and forward-constrained (stationary). The experiments revealed significant differences in body motion and flow structures. This numerical study further investigates these differences using plate motion data from the experiments. Our computations show that, in dynamic cases, interplate cavity pressure is lower than in stationary cases. A basic unsteady Bernoulli analysis explains that forward acceleration reduces interplate pressure. Furthermore, stationary cases exhibit distinct vortex dynamics, with starting vortex tubes forming at the plate edges and reconnecting with stopping vortex tubes to form triangular vortex loops in the rea...</p>
+                
+            
+                
+                    <h3><a href="http://dx.doi.org/10.1145/3744169.3744171" target="_blank">Towards Creating Infrastructures for Values and Ethics Work in the Production of Software Technologies</a></h3>
+                    <p><strong>Authors:</strong> Richmond Y. Wong</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> cs.HC</p>
+                    <p><strong>Summary:</strong> Recognizing how technical systems can embody social values or cause harms, human-computer interaction (HCI) research often approaches addressing values and ethics in design by creating tools to help tech workers integrate social values into the design of products. While useful, these approaches usually do not consider the politics embedded in the broader processes, organizations, social systems, and governance structures that affect the types of actions that tech workers can take to address values and ethics. This paper argues that creating infrastructures to support values and ethics work, rather than tools, is an approach that takes these broader processes into account and opens them up for (re)design. Drawing on prior research conceptualizing infrastructures from science \ technology studies and media studies, this paper outlines conceptual insights from infrastructures studies that open up new tactics for HCI researchers and designers seeking to support values and ethics in design.</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11489v1" target="_blank">Solving Integrated Periodic Railway Timetabling with Satisfiability Modulo Theories: A Scalable Approach to Routing and Vehicle Circulation</a></h3>
+                    <p><strong>Authors:</strong> Florian Fuchs, Bernardo Martin-Iradi, Francesco Corman</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> math.OC</p>
+                    <p><strong>Summary:</strong> This paper introduces a novel approach for jointly solving the periodic Train Timetabling Problem (TTP), train routing, and Vehicle Circulation Problem (VCP) through a unified optimization model. While these planning stages are traditionally addressed sequentially, their interdependencies often lead to suboptimal vehicle usage. We propose the VCR-PESP, an integrated formulation that minimizes fleet size while ensuring feasible and infrastructure-compliant periodic timetables. We present the first Satisfiability Modulo Theories (SMT)-based method for the VCR-PESP to solve the resulting large-scale instances. Unlike the Boolean Satisfiability Problem (SAT), which requires time discretisation, SMT supports continuous time via difference constraints, eliminating the trade-off between temporal precision and encoding size. Our approach avoids rounding artifacts and scales effectively, outperforming both SAT and Mixed Integer Program (MIP) models across non-trivial instances. Using real-world...</p>
+                
+            
+                
+                    <h3><a href="http://arxiv.org/abs/2507.11488v1" target="_blank">COLIBRI Fuzzy Model: Color Linguistic-Based Representation and Interpretation</a></h3>
+                    <p><strong>Authors:</strong> Pakizar Shamoi, Nuray Toganas, Muragul Muratbekova, Elnara Kadyrgali, Adilet Yerkin, Ayan Igali, Malika Ziyada, Ayana Adilova, Aron Karatayev, Yerdauit Torekhan</p>
+                    <p><strong>Published:</strong> 7/15/2025</p>
+                    <p><strong>Categories:</strong> cs.CV, cs.AI</p>
+                    <p><strong>Summary:</strong> Colors are omnipresent in todays world and play a vital role in how humans perceive and interact with their surroundings. However, it is challenging for computers to imitate human color perception. This paper introduces the Human Perception-Based Fuzzy Color Model, COLIBRI (Color Linguistic-Based Representation and Interpretation), designed to bridge the gap between computational color representations and human visual perception. The proposed model uses fuzzy sets and logic to create a framework for color categorization. Using a three-phase experimental approach, the study first identifies distinguishable color stimuli for hue, saturation, and intensity through preliminary experiments, followed by a large-scale human categorization survey involving more than 1000 human subjects. The resulting data are used to extract fuzzy partitions and generate membership functions that reflect real-world perceptual uncertainty. The model incorporates a mechanism for adaptation that allows refinement...</p>
+                
+            
+        
+        
+            <p><em>Generated by AI News Agent</em></p>
+        
+    
+
