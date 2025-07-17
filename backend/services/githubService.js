@@ -6,6 +6,9 @@ const { generateUserIdFromRecipients } = require('../utils/userUtils');
 const { uploadReportViaPR } = require('./githubPullRequestUploader');
 const { uploadReportDirect } = require('./githubDirectUploader');
 
+// Path to user data JSON in the GitHub repository (relative to repo root)
+const USER_JSON_GITHUB_PATH = 'backend/data/users.json';
+
 // GitHub Service for uploading reports to GitHub Pages
 class GitHubService {
     constructor() {
@@ -124,7 +127,7 @@ class GitHubService {
      * @returns {Promise<Object>} Upload result
      */
     async uploadUserData(usersData, githubToken, commitMessage = 'Update user data') {
-        const filePath = 'data/users.json';
+        const filePath = USER_JSON_GITHUB_PATH;
         const content = JSON.stringify(usersData, null, 2);
         const useDirectUpload = process.env.GITHUB_DIRECT_UPLOAD === 'true';
         const branch = this.branch;
@@ -173,7 +176,7 @@ class GitHubService {
      * @returns {Promise<Object>} Upload result
      */
     async uploadOrUpdateUserInJson(userData, githubToken, commitMessage = 'Update user data') {
-        const filePath = 'data/users.json';
+        const filePath = USER_JSON_GITHUB_PATH;
         let users = [];
         let sha = undefined;
         try {
