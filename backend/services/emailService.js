@@ -1,5 +1,5 @@
-const mailgun = require('mailgun.js');
-const FormData = require('form-data');
+const Mailgun = require('mailgun.js');
+const formData = require('form-data');
 const { logger, logApiCall } = require('../utils/logger');
 const { handleMailgunError } = require('../utils/errorHandler');
 const { sanitizeText, sanitizeHtml } = require('../utils/sanitizer');
@@ -16,6 +16,7 @@ class EmailService {
             throw new Error('Mailgun API key and domain are required');
         }
 
+        const mailgun = new Mailgun(formData);
         this.mailgunClient = mailgun.client({
             username: 'api',
             key: apiKey

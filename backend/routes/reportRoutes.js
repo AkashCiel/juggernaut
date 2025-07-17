@@ -350,10 +350,19 @@ router.post('/generate-report',
             try {
                 validateApiKey(process.env.MAILGUN_API_KEY, 'Mailgun');
                 validateApiKey(process.env.MAILGUN_DOMAIN, 'Mailgun Domain');
+                
+                logger.info('📧 Initializing email service...');
+                logger.info(`📧 Mailgun API Key: ${process.env.MAILGUN_API_KEY ? 'Present' : 'Missing'}`);
+                logger.info(`📧 Mailgun Domain: ${process.env.MAILGUN_DOMAIN || 'Missing'}`);
+                
                 emailService.initialize(process.env.MAILGUN_API_KEY, process.env.MAILGUN_DOMAIN);
                 emailResult = await emailService.sendEmail(reportData, sanitizedTopics, sanitizedRecipients, new Date());
                 logApiCall('mailgun', 'sendEmail', { recipientsCount: sanitizedRecipients.length });
             } catch (error) {
+                logger.error('❌ Email service error:', {
+                    message: error.message,
+                    stack: error.stack
+                });
                 handleMailgunError(error);
             }
         } else if (sanitizedRecipients && sanitizedRecipients.length > 0 && isDemoMode) {
