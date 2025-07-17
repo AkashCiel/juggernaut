@@ -433,7 +433,9 @@ class App {
             
             this.elements.progressText.textContent = 'Requesting backend...';
             
-            const response = await fetch('http://localhost:8000/api/generate-report', {
+            // Use configurable API URL (default to localhost for development)
+            const API_URL = window.API_URL || 'https://juggernaut-37yk.onrender.com';
+            const response = await fetch(`${API_URL}/api/generate-report`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
