@@ -1,15 +1,11 @@
-const { logger, logApiCall } = require('../utils/logger');
+const { logger } = require('../utils/logger');
 const UserService = require('./userService');
-const SummaryService = require('./summaryService');
-const GitHubService = require('./githubService');
-const EmailService = require('./emailService');
+const ReportGenerator = require('./reportGenerator');
 
 class DailyReportService {
     constructor() {
         this.userService = new UserService();
-        this.summaryService = new SummaryService();
-        this.githubService = new GitHubService();
-        this.emailService = new EmailService();
+        this.reportGenerator = new ReportGenerator();
     }
 
     /**
@@ -113,62 +109,14 @@ class DailyReportService {
      */
     async generateReportForUser(user) {
         try {
-            // Generate the report using existing summary service
-            const reportData = await this.summaryService.generateReport(
-                user.topics,
-                user.userId,
-                [user.email]
-            );
-
-            if (!reportData || !reportData.success) {
-                return {
-                    success: false,
-                    error: 'Failed to generate report data'
-                };
-            }
-
-            // Upload report to GitHub
-            const githubToken = process.env.GITHUB_TOKEN;
-            if (!githubToken) {
-                logger.warn('⚠️ GITHUB_TOKEN not set, skipping GitHub upload');
-                return {
-                    success: false,
-                    error: 'GitHub token not configured'
-                };
-            }
-
-            const uploadResult = await this.githubService.uploadReport(
-                reportData.data,
-                githubToken,
-                [user.email]
-            );
-
-            if (!uploadResult) {
-                return {
-                    success: false,
-                    error: 'Failed to upload report to GitHub'
-                };
-            }
-
-            // Send email with report summary
-            const emailResult = await this.emailService.sendReportEmail(
+            // Use the unified ReportGenerator
+            const result = await this.reportGenerator.generateReport(
                 user.email,
-                reportData.data,
-                uploadResult.pagesUrl || uploadResult.fileUrl
+                user.topics,
+                { maxPapers: 50, isDemoMode: false }
             );
-
-            if (!emailResult.success) {
-                logger.warn(`⚠️ Failed to send email to ${user.email}: ${emailResult.error}`);
-                // Don't fail the entire process if email fails
-            }
-
-            return {
-                success: true,
-                reportData: reportData.data,
-                uploadResult: uploadResult,
-                emailResult: emailResult
-            };
-
+            
+            return result;
         } catch (error) {
             logger.error(`❌ Error generating report for user ${user.email}: ${error.message}`);
             return {

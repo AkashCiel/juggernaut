@@ -7,6 +7,7 @@ const SummaryService = require('../services/summaryService');
 const EmailService = require('../services/emailService');
 const GitHubService = require('../services/githubService');
 const UserService = require('../services/userService');
+const ReportGenerator = require('../services/reportGenerator');
 
 // Import middleware
 const { validateReportRequest, validateUserRegistration, validateArxivTest, validateSummaryTest, handleValidationErrors } = require('../middleware/validation');
@@ -22,6 +23,7 @@ const summaryService = new SummaryService();
 const emailService = new EmailService();
 const githubService = new GitHubService();
 const userService = new UserService();
+const reportGenerator = new ReportGenerator();
 
 /**
  * Generate complete HTML report
@@ -287,128 +289,44 @@ router.post('/generate-report',
             logger.warn('⚠️ Running in demo mode - some features will be limited');
         }
 
-        // Step 1: Fetch papers from ArXiv (with retry)
-        logger.info('📚 Fetching papers from ArXiv...');
-        logApiCall('arxiv', 'fetchPapers', { topics: sanitizedTopics, maxPapers: sanitizedMaxPapers });
-        
-        let papers = [];
-        try {
-            papers = await retry(
-                () => arxivService.fetchPapers(sanitizedTopics, sanitizedMaxPapers),
-                RETRY_CONFIGS.arxiv
-            );
-            papers = sanitizePapers(papers);
-        } catch (error) {
-            handleArxivError(error, sanitizedTopics.join(', '));
-        }
-        
-        if (!papers || papers.length === 0) {
-            throw new NotFoundError('No papers found for the specified topics');
+        // Use the unified ReportGenerator
+        const userEmail = sanitizedRecipients.length > 0 ? sanitizedRecipients[0] : 'public@example.com';
+        const result = await reportGenerator.generateReport(
+            userEmail,
+            sanitizedTopics,
+            { maxPapers: sanitizedMaxPapers, isDemoMode }
+        );
+
+        if (!result.success) {
+            throw new Error(result.error);
         }
 
-        // Step 2: Generate AI summary (skip in demo mode)
-        let aiSummary = null;
-        if (!isDemoMode) {
-            logger.info('🤖 Generating AI summary...');
-            try {
-                validateApiKey(process.env.OPENAI_API_KEY, 'OpenAI');
-                aiSummary = await retry(
-                    () => summaryService.generateSummary(papers, process.env.OPENAI_API_KEY),
-                    RETRY_CONFIGS.openai
-                );
-                logApiCall('openai', 'generateSummary', { papersCount: papers.length });
-            } catch (error) {
-                handleOpenAIError(error);
-            }
-        } else {
-            logger.warn('⚠️ Skipping AI summary in demo mode');
-        }
+        // Generate HTML report for the response
+        const htmlReport = generateHtmlReport(result.data, sanitizedTopics, result.data.date);
 
-        // Step 3: Prepare report data
-        const reportDate = new Date().toISOString().split('T')[0];
-        const reportData = {
-            date: reportDate,
-            topics: sanitizedTopics,
-            papers: papers,
-            aiSummary: aiSummary
-        };
-
-        // Step 4: Generate HTML report
-        const htmlReport = generateHtmlReport(reportData, sanitizedTopics, reportDate);
-
-        // Step 5: Upload report to GitHub via Pull Request (skip in demo mode)
-        let uploadResult = null;
-        if (!isDemoMode) {
-            logger.info('📤 Uploading report to GitHub via Pull Request...');
-            try {
-                validateApiKey(process.env.GITHUB_TOKEN, 'GitHub');
-                uploadResult = await retry(
-                    () => githubService.uploadReport(reportData, process.env.GITHUB_TOKEN, sanitizedRecipients),
-                    RETRY_CONFIGS.github
-                );
-                reportData.pagesUrl = uploadResult.pagesUrl;
-                reportData.prUrl = uploadResult.prUrl;
-                reportData.userId = uploadResult.userId;
-                logApiCall('github', 'uploadReportViaPR', { reportDate, userId: uploadResult.userId });
-            } catch (error) {
-                handleGitHubError(error);
-            }
-        } else {
-            logger.warn('⚠️ Skipping GitHub upload in demo mode');
-        }
-
-        // Step 6: Send email if recipients provided (skip in demo mode)
-        let emailResult = null;
-        if (sanitizedRecipients && sanitizedRecipients.length > 0 && !isDemoMode) {
-            logger.info('📧 Sending email...');
-            try {
-                validateApiKey(process.env.MAILGUN_API_KEY, 'Mailgun');
-                validateApiKey(process.env.MAILGUN_DOMAIN, 'Mailgun Domain');
-                
-                logger.info('📧 Initializing email service...');
-                logger.info(`📧 Mailgun API Key: ${process.env.MAILGUN_API_KEY ? 'Present' : 'Missing'}`);
-                logger.info(`📧 Mailgun Domain: ${process.env.MAILGUN_DOMAIN || 'Missing'}`);
-                
-                emailService.initialize(process.env.MAILGUN_API_KEY, process.env.MAILGUN_DOMAIN);
-                emailResult = await retry(
-                    () => emailService.sendEmail(reportData, sanitizedTopics, sanitizedRecipients, new Date()),
-                    RETRY_CONFIGS.email
-                );
-                logApiCall('mailgun', 'sendEmail', { recipientsCount: sanitizedRecipients.length });
-            } catch (error) {
-                logger.error('❌ Email service error:', {
-                    message: error.message,
-                    stack: error.stack
-                });
-                handleMailgunError(error);
-            }
-        } else if (sanitizedRecipients && sanitizedRecipients.length > 0 && isDemoMode) {
-            logger.warn('⚠️ Skipping email in demo mode');
-        }
-
-        // Step 7: Return success response with HTML report
+        // Return success response with HTML report
         const response = {
             success: true,
             message: isDemoMode ? 'Report generated successfully (Demo Mode)' : 'Report generated successfully',
             data: {
-                reportDate: reportDate,
+                reportDate: result.data.date,
                 topics: sanitizedTopics,
-                papersCount: papers.length,
-                hasAISummary: !!aiSummary,
-                reportUrl: uploadResult?.pagesUrl || null,
-                prUrl: uploadResult?.prUrl || null,
-                userId: uploadResult?.userId || 'public',
-                emailSent: !!emailResult,
+                papersCount: result.papersCount,
+                hasAISummary: result.hasAISummary,
+                reportUrl: result.reportUrl,
+                prUrl: result.uploadResult?.prUrl || null,
+                userId: result.uploadResult?.userId || 'public',
+                emailSent: result.emailSent,
                 demoMode: isDemoMode,
                 htmlReport: htmlReport
             }
         };
 
-        if (emailResult) {
-            response.data.emailId = emailResult.messageId;
+        if (result.emailResult) {
+            response.data.emailId = result.emailResult.messageId;
         }
 
-        logReportGeneration(sanitizedTopics, papers.length, !!aiSummary, isDemoMode);
+        logReportGeneration(sanitizedTopics, result.papersCount, result.hasAISummary, isDemoMode);
         logger.info('✅ Report generation completed successfully');
         
         res.json(response);
@@ -523,12 +441,12 @@ router.post('/register-user',
             let reportResult = null;
             
             try {
-                // Import scheduler service for immediate report generation
-                const SchedulerService = require('../services/schedulerService');
-                const schedulerService = new SchedulerService();
-                
-                // Generate report immediately (not in demo mode for new users)
-                reportResult = await schedulerService.generateUserReport(user, false);
+                // Use the unified ReportGenerator for immediate report generation
+                reportResult = await reportGenerator.generateReport(
+                    user.email,
+                    user.topics,
+                    { maxPapers: 50, isDemoMode: false }
+                );
                 
                 if (reportResult.success) {
                     logger.info(`✅ Immediate report generated successfully for ${email}`);
@@ -567,25 +485,18 @@ router.post('/register-user',
     })
 );
 
-// Get scheduler status
+// Get scheduler status (GitHub Actions based)
 router.get('/scheduler/status',
     asyncHandler(async (req, res) => {
-        try {
-            const SchedulerService = require('../services/schedulerService');
-            const schedulerService = new SchedulerService();
-            const status = await schedulerService.getStatus();
-            
-            res.json({
-                success: true,
-                data: status
-            });
-        } catch (error) {
-            logger.error('❌ Failed to get scheduler status:', error.message);
-            res.status(500).json({
-                success: false,
-                error: 'Failed to get scheduler status'
-            });
-        }
+        res.json({
+            success: true,
+            data: {
+                type: 'github-actions',
+                schedule: 'Daily at 4 PM Amsterdam time',
+                nextRun: 'Automatically managed by GitHub Actions',
+                status: 'active'
+            }
+        });
     })
 );
 
