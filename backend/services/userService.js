@@ -46,7 +46,9 @@ class UserService {
             // Also push to GitHub main branch
             const githubToken = process.env.GITHUB_TOKEN;
             if (githubToken) {
-                this.githubService.uploadUserData(users, githubToken, 'Update user data (registration or update)')
+                // Only upload the last user (added or updated)
+                const lastUser = users[users.length - 1];
+                this.githubService.uploadOrUpdateUserInJson(lastUser, githubToken, 'Add or update user via registration')
                     .then(result => {
                         logger.info('✅ Synced users.json to GitHub main branch');
                     })
