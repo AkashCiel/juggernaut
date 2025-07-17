@@ -184,6 +184,16 @@
             color: #0c5460;
             border: 1px solid #bee5eb;
         }
+
+        .status a {
+            color: inherit;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        .status a:hover {
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body>
@@ -286,14 +296,14 @@
         // Show status message
         function showStatus(message, type = 'info') {
             const status = document.getElementById('status');
-            status.textContent = message;
+            status.innerHTML = message; // Use innerHTML to support links
             status.className = `status ${type}`;
             status.style.display = 'block';
             
             if (type === 'success') {
                 setTimeout(() => {
                     status.style.display = 'none';
-                }, 5000);
+                }, 8000); // Increased timeout for longer messages
             }
         }
 
@@ -333,7 +343,25 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    showStatus('✅ Successfully registered! You\'ll receive daily reports starting tomorrow.', 'success');
+                    let statusMessage = '✅ Successfully registered! You\'ll receive daily reports starting tomorrow.';
+                    
+                    // Check if immediate report was generated
+                    if (result.data.immediateReport) {
+                        const report = result.data.immediateReport;
+                        if (report.success) {
+                            statusMessage = `✅ Successfully registered! Your first report has been generated with ${report.papersCount} papers.`;
+                            if (report.reportUrl) {
+                                statusMessage += ` <a href="${report.reportUrl}" target="_blank">View Report</a>`;
+                            }
+                            if (report.emailSent) {
+                                statusMessage += ' Check your email for the report!';
+                            }
+                        } else {
+                            statusMessage += ' (Note: First report generation failed, but you\'re registered for daily reports)';
+                        }
+                    }
+                    
+                    showStatus(statusMessage, 'success');
                     document.getElementById('registrationForm').reset();
                     selectedTopics = new Set(['artificial intelligence', 'machine learning']);
                     initializeTopics();

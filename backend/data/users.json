@@ -10,5 +10,16 @@
     "isActive": true,
     "createdAt": "2025-07-17T16:35:03.377Z",
     "lastReportDate": null
+  },
+  {
+    "userId": "813ecbe8",
+    "email": "akashadroitsingh@gmail.com",
+    "topics": [
+      "artificial intelligence",
+      "machine learning"
+    ],
+    "isActive": true,
+    "createdAt": "2025-07-17T16:40:47.510Z",
+    "lastReportDate": null
   }
 ]

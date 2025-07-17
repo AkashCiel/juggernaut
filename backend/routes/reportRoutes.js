@@ -470,6 +470,28 @@ router.post('/register-user',
             
             logger.info(`✅ User registered: ${email} (${user.userId})`);
             
+            // Generate immediate report for the new user
+            logger.info(`🚀 Generating immediate report for new user: ${email}`);
+            let reportResult = null;
+            
+            try {
+                // Import scheduler service for immediate report generation
+                const SchedulerService = require('../services/schedulerService');
+                const schedulerService = new SchedulerService();
+                
+                // Generate report immediately (not in demo mode for new users)
+                reportResult = await schedulerService.generateUserReport(user, false);
+                
+                if (reportResult.success) {
+                    logger.info(`✅ Immediate report generated successfully for ${email}`);
+                } else {
+                    logger.warn(`⚠️ Immediate report generation failed for ${email}: ${reportResult.error}`);
+                }
+            } catch (reportError) {
+                logger.error(`❌ Immediate report generation error for ${email}:`, reportError.message);
+                // Don't fail registration if report generation fails
+            }
+            
             res.json({
                 success: true,
                 message: 'User registered successfully for daily reports',
@@ -477,7 +499,14 @@ router.post('/register-user',
                     userId: user.userId,
                     email: user.email,
                     topics: user.topics,
-                    isActive: user.isActive
+                    isActive: user.isActive,
+                    immediateReport: reportResult ? {
+                        success: reportResult.success,
+                        papersCount: reportResult.papersCount,
+                        hasAISummary: reportResult.hasAISummary,
+                        reportUrl: reportResult.reportUrl,
+                        emailSent: reportResult.emailSent
+                    } : null
                 }
             });
         } catch (error) {

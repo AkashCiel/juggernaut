@@ -79,13 +79,17 @@ class UserService {
         };
 
         if (existingUserIndex >= 0) {
-            // Update existing user
+            // Update existing user - keep everything the same except topics
+            const existingUser = users[existingUserIndex];
             users[existingUserIndex] = {
-                ...users[existingUserIndex],
+                ...existingUser,
                 topics: userData.topics,
-                isActive: true
+                isActive: true,
+                updatedAt: new Date().toISOString()
             };
-            logger.info(`🔄 Updated existing user: ${email} (${userId})`);
+            logger.info(`🔄 Updated existing user topics: ${email} (${userId})`);
+            logger.info(`📝 Previous topics: ${existingUser.topics.join(', ')}`);
+            logger.info(`📝 New topics: ${userData.topics.join(', ')}`);
         } else {
             // Add new user
             users.push(userData);
