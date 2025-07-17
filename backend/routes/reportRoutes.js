@@ -327,15 +327,17 @@ router.post('/generate-report',
         // Step 4: Generate HTML report
         const htmlReport = generateHtmlReport(reportData, sanitizedTopics, reportDate);
 
-        // Step 5: Upload report to GitHub (skip in demo mode)
+        // Step 5: Upload report to GitHub via Pull Request (skip in demo mode)
         let uploadResult = null;
         if (!isDemoMode) {
-            logger.info('📤 Uploading report to GitHub...');
+            logger.info('📤 Uploading report to GitHub via Pull Request...');
             try {
                 validateApiKey(process.env.GITHUB_TOKEN, 'GitHub');
-                uploadResult = await githubService.uploadReport(reportData, process.env.GITHUB_TOKEN);
+                uploadResult = await githubService.uploadReport(reportData, process.env.GITHUB_TOKEN, sanitizedRecipients);
                 reportData.pagesUrl = uploadResult.pagesUrl;
-                logApiCall('github', 'uploadReport', { reportDate });
+                reportData.prUrl = uploadResult.prUrl;
+                reportData.userId = uploadResult.userId;
+                logApiCall('github', 'uploadReportViaPR', { reportDate, userId: uploadResult.userId });
             } catch (error) {
                 handleGitHubError(error);
             }
@@ -379,6 +381,8 @@ router.post('/generate-report',
                 papersCount: papers.length,
                 hasAISummary: !!aiSummary,
                 reportUrl: uploadResult?.pagesUrl || null,
+                prUrl: uploadResult?.prUrl || null,
+                userId: uploadResult?.userId || 'public',
                 emailSent: !!emailResult,
                 demoMode: isDemoMode,
                 htmlReport: htmlReport
