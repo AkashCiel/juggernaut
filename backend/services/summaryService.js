@@ -37,12 +37,12 @@ class SummaryService {
             return `${index + 1}. **${title}**\n   Authors: ${authors}\n   Summary: ${summary}\n`;
         }).join('\n');
 
-        return `You are an AI research assistant. Please provide a high-level summary of the following AI research papers. Focus on the most important trends, breakthroughs, and implications. Keep it concise but insightful (2-3 paragraphs max).
+        return `You are a research assistant. Please provide a high-level summary of the following research papers. Focus on the most important trends, breakthroughs, and implications. Write the summary in a way that a STEM graduate who is not an expert in the field can understand. Keep it concise but insightful (2-3 paragraphs max).
 
 Research Papers:
 ${papersText}
 
-Please provide a clear, well-structured summary that highlights the key findings and their significance in the AI research landscape.`;
+Please provide a clear, well-structured summary that highlights the key findings and their significance.`;
     }
 
     callOpenAI(prompt, apiKey, timeoutMs) {
