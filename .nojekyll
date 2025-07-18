@@ -1,0 +1,3 @@
+# This file tells GitHub Pages to bypass Jekyll processing
+# and serve files directly, allowing static HTML files in subdirectories
+# to be accessible via direct URLs. 
