@@ -34,41 +34,65 @@ class ReportGenerator {
             const sanitizedTopics = sanitizeTopics(topics);
             const sanitizedMaxPapers = Math.min(Math.max(parseInt(maxPapers) || 50, 1), 100);
             
-            // Step 1: Fetch papers from ArXiv (with retry)
-            logger.info('📚 Fetching papers from ArXiv...');
+            // Step 1: Fetch papers and generate summaries per topic
+            logger.info('📚 Fetching papers and generating summaries per topic...');
             logApiCall('arxiv', 'fetchPapers', { topics: sanitizedTopics, maxPapers: sanitizedMaxPapers });
             
-            let papers = [];
-            try {
-                papers = await retry(
-                    () => this.arxivService.fetchPapers(sanitizedTopics, sanitizedMaxPapers),
-                    RETRY_CONFIGS.arxiv
-                );
-                papers = sanitizePapers(papers);
-            } catch (error) {
-                handleArxivError(error, sanitizedTopics.join(', '));
+            let allPapers = [];
+            let topicSummaries = [];
+            
+            for (const topic of sanitizedTopics) {
+                try {
+                    // Fetch papers for this specific topic
+                    logger.info(`📚 Fetching papers for topic: ${topic}`);
+                    const topicPapers = await retry(
+                        () => this.arxivService.fetchPapers([topic], sanitizedMaxPapers),
+                        RETRY_CONFIGS.arxiv
+                    );
+                    const sanitizedTopicPapers = sanitizePapers(topicPapers);
+                    
+                    if (sanitizedTopicPapers.length > 0) {
+                        allPapers.push(...sanitizedTopicPapers);
+                        
+                        // Generate summary for this topic immediately
+                        if (!isDemoMode) {
+                            logger.info(`🤖 Generating summary for topic: ${topic}`);
+                            try {
+                                validateApiKey(process.env.OPENAI_API_KEY, 'OpenAI');
+                                const topicSummary = await retry(
+                                    () => this.summaryService.generateSummaryForTopic(sanitizedTopicPapers, topic, process.env.OPENAI_API_KEY, 60000),
+                                    RETRY_CONFIGS.openai
+                                );
+                                
+                                if (topicSummary) {
+                                    topicSummaries.push(topicSummary);
+                                    logApiCall('openai', 'generateTopicSummary', { 
+                                        topic: topic,
+                                        papersCount: sanitizedTopicPapers.length 
+                                    });
+                                }
+                            } catch (error) {
+                                logger.error(`❌ Error generating summary for topic "${topic}": ${error.message}`);
+                                handleOpenAIError(error);
+                            }
+                        }
+                    } else {
+                        logger.warn(`⚠️ No papers found for topic: ${topic}`);
+                    }
+                } catch (error) {
+                    logger.error(`❌ Error fetching papers for topic "${topic}": ${error.message}`);
+                    handleArxivError(error, topic);
+                }
             }
             
-            if (!papers || papers.length === 0) {
-                throw new Error('No papers found for the specified topics');
+            if (allPapers.length === 0) {
+                throw new Error('No papers found for any of the specified topics');
             }
-
-            // Step 2: Generate AI summary (skip in demo mode)
+            
+            // Combine all topic summaries into one
             let aiSummary = null;
-            if (!isDemoMode) {
-                logger.info('🤖 Generating AI summary...');
-                try {
-                    validateApiKey(process.env.OPENAI_API_KEY, 'OpenAI');
-                    aiSummary = await retry(
-                        () => this.summaryService.generateSummary(papers, process.env.OPENAI_API_KEY),
-                        RETRY_CONFIGS.openai
-                    );
-                    logApiCall('openai', 'generateSummary', { papersCount: papers.length });
-                } catch (error) {
-                    handleOpenAIError(error);
-                }
-            } else {
-                logger.warn('⚠️ Skipping AI summary in demo mode');
+            if (topicSummaries.length > 0) {
+                aiSummary = this.summaryService.combineTopicSummaries(topicSummaries);
             }
 
             // Step 3: Prepare report data
@@ -76,7 +100,7 @@ class ReportGenerator {
             const reportData = {
                 date: reportDate,
                 topics: sanitizedTopics,
-                papers: papers,
+                papers: allPapers,
                 aiSummary: aiSummary
             };
 
@@ -130,7 +154,7 @@ class ReportGenerator {
                 data: reportData,
                 uploadResult,
                 emailResult,
-                papersCount: papers.length,
+                papersCount: allPapers.length,
                 hasAISummary: !!aiSummary,
                 reportUrl: uploadResult?.pagesUrl || null,
                 emailSent: !!emailResult
