@@ -4,13 +4,19 @@ const { handleOpenAIError } = require('../utils/errorHandler');
 const { sanitizeText } = require('../utils/sanitizer');
 
 class SummaryService {
-    async generateSummary(papers, apiKey, timeoutMs = 60000) {
+    async generateSummary(papers, apiKey, timeoutMs = 60000, topics = []) {
         if (!papers || papers.length === 0) {
             return 'No papers available for summary generation.';
         }
 
         logger.info(`🤖 Generating AI summary for ${papers.length} papers...`);
 
+        // If topics are provided, generate topic-based summaries
+        if (topics && topics.length > 0) {
+            return await this.generateTopicBasedSummary(papers, topics, apiKey, timeoutMs);
+        }
+
+        // Fallback to original single summary approach
         const prompt = this.createSummaryPrompt(papers);
         
         try {
@@ -26,6 +32,112 @@ class SummaryService {
         } catch (error) {
             handleOpenAIError(error);
         }
+    }
+
+    async generateSummaryForTopic(topicPapers, topic, apiKey, timeoutMs) {
+        if (!topicPapers || topicPapers.length === 0) {
+            logger.warn(`⚠️ No papers provided for topic: ${topic}`);
+            return null;
+        }
+
+        logger.info(`📝 Generating summary for topic "${topic}" with ${topicPapers.length} papers`);
+        
+        try {
+            const topicPrompt = this.createTopicSummaryPrompt(topicPapers, topic);
+            const topicSummary = await this.callOpenAI(topicPrompt, apiKey, timeoutMs);
+            
+            const sanitizedTopicSummary = sanitizeText(topicSummary, 2000);
+            
+            logApiCall('openai', 'generateTopicSummary', { 
+                topic: topic,
+                papersCount: topicPapers.length,
+                summaryLength: sanitizedTopicSummary.length 
+            });
+            
+            return {
+                topic: topic,
+                summary: sanitizedTopicSummary,
+                paperCount: topicPapers.length
+            };
+            
+        } catch (error) {
+            logger.error(`❌ Error generating summary for topic "${topic}": ${error.message}`);
+            return null;
+        }
+    }
+
+    async generateTopicBasedSummary(papers, topics, apiKey, timeoutMs) {
+        logger.info(`🤖 Generating topic-based summaries for ${topics.length} topics...`);
+        
+        const topicSummaries = [];
+        
+        for (const topic of topics) {
+            try {
+                // Filter papers for this topic (simple keyword matching)
+                const topicPapers = this.filterPapersByTopic(papers, topic);
+                
+                if (topicPapers.length === 0) {
+                    logger.warn(`⚠️ No papers found for topic: ${topic}`);
+                    continue;
+                }
+                
+                const topicSummary = await this.generateSummaryForTopic(topicPapers, topic, apiKey, timeoutMs);
+                if (topicSummary) {
+                    topicSummaries.push(topicSummary);
+                }
+                
+            } catch (error) {
+                logger.error(`❌ Error generating summary for topic "${topic}": ${error.message}`);
+                // Continue with other topics even if one fails
+            }
+        }
+        
+        // Combine all topic summaries
+        return this.combineTopicSummaries(topicSummaries);
+    }
+
+    filterPapersByTopic(papers, topic) {
+        const topicLower = topic.toLowerCase();
+        return papers.filter(paper => {
+            const title = (paper.title || '').toLowerCase();
+            const summary = (paper.summary || '').toLowerCase();
+            const categories = Array.isArray(paper.categories) 
+                ? paper.categories.join(' ').toLowerCase() 
+                : '';
+            
+            return title.includes(topicLower) || 
+                   summary.includes(topicLower) || 
+                   categories.includes(topicLower);
+        });
+    }
+
+    createTopicSummaryPrompt(papers, topic) {
+        const papersText = papers.map((paper, index) => {
+            const authors = Array.isArray(paper.authors) ? paper.authors.join(', ') : paper.authors;
+            const title = sanitizeText(paper.title || '', 200);
+            const summary = sanitizeText(paper.summary || '', 1000);
+            
+            return `${index + 1}. **${title}**\n   Authors: ${authors}\n   Summary: ${summary}\n`;
+        }).join('\n');
+
+        return `You are a research assistant. Please provide a focused summary of the following research papers related to "${topic}". Focus on the most important trends, breakthroughs, and implications specific to this topic. Write the summary in a way that a STEM graduate who is not an expert in the field can understand. Keep it concise but insightful (1-2 paragraphs max).
+
+Research Papers for "${topic}":
+${papersText}
+
+Please provide a clear, well-structured summary that highlights the key findings and their significance in the context of ${topic}.`;
+    }
+
+    combineTopicSummaries(topicSummaries) {
+        if (topicSummaries.length === 0) {
+            return 'No topic summaries available.';
+        }
+        
+        const combinedSummary = topicSummaries.map(item => {
+            return `## ${item.topic}\n\n${item.summary}\n\n*Based on ${item.paperCount} research paper${item.paperCount > 1 ? 's' : ''}*\n`;
+        }).join('\n---\n\n');
+        
+        return combinedSummary;
     }
 
     createSummaryPrompt(papers) {

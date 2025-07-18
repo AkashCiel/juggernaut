@@ -367,7 +367,7 @@ router.post('/test/summary',
         
         try {
             validateApiKey(apiKey, 'OpenAI');
-            const summary = await summaryService.generateSummary(sanitizedPapers, apiKey);
+            const summary = await summaryService.generateSummary(sanitizedPapers, apiKey, 60000, ['artificial intelligence']);
             res.json({ success: true, summary });
         } catch (error) {
             handleOpenAIError(error);
