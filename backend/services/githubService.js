@@ -12,11 +12,11 @@ const USER_JSON_GITHUB_PATH = 'backend/data/users.json';
 // GitHub Service for uploading reports to GitHub Pages
 class GitHubService {
     constructor() {
-        this.repository = 'AkashCiel/juggernaut';
+        this.repository = 'AkashCiel/juggernaut-reports';
         // Get branch from environment variable, default to 'main'
         this.branch = process.env.GITHUB_BRANCH || 'main';
         this.repoOwner = 'AkashCiel';
-        this.repoName = 'juggernaut';
+        this.repoName = 'juggernaut-reports';
     }
 
     /**
@@ -40,8 +40,9 @@ class GitHubService {
         }
         logger.info(`📁 Reports will be stored in: reports/${userId === 'public' ? 'public' : `user-${userId}`}/`);
         
-        // Check if we should use direct upload (when branch protection is disabled)
-        const useDirectUpload = process.env.GITHUB_DIRECT_UPLOAD === 'true';
+        // Use direct upload by default for the new hosting repo setup
+        // Set GITHUB_DIRECT_UPLOAD=false to use PR-based uploads
+        const useDirectUpload = process.env.GITHUB_DIRECT_UPLOAD !== 'false';
         
         if (useDirectUpload) {
             logger.info('📤 Uploading report directly to GitHub (branch protection disabled)...');
@@ -73,7 +74,9 @@ class GitHubService {
                     this.branch, 
                     this.repoOwner, 
                     this.repoName,
-                    userId
+                    userId,
+                    reportData.topics,
+                    process.env.OPENAI_API_KEY
                 );
                 
                 logApiCall('github', 'uploadReportDirect', { 
@@ -95,7 +98,9 @@ class GitHubService {
                     this.branch, 
                     this.repoOwner, 
                     this.repoName,
-                    userId
+                    userId,
+                    reportData.topics,
+                    process.env.OPENAI_API_KEY
                 );
                 
                 logApiCall('github', 'uploadReportViaPR', { 
@@ -142,7 +147,9 @@ class GitHubService {
                 branch,
                 repoOwner,
                 repoName,
-                null // userId not needed
+                null, // userId not needed
+                null, // topics not needed for user data
+                null  // apiKey not needed for user data
             );
             logApiCall('github', 'uploadUserDataDirect', {
                 filePath,
@@ -157,7 +164,9 @@ class GitHubService {
                 branch,
                 repoOwner,
                 repoName,
-                null // userId not needed
+                null, // userId not needed
+                null, // topics not needed for user data
+                null  // apiKey not needed for user data
             );
             logApiCall('github', 'uploadUserDataViaPR', {
                 filePath,

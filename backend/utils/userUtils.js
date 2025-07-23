@@ -1,10 +1,11 @@
 const crypto = require('crypto');
+const https = require('https');
 
 /**
  * Generate a consistent user ID from an email address
- * Uses SHA-256 hash for better distribution and security
+ * Removes domain part and strips special characters
  * @param {string} email - User's email address
- * @returns {string} User ID (8-character hex string)
+ * @returns {string} User ID (cleaned username)
  */
 function generateUserId(email) {
     if (!email || typeof email !== 'string') {
@@ -14,11 +15,18 @@ function generateUserId(email) {
     // Normalize email to lowercase and trim whitespace
     const normalizedEmail = email.toLowerCase().trim();
     
-    // Create SHA-256 hash of the email
-    const hash = crypto.createHash('sha256').update(normalizedEmail).digest('hex');
+    // Remove the '@domain' part
+    const username = normalizedEmail.split('@')[0];
     
-    // Return first 8 characters for consistency with existing code
-    return hash.substring(0, 8);
+    // Strip special characters, keeping only letters and numbers
+    const cleanUsername = username.replace(/[^a-zA-Z0-9]/g, '');
+    
+    // Ensure we don't return an empty string
+    if (!cleanUsername) {
+        throw new Error('Email username contains no valid characters');
+    }
+    
+    return cleanUsername;
 }
 
 /**
@@ -51,16 +59,116 @@ function isValidUserId(userId) {
         return true;
     }
     
-    // Check if it's a valid 8-character hex string
-    return /^[a-f0-9]{8}$/i.test(userId);
+    // Check if it's a valid alphanumeric string
+    return /^[a-zA-Z0-9]+$/.test(userId);
+}
+
+/**
+ * Generate a topic directory name using OpenAI
+ * @param {Array} topics - Array of topic strings
+ * @param {string} apiKey - OpenAI API key
+ * @returns {Promise<string>} Topic directory name
+ */
+async function generateTopicDirectoryName(topics, apiKey) {
+    if (!topics || topics.length === 0) {
+        return 'general';
+    }
+    
+    const topicsText = topics.join(', ');
+    const prompt = `Create a 3-5 word directory name for these research topics: ${topicsText}. Return only the name, no quotes or extra text.`;
+    
+    return new Promise((resolve, reject) => {
+        const data = JSON.stringify({
+            model: 'gpt-4o',
+            messages: [
+                {
+                    role: 'system',
+                    content: 'You are a helpful assistant that creates concise directory names.'
+                },
+                {
+                    role: 'user',
+                    content: prompt
+                }
+            ],
+            max_tokens: 20,
+            temperature: 0.3
+        });
+
+        const options = {
+            hostname: 'api.openai.com',
+            port: 443,
+            path: '/v1/chat/completions',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Length': Buffer.byteLength(data)
+            }
+        };
+
+        const timeout = setTimeout(() => {
+            req.destroy();
+            reject(new Error('OpenAI request timeout'));
+        }, 10000);
+
+        const req = https.request(options, (res) => {
+            clearTimeout(timeout);
+            
+            if (res.statusCode !== 200) {
+                reject(new Error(`OpenAI API returned status ${res.statusCode}`));
+                return;
+            }
+            
+            let responseData = '';
+            
+            res.on('data', (chunk) => {
+                responseData += chunk;
+            });
+            
+            res.on('end', () => {
+                try {
+                    const response = JSON.parse(responseData);
+                    
+                    if (response.error) {
+                        reject(new Error(`OpenAI API Error: ${response.error.message}`));
+                        return;
+                    }
+                    
+                    if (response.choices && response.choices[0] && response.choices[0].message) {
+                        const directoryName = response.choices[0].message.content.trim()
+                            .replace(/['"]/g, '') // Remove quotes
+                            .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
+                            .replace(/\s+/g, '-') // Replace spaces with hyphens
+                            .toLowerCase();
+                        
+                        resolve(directoryName || 'general');
+                    } else {
+                        reject(new Error('Unexpected response format from OpenAI API'));
+                    }
+                } catch (error) {
+                    reject(new Error(`Failed to parse OpenAI response: ${error.message}`));
+                }
+            });
+        });
+
+        req.on('error', (error) => {
+            clearTimeout(timeout);
+            reject(new Error(`Request failed: ${error.message}`));
+        });
+
+        req.write(data);
+        req.end();
+    });
 }
 
 /**
  * Get the file path for a user's reports
  * @param {string} userId - User ID
- * @returns {string} File path for user's reports
+ * @param {Array} topics - Array of topics (optional, for topic-based directories)
+ * @param {string} apiKey - OpenAI API key (optional, for topic-based directories)
+ * @returns {Promise<string>} File path for user's reports
  */
-function getUserReportPath(userId) {
+async function getUserReportPath(userId, topics = null, apiKey = null) {
     if (!isValidUserId(userId)) {
         throw new Error('Invalid user ID');
     }
@@ -69,12 +177,27 @@ function getUserReportPath(userId) {
         return 'reports/public';
     }
     
-    return `reports/user-${userId}`;
+    let basePath = `reports/user-${userId}`;
+    
+    // If topics and API key are provided, create topic-based subdirectory
+    if (topics && topics.length > 0 && apiKey) {
+        try {
+            const topicDirName = await generateTopicDirectoryName(topics, apiKey);
+            return `${basePath}/${topicDirName}`;
+        } catch (error) {
+            // Use a fallback directory name if OpenAI fails
+            const fallbackName = topics.join('-').replace(/[^a-zA-Z0-9-]/g, '').toLowerCase() || 'general';
+            return `${basePath}/${fallbackName}`;
+        }
+    }
+    
+    return basePath;
 }
 
 module.exports = {
     generateUserId,
     generateUserIdFromRecipients,
     isValidUserId,
+    generateTopicDirectoryName,
     getUserReportPath
 }; 
