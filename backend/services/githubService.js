@@ -341,11 +341,11 @@ class GitHubService {
         const papersHtml = reportData.papers.map((paper, index) => {
             const authors = Array.isArray(paper.authors) ? paper.authors.join(', ') : paper.authors;
             const publishedDate = new Date(paper.published).toLocaleDateString();
-            const title = sanitizeText(paper.title || '', 200);
-            const summary = sanitizeText(paper.summary || '', 1000);
-            const link = sanitizeText(paper.link || '', 500);
+            const title = sanitizeText(paper.title || '');
+            const summary = sanitizeText(paper.summary || '');
+            const link = sanitizeText(paper.link || '');
             const categories = Array.isArray(paper.categories) 
-                ? paper.categories.map(cat => sanitizeText(cat, 50)).join(', ')
+                ? paper.categories.map(cat => sanitizeText(cat)).join(', ')
                 : '';
             
             return `
@@ -362,11 +362,11 @@ class GitHubService {
         const aiSummarySection = reportData.aiSummary ? `
             <div class="ai-summary">
                 <h2>🤖 AI Summary</h2>
-                <p>${sanitizeText(reportData.aiSummary, 3000)}</p>
+                <p>${sanitizeText(reportData.aiSummary)}</p>
             </div>
         ` : '';
 
-        const topicsStr = sanitizeText(reportData.topics.join(', '), 200);
+        const topicsStr = sanitizeText(reportData.topics.join(', '));
 
         return sanitizeHtml(`<!DOCTYPE html>
 <html lang="en">
