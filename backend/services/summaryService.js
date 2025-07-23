@@ -21,7 +21,7 @@ class SummaryService {
         
         try {
             const summary = await this.callOpenAI(prompt, apiKey, timeoutMs);
-            const sanitizedSummary = sanitizeText(summary, 5000);
+            const sanitizedSummary = sanitizeText(summary);
             
             logApiCall('openai', 'generateSummary', { 
                 papersCount: papers.length,
@@ -46,7 +46,7 @@ class SummaryService {
             const topicPrompt = this.createTopicSummaryPrompt(topicPapers, topic);
             const topicSummary = await this.callOpenAI(topicPrompt, apiKey, timeoutMs);
             
-            const sanitizedTopicSummary = sanitizeText(topicSummary, 2000);
+            const sanitizedTopicSummary = sanitizeText(topicSummary);
             
             logApiCall('openai', 'generateTopicSummary', { 
                 topic: topic,
@@ -114,8 +114,8 @@ class SummaryService {
     createTopicSummaryPrompt(papers, topic) {
         const papersText = papers.map((paper, index) => {
             const authors = Array.isArray(paper.authors) ? paper.authors.join(', ') : paper.authors;
-            const title = sanitizeText(paper.title || '', 200);
-            const summary = sanitizeText(paper.summary || '', 1000);
+            const title = sanitizeText(paper.title || '');
+            const summary = sanitizeText(paper.summary || '');
             
             return `${index + 1}. **${title}**\n   Authors: ${authors}\n   Summary: ${summary}\n`;
         }).join('\n');
@@ -143,8 +143,8 @@ Please provide a clear, well-structured summary that highlights the key findings
     createSummaryPrompt(papers) {
         const papersText = papers.map((paper, index) => {
             const authors = Array.isArray(paper.authors) ? paper.authors.join(', ') : paper.authors;
-            const title = sanitizeText(paper.title || '', 200);
-            const summary = sanitizeText(paper.summary || '', 1000);
+            const title = sanitizeText(paper.title || '');
+            const summary = sanitizeText(paper.summary || '');
             
             return `${index + 1}. **${title}**\n   Authors: ${authors}\n   Summary: ${summary}\n`;
         }).join('\n');
@@ -171,7 +171,7 @@ Please provide a clear, well-structured summary that highlights the key findings
                         content: prompt
                     }
                 ],
-                max_tokens: 1000,
+                max_tokens: 4000,
                 temperature: 0.7
             });
 

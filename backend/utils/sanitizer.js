@@ -39,10 +39,9 @@ const sanitizeHtml = (html, options = {}) => {
 /**
  * Sanitize plain text content
  * @param {string} text - Text content to sanitize
- * @param {number} maxLength - Maximum length allowed
  * @returns {string} - Sanitized text
  */
-const sanitizeText = (text, maxLength = 1000) => {
+const sanitizeText = (text) => {
     if (!text || typeof text !== 'string') {
         return '';
     }
@@ -55,11 +54,6 @@ const sanitizeText = (text, maxLength = 1000) => {
     
     // Trim whitespace
     sanitized = sanitized.trim();
-    
-    // Limit length
-    if (sanitized.length > maxLength) {
-        sanitized = sanitized.substring(0, maxLength) + '...';
-    }
     
     return sanitized;
 };
@@ -75,17 +69,17 @@ const sanitizePaper = (paper) => {
     }
 
     return {
-        id: sanitizeText(paper.id || '', 100),
-        title: sanitizeText(paper.title || '', 500),
+        id: sanitizeText(paper.id || ''),
+        title: sanitizeText(paper.title || ''),
         authors: Array.isArray(paper.authors) 
-            ? paper.authors.map(author => sanitizeText(author, 100)).filter(Boolean)
-            : [sanitizeText(paper.authors || '', 100)].filter(Boolean),
-        summary: sanitizeText(paper.summary || paper.abstract || '', 5000),
-        published: sanitizeText(paper.published || '', 50),
-        updated: sanitizeText(paper.updated || '', 50),
-        link: sanitizeText(paper.link || '', 500),
+            ? paper.authors.map(author => sanitizeText(author)).filter(Boolean)
+            : [sanitizeText(paper.authors || '')].filter(Boolean),
+        summary: sanitizeText(paper.summary || paper.abstract || ''),
+        published: sanitizeText(paper.published || ''),
+        updated: sanitizeText(paper.updated || ''),
+        link: sanitizeText(paper.link || ''),
         categories: Array.isArray(paper.categories)
-            ? paper.categories.map(cat => sanitizeText(cat, 50)).filter(Boolean)
+            ? paper.categories.map(cat => sanitizeText(cat)).filter(Boolean)
             : []
     };
 };
@@ -116,7 +110,7 @@ const sanitizeTopics = (topics) => {
     }
 
     return topics
-        .map(topic => sanitizeText(topic, 100))
+        .map(topic => sanitizeText(topic))
         .filter(topic => topic.length > 0)
         .slice(0, 20); // Limit to 20 topics
 };
@@ -135,7 +129,7 @@ const sanitizeEmails = (emails) => {
     
     return emails
         .map(email => {
-            const sanitized = sanitizeText(email, 254).toLowerCase();
+            const sanitized = sanitizeText(email).toLowerCase();
             return emailRegex.test(sanitized) ? sanitized : null;
         })
         .filter(email => email !== null)

@@ -81,11 +81,11 @@ class EmailService {
             day: 'numeric'
         });
 
-        const topicsStr = sanitizeText(topics.join(', '), 200);
+        const topicsStr = sanitizeText(topics.join(', '));
         
         // Get AI summary from the reportData argument
-        let aiSummary = sanitizeText(reportData.aiSummary || '', 8000);
-        let reportUrl = sanitizeText(reportData.pagesUrl || '#', 500);
+        let aiSummary = sanitizeText(reportData.aiSummary || '');
+        let reportUrl = sanitizeText(reportData.pagesUrl || '#');
         
         // Check if AI summary is available
         const hasAISummary = aiSummary && aiSummary.trim() !== '';
