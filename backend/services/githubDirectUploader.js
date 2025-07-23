@@ -1,4 +1,5 @@
 const https = require('https');
+const { getUserReportPath } = require('../utils/userUtils');
 
 /**
  * Directly uploads a report to the main branch (for when branch protection is disabled).
@@ -8,14 +9,16 @@ const https = require('https');
  * @param {string} repoOwner - The owner of the repo (e.g., 'AkashCiel').
  * @param {string} repoName - The name of the repo (e.g., 'juggernaut').
  * @param {string} userId - Optional user ID for future multi-user support.
+ * @param {Array} topics - Array of topics for directory naming.
+ * @param {string} openaiApiKey - OpenAI API key for topic directory generation.
  * @returns {Promise<{fileUrl: string, sha: string}>}
  */
-async function uploadReportDirect(reportData, githubToken, branch, repoOwner, repoName, userId = null) {
+async function uploadReportDirect(reportData, githubToken, branch, repoOwner, repoName, userId = null, topics = null, openaiApiKey = null) {
     const fileName = `report-${reportData.date}.html`;
     
-    // Future-proof file path structure for multi-user support
-    const userPath = userId ? `user-${userId}` : 'public';
-    const filePath = `reports/${userPath}/${fileName}`;
+    // Get user report path with topic-based subdirectory
+    const userReportPath = await getUserReportPath(userId || 'public', topics, openaiApiKey);
+    const filePath = `${userReportPath}/${fileName}`;
     
     const commitMessage = `Add AI research report for ${reportData.date}${userId ? ` (User: ${userId})` : ''}`;
     const fileContent = Buffer.from(reportData.html || reportData.content || '').toString('base64');
@@ -32,9 +35,10 @@ async function uploadReportDirect(reportData, githubToken, branch, repoOwner, re
             }
         );
         
-        const fileUrl = `https://github.com/${repoOwner}/${repoName}/blob/${branch}/${filePath}`;
+        // Generate GitHub Pages URL for the uploaded file
+        const pagesUrl = `https://akashciel.github.io/juggernaut-reports/${filePath}`;
         return {
-            fileUrl,
+            fileUrl: pagesUrl,
             sha: response.content.sha
         };
     } catch (error) {
@@ -102,9 +106,10 @@ async function updateExistingFile(owner, repo, filePath, content, branch, messag
         branch
     });
     
-    const fileUrl = `https://github.com/${owner}/${repo}/blob/${branch}/${filePath}`;
+    // Generate GitHub Pages URL for the uploaded file
+    const pagesUrl = `https://akashciel.github.io/juggernaut-reports/${filePath}`;
     return {
-        fileUrl,
+        fileUrl: pagesUrl,
         sha: response.content.sha
     };
 }

@@ -1,5 +1,6 @@
 const https = require('https');
 const { v4: uuidv4 } = require('uuid');
+const { getUserReportPath } = require('../utils/userUtils');
 
 /**
  * Uploads a report by creating a new branch, committing the file, and opening a pull request to main.
@@ -9,14 +10,16 @@ const { v4: uuidv4 } = require('uuid');
  * @param {string} repoOwner - The owner of the repo (e.g., 'AkashCiel').
  * @param {string} repoName - The name of the repo (e.g., 'juggernaut').
  * @param {string} userId - Optional user ID for future multi-user support.
+ * @param {Array} topics - Array of topics for directory naming.
+ * @param {string} openaiApiKey - OpenAI API key for topic directory generation.
  * @returns {Promise<{prUrl: string, branchName: string, fileUrl: string}>}
  */
-async function uploadReportViaPR(reportData, githubToken, baseBranch, repoOwner, repoName, userId = null) {
+async function uploadReportViaPR(reportData, githubToken, baseBranch, repoOwner, repoName, userId = null, topics = null, openaiApiKey = null) {
     const fileName = `report-${reportData.date}.html`;
     
-    // Future-proof file path structure for multi-user support
-    const userPath = userId ? `user-${userId}` : 'public';
-    const filePath = `reports/${userPath}/${fileName}`;
+    // Get user report path with topic-based subdirectory
+    const userReportPath = await getUserReportPath(userId || 'public', topics, openaiApiKey);
+    const filePath = `${userReportPath}/${fileName}`;
     
     const branchName = `auto/report-${reportData.date}-${uuidv4().slice(0, 8)}`;
     const commitMessage = `Add AI research report for ${reportData.date}${userId ? ` (User: ${userId})` : ''}`;
@@ -36,8 +39,9 @@ async function uploadReportViaPR(reportData, githubToken, baseBranch, repoOwner,
     // 4. Open a pull request from the new branch to the base branch
     const prUrl = await createPullRequest(repoOwner, repoName, branchName, baseBranch, prTitle, prBody, githubToken);
 
-    const fileUrl = `https://github.com/${repoOwner}/${repoName}/blob/${branchName}/${filePath}`;
-    return { prUrl, branchName, fileUrl };
+    // Generate GitHub Pages URL using the target branch (main) instead of temporary branch
+    const pagesUrl = `https://akashciel.github.io/juggernaut-reports/${filePath}`;
+    return { prUrl, branchName, fileUrl: pagesUrl };
 }
 
 function githubApiRequest(path, method, githubToken, data = null) {

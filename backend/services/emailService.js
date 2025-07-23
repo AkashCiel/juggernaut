@@ -84,7 +84,7 @@ class EmailService {
         const topicsStr = sanitizeText(topics.join(', '), 200);
         
         // Get AI summary from the reportData argument
-        let aiSummary = sanitizeText(reportData.aiSummary || '', 3000);
+        let aiSummary = sanitizeText(reportData.aiSummary || '', 8000);
         let reportUrl = sanitizeText(reportData.pagesUrl || '#', 500);
         
         // Check if AI summary is available
