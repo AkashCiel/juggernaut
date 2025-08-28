@@ -115,6 +115,11 @@ class ReportGenerator {
                         RETRY_CONFIGS.github
                     );
                     logApiCall('github', 'uploadReport', { reportDate, userEmail });
+                    
+                    // ✅ Fix: Add pagesUrl to reportData for email service
+                    if (uploadResult && uploadResult.pagesUrl) {
+                        reportData.pagesUrl = uploadResult.pagesUrl;
+                    }
                 } catch (error) {
                     handleGitHubError(error);
                 }
