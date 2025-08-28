@@ -28,7 +28,12 @@ const RESEARCH_SUMMARY_PROMPTS = {
             return `${index + 1}. **${title}**\n   Authors: ${authors}\n   Summary: ${summary}\n`;
         }).join('\n');
 
-        return `You are a research assistant. Please provide a high-level summary of the following research papers. Focus on the most important trends, breakthroughs, and implications. Write the summary in a way that a STEM graduate who is not an expert in the field can understand. Keep it concise but insightful (2-3 paragraphs max).
+        return `You are a research assistant. Please provide a high-level summary of the following research papers. 
+        Avoid using jargon and technical terms. Break the sumamry down into most important trends, breakthroughs, and implications.
+        Structure the summary according to the following format:
+        - Most important trends
+        - Breakthroughs
+        - Implications
 
 Research Papers:
 ${papersText}
@@ -53,7 +58,12 @@ Please provide a clear, well-structured summary that highlights the key findings
             return `${index + 1}. **${title}**\n   Authors: ${authors}\n   Summary: ${summary}\n`;
         }).join('\n');
 
-        return `You are a research assistant. Please provide a focused summary of the following research papers related to "${topic}". Focus on the most important trends, breakthroughs, and implications specific to this topic. Write the summary in a way that a STEM graduate who is not an expert in the field can understand. Keep it concise but insightful (1-2 paragraphs max).
+        return `You are a research assistant. Please provide a high-level summary of the following research papers. 
+        Avoid using jargon and technical terms. Break the sumamry down into most important trends, breakthroughs, and implications.
+        Structure the summary according to the following format:
+        - Most important trends
+        - Breakthroughs
+        - Implications
 
 Research Papers for "${topic}":
 ${papersText}
