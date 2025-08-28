@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const https = require('https');
+const { UTILITY_PROMPTS, SYSTEM_ROLES, OPENAI_CONFIG } = require('../config/prompts');
 
 /**
  * Generate a consistent user ID from an email address
@@ -74,25 +75,24 @@ async function generateTopicDirectoryName(topics, apiKey) {
         return 'general';
     }
     
-    const topicsText = topics.join(', ');
-    const prompt = `Create a 3-5 word directory name for these research topics: ${topicsText}. Return only the name, no quotes or extra text.`;
+    const prompt = UTILITY_PROMPTS.topicDirectoryName(topics);
     
     return new Promise((resolve, reject) => {
-        const data = JSON.stringify({
-            model: 'gpt-4o',
-            messages: [
-                {
-                    role: 'system',
-                    content: 'You are a helpful assistant that creates concise directory names.'
-                },
-                {
-                    role: 'user',
-                    content: prompt
-                }
-            ],
-            max_tokens: 20,
-            temperature: 0.3
-        });
+                    const data = JSON.stringify({
+                model: OPENAI_CONFIG.defaultModel,
+                messages: [
+                    {
+                        role: 'system',
+                        content: SYSTEM_ROLES.directoryNaming
+                    },
+                    {
+                        role: 'user',
+                        content: prompt
+                    }
+                ],
+                max_tokens: OPENAI_CONFIG.maxTokens.directoryName,
+                temperature: OPENAI_CONFIG.temperature.directoryName
+            });
 
         const options = {
             hostname: 'api.openai.com',
@@ -109,7 +109,7 @@ async function generateTopicDirectoryName(topics, apiKey) {
         const timeout = setTimeout(() => {
             req.destroy();
             reject(new Error('OpenAI request timeout'));
-        }, 10000);
+        }, OPENAI_CONFIG.timeouts.directoryName);
 
         const req = https.request(options, (res) => {
             clearTimeout(timeout);

@@ -2,6 +2,7 @@ const https = require('https');
 const { logger, logApiCall } = require('../utils/logger');
 const { handleOpenAIError } = require('../utils/errorHandler');
 const { sanitizeText } = require('../utils/sanitizer');
+const { RESEARCH_SUMMARY_PROMPTS, SYSTEM_ROLES, OPENAI_CONFIG } = require('../config/prompts');
 
 class SummaryService {
     async generateSummary(papers, apiKey, timeoutMs = 60000, topics = []) {
@@ -112,20 +113,14 @@ class SummaryService {
     }
 
     createTopicSummaryPrompt(papers, topic) {
-        const papersText = papers.map((paper, index) => {
-            const authors = Array.isArray(paper.authors) ? paper.authors.join(', ') : paper.authors;
-            const title = sanitizeText(paper.title || '');
-            const summary = sanitizeText(paper.summary || '');
-            
-            return `${index + 1}. **${title}**\n   Authors: ${authors}\n   Summary: ${summary}\n`;
-        }).join('\n');
-
-        return `You are a research assistant. Please provide a focused summary of the following research papers related to "${topic}". Focus on the most important trends, breakthroughs, and implications specific to this topic. Write the summary in a way that a STEM graduate who is not an expert in the field can understand. Keep it concise but insightful (1-2 paragraphs max).
-
-Research Papers for "${topic}":
-${papersText}
-
-Please provide a clear, well-structured summary that highlights the key findings and their significance in the context of ${topic}.`;
+        // Use centralized prompt with sanitized paper data
+        const sanitizedPapers = papers.map(paper => ({
+            ...paper,
+            title: sanitizeText(paper.title || ''),
+            summary: sanitizeText(paper.summary || '')
+        }));
+        
+        return RESEARCH_SUMMARY_PROMPTS.topicSummary(sanitizedPapers, topic);
     }
 
     combineTopicSummaries(topicSummaries) {
@@ -141,38 +136,32 @@ Please provide a clear, well-structured summary that highlights the key findings
     }
 
     createSummaryPrompt(papers) {
-        const papersText = papers.map((paper, index) => {
-            const authors = Array.isArray(paper.authors) ? paper.authors.join(', ') : paper.authors;
-            const title = sanitizeText(paper.title || '');
-            const summary = sanitizeText(paper.summary || '');
-            
-            return `${index + 1}. **${title}**\n   Authors: ${authors}\n   Summary: ${summary}\n`;
-        }).join('\n');
-
-        return `You are a research assistant. Please provide a high-level summary of the following research papers. Focus on the most important trends, breakthroughs, and implications. Write the summary in a way that a STEM graduate who is not an expert in the field can understand. Keep it concise but insightful (2-3 paragraphs max).
-
-Research Papers:
-${papersText}
-
-Please provide a clear, well-structured summary that highlights the key findings and their significance.`;
+        // Use centralized prompt with sanitized paper data
+        const sanitizedPapers = papers.map(paper => ({
+            ...paper,
+            title: sanitizeText(paper.title || ''),
+            summary: sanitizeText(paper.summary || '')
+        }));
+        
+        return RESEARCH_SUMMARY_PROMPTS.generalSummary(sanitizedPapers);
     }
 
     callOpenAI(prompt, apiKey, timeoutMs) {
         return new Promise((resolve, reject) => {
             const data = JSON.stringify({
-                model: 'gpt-4o',
+                model: OPENAI_CONFIG.defaultModel,
                 messages: [
                     {
                         role: 'system',
-                        content: 'You are an AI research assistant that provides clear, insightful summaries of research papers.'
+                        content: SYSTEM_ROLES.researchAssistant
                     },
                     {
                         role: 'user',
                         content: prompt
                     }
                 ],
-                max_tokens: 4000,
-                temperature: 0.7
+                max_tokens: OPENAI_CONFIG.maxTokens.summary,
+                temperature: OPENAI_CONFIG.temperature.summary
             });
 
             const options = {
@@ -190,7 +179,7 @@ Please provide a clear, well-structured summary that highlights the key findings
             const timeout = setTimeout(() => {
                 req.destroy();
                 reject(new Error('OpenAI request timeout'));
-            }, timeoutMs);
+            }, timeoutMs || OPENAI_CONFIG.timeouts.summary);
 
             const req = https.request(options, (res) => {
                 clearTimeout(timeout);
