@@ -4,7 +4,8 @@ on:
   schedule:
     # 4 PM Amsterdam time (UTC+1 in winter, UTC+2 in summer)
     # Using 3 PM UTC to account for both timezones
-    - cron: '0 15 * * *'
+    # Every 4 days instead of daily
+    - cron: '0 15 */4 * *'
   workflow_dispatch: # Allow manual trigger for testing
 
 jobs:
