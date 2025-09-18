@@ -3,13 +3,12 @@ const xml2js = require('xml2js');
 const { logger, logApiCall } = require('../utils/logger');
 const { handleArxivError } = require('../utils/errorHandler');
 const { sanitizePapers } = require('../utils/sanitizer');
+const { NUM_PAPERS_PER_TOPIC } = require('../config/constants');
 
 // ArXiv API Service for fetching research papers
-// Default: 50 papers for comprehensive reports
-const SERVER_MAX_PAPERS = 50;
 
 class ArxivService {
-    async fetchPapers(topics, maxResults = SERVER_MAX_PAPERS) {
+    async fetchPapers(topics, maxResults = NUM_PAPERS_PER_TOPIC) {
         logger.info(`🔍 Searching ArXiv for topics: ${topics.join(', ')}`);
         logger.info(`📊 Server-side limit: ${maxResults} papers`);
         
@@ -39,7 +38,7 @@ class ArxivService {
         return sanitizedPapers;
     }
 
-    searchArxiv(query, maxResults = SERVER_MAX_PAPERS) {
+    searchArxiv(query, maxResults = NUM_PAPERS_PER_TOPIC) {
         return new Promise((resolve, reject) => {
             const encodedQuery = encodeURIComponent(query);
             const url = `https://export.arxiv.org/api/query?search_query=all:${encodedQuery}&start=0&max_results=${maxResults}&sortBy=submittedDate&sortOrder=descending`;
