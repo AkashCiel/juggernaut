@@ -7,6 +7,7 @@ const { retry, RETRY_CONFIGS } = require('../utils/retryUtils');
 const UserService = require('./userService');
 const ArxivService = require('./arxivService');
 const SummaryService = require('./summaryService');
+const { NUM_PAPERS_PER_TOPIC } = require('../config/constants');
 const GuardianService = require('./guardianService');
 const NewsProcessingService = require('./newsProcessingService');
 const EmailService = require('./emailService');
@@ -114,7 +115,7 @@ class SchedulerService {
 
             // Step 1: Fetch papers and generate summaries per topic
             const sanitizedTopics = sanitizeTopics(user.topics);
-            const maxPapers = 50; // Default for daily reports
+            const maxPapers = NUM_PAPERS_PER_TOPIC; // Global per-topic default
             
             logger.info('📚 Fetching papers and generating summaries per topic...');
             logApiCall('arxiv', 'fetchPapers', { 
@@ -131,7 +132,7 @@ class SchedulerService {
                     // Fetch papers for this specific topic
                     logger.info(`📚 Fetching papers for topic: ${topic}`);
                     const topicPapers = await retry(
-                        () => this.arxivService.fetchPapers([topic], maxPapers),
+                        () => this.arxivService.fetchPapers([topic], NUM_PAPERS_PER_TOPIC),
                         RETRY_CONFIGS.arxiv
                     );
                     const sanitizedTopicPapers = sanitizePapers(topicPapers);

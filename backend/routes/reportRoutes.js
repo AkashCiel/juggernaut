@@ -304,14 +304,12 @@ router.post('/generate-report',
         
         const { 
             topics = ['artificial intelligence', 'machine learning', 'deep learning'],
-            recipients = [],
-            maxPapers = 50
+            recipients = []
         } = req.body;
 
         // Sanitize inputs
         const sanitizedTopics = sanitizeTopics(topics);
         const sanitizedRecipients = sanitizeEmails(recipients);
-        const sanitizedMaxPapers = Math.min(Math.max(parseInt(maxPapers) || 50, 1), 100);
 
         // Check for demo mode (missing environment variables)
         const isDemoMode = !validateEnvironment();
@@ -325,7 +323,7 @@ router.post('/generate-report',
         const result = await reportGenerator.generateReport(
             userEmail,
             sanitizedTopics,
-            { maxPapers: sanitizedMaxPapers, isDemoMode }
+            { isDemoMode }
         );
 
         if (!result.success) {
@@ -369,12 +367,11 @@ router.post('/test/arxiv',
     validateArxivTest,
     handleValidationErrors,
     asyncHandler(async (req, res) => {
-        const { topics = ['artificial intelligence'], maxPapers = 10 } = req.body;
+        const { topics = ['artificial intelligence'] } = req.body;
         const sanitizedTopics = sanitizeTopics(topics);
-        const sanitizedMaxPapers = Math.min(Math.max(parseInt(maxPapers) || 10, 1), 20);
         
         try {
-            const papers = await arxivService.fetchPapers(sanitizedTopics, sanitizedMaxPapers);
+            const papers = await arxivService.fetchPapers(sanitizedTopics);
             const sanitizedPapers = sanitizePapers(papers);
             
             res.json({ 
@@ -476,7 +473,7 @@ router.post('/register-user',
                 reportResult = await reportGenerator.generateReport(
                     user.email,
                     user.topics,
-                    { maxPapers: 50, isDemoMode: false }
+                    { isDemoMode: false }
                 );
                 
                 if (reportResult.success) {

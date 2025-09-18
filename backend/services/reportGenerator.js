@@ -6,6 +6,7 @@ const ArxivService = require('./arxivService');
 const SummaryService = require('./summaryService');
 const GuardianService = require('./guardianService');
 const NewsProcessingService = require('./newsProcessingService');
+const { NUM_PAPERS_PER_TOPIC } = require('../config/constants');
 const GitHubService = require('./githubService');
 const EmailService = require('./emailService');
 
@@ -24,23 +25,23 @@ class ReportGenerator {
      * @param {string} userEmail - User's email address
      * @param {Array} topics - Research topics
      * @param {Object} options - Additional options
-     * @param {number} options.maxPapers - Maximum papers to fetch (default: 50)
+     * (Papers per topic is controlled globally via NUM_PAPERS_PER_TOPIC)
      * @param {boolean} options.isDemoMode - Demo mode flag (default: false)
      * @returns {Promise<Object>} Complete report result
      */
     async generateReport(userEmail, topics, options = {}) {
-        const { maxPapers = 50, isDemoMode = false } = options;
+        const { isDemoMode = false } = options;
         
         logger.info(`🚀 Generating report for ${userEmail} with topics: ${topics.join(', ')}`);
         
         try {
             // Sanitize inputs
             const sanitizedTopics = sanitizeTopics(topics);
-            const sanitizedMaxPapers = Math.min(Math.max(parseInt(maxPapers) || 50, 1), 100);
+            const sanitizedMaxPapers = NUM_PAPERS_PER_TOPIC;
             
             // Step 1: Fetch papers and generate summaries per topic
             logger.info('📚 Fetching papers and generating summaries per topic...');
-            logApiCall('arxiv', 'fetchPapers', { topics: sanitizedTopics, maxPapers: sanitizedMaxPapers });
+            logApiCall('arxiv', 'fetchPapers', { topics: sanitizedTopics, perTopic: NUM_PAPERS_PER_TOPIC });
             
             let allPapers = [];
             let topicSummaries = [];
@@ -50,7 +51,7 @@ class ReportGenerator {
                     // Fetch papers for this specific topic
                     logger.info(`📚 Fetching papers for topic: ${topic}`);
                     const topicPapers = await retry(
-                        () => this.arxivService.fetchPapers([topic], sanitizedMaxPapers),
+                        () => this.arxivService.fetchPapers([topic], NUM_PAPERS_PER_TOPIC),
                         RETRY_CONFIGS.arxiv
                     );
                     const sanitizedTopicPapers = sanitizePapers(topicPapers);
