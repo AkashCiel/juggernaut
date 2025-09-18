@@ -162,6 +162,19 @@ const RETRY_CONFIGS = {
             const retryable = ['timeout', 'temporary', 'server error', 'network'];
             return retryable.some(retryable => errorMessage.includes(retryable));
         }
+    },
+    
+    // The Guardian Content API calls
+    guardian: {
+        maxAttempts: 3,
+        baseDelay: 1000,
+        maxDelay: 8000,
+        shouldRetry: (error) => {
+            // Retry on rate limits (429), timeouts, and transient network/server errors
+            const errorMessage = error.message?.toLowerCase() || '';
+            const retryable = ['429', 'rate limit', 'timeout', 'temporary', 'server error', 'econnreset', 'enotfound', 'network'];
+            return retryable.some(token => errorMessage.includes(token));
+        }
     }
 };
 

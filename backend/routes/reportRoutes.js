@@ -40,6 +40,7 @@ function generateHtmlReport(reportData, topics, reportDate) {
     const topicsStr = topics.join(', ');
     const aiSummary = reportData.aiSummary || '';
     const papers = reportData.papers || [];
+    const news = Array.isArray(reportData.news) ? reportData.news : [];
     
     const html = `
 <!DOCTYPE html>
@@ -231,6 +232,37 @@ function generateHtmlReport(reportData, topics, reportDate) {
     </div>
     `}
     
+    ${news.length > 0 ? `
+    <div class="papers-section">
+        <h2>📰 News</h2>
+        ${news.map(group => {
+            const summariesById = Object.fromEntries((group.perArticleSummaries || []).map(s => [s.articleId, s]));
+            return `
+            <div class="paper-item">
+                <div class="paper-title">${group.topic}</div>
+                ${group.articles.map(article => {
+                    const s = summariesById[article.id] || {};
+                    const link = s.link || article.shortUrl || article.url;
+                    const published = article.publishedAt || '';
+                    const byline = article.byline ? ` — ${article.byline}` : '';
+                    return `
+                    <div style="margin: 16px 0;">
+                        <div style="font-weight:600;">
+                            <a href="${link}" target="_blank" class="paper-link">${article.title || 'Untitled'}</a>${byline}
+                        </div>
+                        <div style="color:#999; font-size:0.9em;">${published}</div>
+                        <div style="margin-top:8px;">${(s.text || '').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+                        <div style="margin-top:6px;"><a href="${link}" target="_blank" class="paper-link">Read full article</a></div>
+                    </div>
+                    `;
+                }).join('')}
+                <div style="font-size:0.85em; color:#666; margin-top:8px;">Source: The Guardian</div>
+            </div>
+            `;
+        }).join('')}
+    </div>
+    ` : ''}
+
     <div class="papers-section">
         <h2>📄 Research Papers (${papers.length})</h2>
         ${papers.map(paper => `

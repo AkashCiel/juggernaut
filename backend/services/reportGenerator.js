@@ -4,6 +4,8 @@ const { sanitizeTopics, sanitizePapers } = require('../utils/sanitizer');
 const { validateApiKey, handleArxivError, handleOpenAIError, handleGitHubError, handleMailgunError } = require('../utils/errorHandler');
 const ArxivService = require('./arxivService');
 const SummaryService = require('./summaryService');
+const GuardianService = require('./guardianService');
+const NewsProcessingService = require('./newsProcessingService');
 const GitHubService = require('./githubService');
 const EmailService = require('./emailService');
 
@@ -11,6 +13,8 @@ class ReportGenerator {
     constructor() {
         this.arxivService = new ArxivService();
         this.summaryService = new SummaryService();
+        this.guardianService = new GuardianService();
+        this.newsProcessingService = new NewsProcessingService();
         this.githubService = new GitHubService();
         this.emailService = new EmailService();
     }
@@ -95,13 +99,48 @@ class ReportGenerator {
                 aiSummary = this.summaryService.combineTopicSummaries(topicSummaries);
             }
 
+            // Step 2: Fetch Guardian news and generate per-article summaries
+            let newsByTopic = [];
+            try {
+                if (process.env.GUARDIAN_API_KEY) {
+                    logger.info('📰 Fetching Guardian news by topic...');
+                    const now = new Date();
+                    const from = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
+                    const fromDate = from.toISOString().slice(0, 10);
+                    const toDate = now.toISOString().slice(0, 10);
+                    const { articlesByTopic } = await this.guardianService.fetchArticles(sanitizedTopics, {
+                        fromDate,
+                        toDate,
+                        pageSize: 10,
+                        orderBy: 'newest',
+                        section: 'technology',
+                        includeBodyText: true
+                    });
+
+                    for (const group of articlesByTopic) {
+                        const summaries = await this.newsProcessingService.process('perArticleFiveSentences', group.articles, {
+                            maxArticles: group.articles.length,
+                            maxInputChars: 1600,
+                            apiKey: process.env.OPENAI_API_KEY,
+                            timeoutMs: 60000
+                        });
+                        newsByTopic.push({ topic: group.topic, articles: group.articles, perArticleSummaries: summaries });
+                    }
+                } else {
+                    logger.warn('⚠️ GUARDIAN_API_KEY not set. Skipping news fetch.');
+                }
+            } catch (error) {
+                logger.warn(`⚠️ Guardian news integration failed: ${error.message}`);
+            }
+
             // Step 3: Prepare report data
             const reportDate = new Date().toISOString().split('T')[0];
             const reportData = {
                 date: reportDate,
                 topics: sanitizedTopics,
                 papers: allPapers,
-                aiSummary: aiSummary
+                aiSummary: aiSummary,
+                news: newsByTopic
             };
 
             // Step 4: Upload report to GitHub (skip in demo mode)
