@@ -43,12 +43,10 @@ const handleValidationErrors = (req, res, next) => {
 router.post('/start',
     apiLimiter,
     asyncHandler(async (req, res) => {
-        logger.info('🚀 Chat session start requested');
         
         try {
             const result = await chatService.startSession();
             
-            logger.info('✅ Chat session started successfully');
             
             res.json({
                 success: true,
@@ -56,7 +54,6 @@ router.post('/start',
                 data: result
             });
         } catch (error) {
-            logger.error('❌ Chat session start failed:', error.message);
             res.status(500).json({
                 success: false,
                 error: 'Failed to start chat session',
@@ -74,18 +71,10 @@ router.post('/message',
     asyncHandler(async (req, res) => {
         const { message, sessionId } = req.body;
         
-        logger.info('💬 Chat message received', { 
-            messageLength: message.length,
-            sessionId: sessionId 
-        });
         
         try {
             const result = await chatService.handleMessage(message, sessionId);
             
-            logger.info('✅ Chat message processed successfully', {
-                sessionId: result.sessionId,
-                conversationComplete: result.conversationComplete
-            });
             
             res.json({
                 success: true,
@@ -93,7 +82,6 @@ router.post('/message',
                 data: result
             });
         } catch (error) {
-            logger.error('❌ Chat message processing failed:', error.message);
             res.status(500).json({
                 success: false,
                 error: 'Failed to process message',

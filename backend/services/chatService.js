@@ -1,9 +1,10 @@
 const { logger, logApiCall } = require('../utils/logger');
 const ConversationService = require('./conversationService');
+const { CHAT_WELCOME_MESSAGE } = require('../config/constants');
 
 class ChatService {
     constructor() {
-        this.welcomeMessage = "Hello! I'm here to help you discover news you care about. What topics interest you?";
+        this.welcomeMessage = CHAT_WELCOME_MESSAGE;
         this.conversationService = new ConversationService();
         this.sessions = new Map(); // Store chat history per session
     }
@@ -16,10 +17,6 @@ class ChatService {
      */
     async handleMessage(message, sessionId) {
         try {
-            logger.info('💬 Processing chat message', { 
-                messageLength: message.length,
-                sessionId: sessionId 
-            });
             
             // Get or create session
             if (!this.sessions.has(sessionId)) {
@@ -28,15 +25,15 @@ class ChatService {
             
             const chatHistory = this.sessions.get(sessionId);
             
+            // Generate AI response (without adding user message to history yet)
+            const conversationResult = await this.conversationService.generateResponse(message, chatHistory);
+            
             // Add user message to history
             chatHistory.push({
                 role: 'user',
                 content: message,
                 timestamp: new Date().toISOString()
             });
-            
-            // Generate AI response
-            const conversationResult = await this.conversationService.generateResponse(message, chatHistory);
             
             // Add AI response to history
             chatHistory.push({
@@ -51,10 +48,6 @@ class ChatService {
             
             if (isComplete) {
                 extractedTopics = await this.conversationService.extractTopics(chatHistory);
-                logger.info('🎯 Conversation complete, topics extracted', { 
-                    topics: extractedTopics,
-                    sessionId: sessionId 
-                });
             }
             
             logApiCall('chat', 'handleMessage', { 
@@ -74,7 +67,6 @@ class ChatService {
                 timestamp: new Date().toISOString()
             };
         } catch (error) {
-            logger.error('❌ Chat message processing failed:', error.message);
             // Fallback to static response on error
             return {
                 success: true,
@@ -93,7 +85,6 @@ class ChatService {
      */
     async startSession() {
         try {
-            logger.info('🚀 Starting new chat session');
             
             const sessionId = this.generateSessionId();
             
@@ -109,7 +100,6 @@ class ChatService {
                 timestamp: new Date().toISOString()
             };
         } catch (error) {
-            logger.error('❌ Chat session start failed:', error.message);
             throw error;
         }
     }

@@ -1,6 +1,6 @@
 const { logger, logApiCall } = require('../utils/logger');
 const { retry, RETRY_CONFIGS } = require('../utils/retryUtils');
-const { CHAT_SYSTEM_PROMPT } = require('../config/constants');
+const { CHAT_SYSTEM_PROMPT, CHAT_WELCOME_MESSAGE } = require('../config/constants');
 
 class ConversationService {
     constructor() {
@@ -9,7 +9,6 @@ class ConversationService {
         this.temperature = 0.7;
         this.maxTokens = 800;
         this.timeout = 30000;
-        
         this.systemPrompt = CHAT_SYSTEM_PROMPT;
     }
 
@@ -21,10 +20,6 @@ class ConversationService {
      */
     async generateResponse(message, chatHistory = []) {
         try {
-            logger.info('🤖 Generating conversational response', { 
-                messageLength: message.length,
-                historyLength: chatHistory.length 
-            });
 
             // Build conversation context
             const messages = this.buildConversationContext(message, chatHistory);
@@ -44,8 +39,6 @@ class ConversationService {
                 timestamp: new Date().toISOString()
             };
         } catch (error) {
-            logger.error('❌ Conversation generation failed:', error.message);
-            logger.error('❌ Full error details:', error);
             throw error;
         }
     }
@@ -57,9 +50,6 @@ class ConversationService {
      */
     async extractTopics(chatHistory) {
         try {
-            logger.info('🔍 Extracting topics from conversation', { 
-                historyLength: chatHistory.length 
-            });
 
             const extractionPrompt = `Analyze this conversation and extract 3-5 specific news topics that this person is interested in. Return only a JSON array of topic strings, nothing else.
 
@@ -85,7 +75,6 @@ Topics:`;
 
             return topics;
         } catch (error) {
-            logger.error('❌ Topic extraction failed:', error.message);
             return [];
         }
     }
@@ -121,6 +110,14 @@ Topics:`;
             { role: 'system', content: this.systemPrompt }
         ];
 
+        // If this is the first message (no chat history), add welcome message
+        if (chatHistory.length === 0) {
+            messages.push({
+                role: 'assistant',
+                content: CHAT_WELCOME_MESSAGE
+            });
+        }
+
         // Add conversation history
         chatHistory.forEach(msg => {
             messages.push({
@@ -150,8 +147,6 @@ Topics:`;
         try {
             return await this.makeOpenAIRequest(messages, temperature, maxTokens);
         } catch (error) {
-            logger.error('❌ Direct OpenAI API call failed:', error.message);
-            logger.error('❌ Full error object:', error);
             throw error;
         }
     }
@@ -166,14 +161,6 @@ Topics:`;
     async makeOpenAIRequest(messages, temperature, maxTokens) {
         const https = require('https');
         
-        // Debug: Log the request data
-        logger.info('🔍 OpenAI request data:', {
-            model: this.model,
-            messagesCount: messages.length,
-            temperature: temperature,
-            maxTokens: maxTokens,
-            apiKeyLength: this.openaiApiKey ? this.openaiApiKey.length : 0
-        });
         
         const requestData = {
             model: this.model,
@@ -184,17 +171,11 @@ Topics:`;
         
         let data;
         try {
-            console.log('🔍 Request object:', JSON.stringify(requestData, null, 2));
-            
             data = JSON.stringify(requestData);
-            
-            console.log('🔍 JSON data length:', data.length);
-            console.log('🔍 JSON data preview:', data.substring(0, 200) + '...');
         } catch (jsonError) {
-            console.error('❌ JSON.stringify failed:', jsonError.message);
             throw new Error(`JSON serialization failed: ${jsonError.message}`);
         }
-
+        console.log('🔍 Request data:', data);
         const options = {
             hostname: 'api.openai.com',
             port: 443,
