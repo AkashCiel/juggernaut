@@ -4,6 +4,7 @@ class ChatClient {
         this.apiUrl = this.getApiUrl();
         this.sessionId = null;
         this.isTyping = false;
+        this.conversationComplete = false;
         
         this.initializeElements();
         this.bindEvents();
@@ -92,7 +93,10 @@ class ChatClient {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ message })
+                body: JSON.stringify({ 
+                    message: message,
+                    sessionId: this.sessionId 
+                })
             });
             
             const result = await response.json();
@@ -102,6 +106,12 @@ class ChatClient {
             
             if (result.success) {
                 this.addMessage(result.data.response, 'bot');
+                
+                // Check if conversation is complete
+                if (result.data.conversationComplete) {
+                    this.conversationComplete = true;
+                    this.handleConversationComplete(result.data.extractedTopics);
+                }
             } else {
                 this.addMessage('Sorry, I encountered an error. Please try again.', 'bot');
             }
@@ -177,6 +187,21 @@ class ChatClient {
     // Hide status message
     hideStatus() {
         this.status.style.display = 'none';
+    }
+
+    // Handle conversation completion
+    handleConversationComplete(topics) {
+        if (topics && topics.length > 0) {
+            const topicsText = topics.join(', ');
+            this.addMessage(`Great! I've identified your interests: ${topicsText}. I'll start curating news for you based on these topics.`, 'bot');
+            
+            // Disable input since conversation is complete
+            this.setInputState(false);
+            this.chatInput.placeholder = 'Conversation complete - topics identified!';
+            
+            // Show completion status
+            this.showStatus(`✅ Topics identified: ${topicsText}`, 'success');
+        }
     }
 
     // Scroll to bottom of chat

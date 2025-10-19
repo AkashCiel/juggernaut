@@ -72,14 +72,20 @@ router.post('/message',
     validateChatMessage,
     handleValidationErrors,
     asyncHandler(async (req, res) => {
-        const { message } = req.body;
+        const { message, sessionId } = req.body;
         
-        logger.info('💬 Chat message received', { messageLength: message.length });
+        logger.info('💬 Chat message received', { 
+            messageLength: message.length,
+            sessionId: sessionId 
+        });
         
         try {
-            const result = await chatService.handleMessage(message);
+            const result = await chatService.handleMessage(message, sessionId);
             
-            logger.info('✅ Chat message processed successfully');
+            logger.info('✅ Chat message processed successfully', {
+                sessionId: result.sessionId,
+                conversationComplete: result.conversationComplete
+            });
             
             res.json({
                 success: true,
