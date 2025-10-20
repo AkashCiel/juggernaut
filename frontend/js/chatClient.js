@@ -192,13 +192,7 @@ class ChatClient {
     // Handle conversation completion
     handleConversationComplete(topics) {
         if (topics && topics.length > 0) {
-            const topicsText = topics.join(', ');
-            this.addMessage(`Great! I've identified your interests: ${topicsText}. I'll start curating news for you based on these topics.`, 'bot');
-            
-            // Disable input since conversation is complete
-            this.setInputState(false);
-            this.chatInput.placeholder = 'Conversation complete - topics identified!';
-            
+            const topicsText = topics.join(', ');            
             // Show completion status
             this.showStatus(`✅ Topics identified: ${topicsText}`, 'success');
         }
