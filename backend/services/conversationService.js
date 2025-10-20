@@ -184,7 +184,7 @@ Topics:`;
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${this.openaiApiKey}`,
-                'Content-Length': data.length
+                'Content-Length': Buffer.byteLength(data, 'utf8')
             }
         };
 
