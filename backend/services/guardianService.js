@@ -119,6 +119,64 @@ class GuardianService {
     stripHtml(html) {
         return String(html).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
     }
+
+    /**
+     * Fetch ALL articles from specified sections without topic filtering
+     * @param {string} sections - Pipe-separated sections (e.g., "technology|science|business")
+     * @param {Object} options - Query options
+     * @returns {Promise<Array>} Array of all articles from sections
+     */
+    async fetchAllArticlesFromSections(sections, options = {}) {
+        const {
+            fromDate,
+            toDate,
+            pageSize = GUARDIAN_PAGE_SIZE,
+            orderBy = 'newest',
+            includeBodyText = false
+        } = options;
+
+        const fields = this.buildShowFields(includeBodyText);
+        const params = new URLSearchParams();
+        
+        // No 'q' parameter - this fetches ALL articles from sections
+        if (sections) params.set('section', sections);
+        params.set('type', 'article');
+        if (fromDate) params.set('from-date', fromDate);
+        if (toDate) params.set('to-date', toDate);
+        params.set('order-by', orderBy);
+        params.set('page-size', String(Math.max(1, Math.min(200, pageSize))));
+        params.set('show-fields', fields.join(','));
+        params.set('api-key', this.apiKey || '');
+
+        const url = `${this.baseUrl}?${params.toString()}`;
+        logApiCall('guardian', 'fetchAllFromSections', { sections, pageSize, fromDate, toDate, orderBy });
+
+        return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => reject(new Error('Guardian API request timeout')), 30000);
+            https.get(url, (res) => {
+                clearTimeout(timeout);
+                if (res.statusCode !== 200) {
+                    reject(new Error(`Guardian API returned status ${res.statusCode}`));
+                    return;
+                }
+                let data = '';
+                res.on('data', (chunk) => { data += chunk; });
+                res.on('end', () => {
+                    try {
+                        const json = JSON.parse(data);
+                        const results = Array.isArray(json?.response?.results) ? json.response.results : [];
+                        const articles = this.mapResultsToNormalizedArticles(results, 'all-sections');
+                        resolve(articles);
+                    } catch (e) {
+                        reject(new Error(`Failed to parse Guardian response: ${e.message}`));
+                    }
+                });
+            }).on('error', (err) => {
+                clearTimeout(timeout);
+                reject(err);
+            });
+        });
+    }
 }
 
 module.exports = GuardianService;

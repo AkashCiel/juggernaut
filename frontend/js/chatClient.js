@@ -110,7 +110,7 @@ class ChatClient {
                 // Check if conversation is complete
                 if (result.data.conversationComplete) {
                     this.conversationComplete = true;
-                    this.handleConversationComplete(result.data.extractedTopics);
+                    this.handleConversationComplete(result.data.userInterestsDescription);
                 }
             } else {
                 this.addMessage('Sorry, I encountered an error. Please try again.', 'bot');
@@ -190,11 +190,13 @@ class ChatClient {
     }
 
     // Handle conversation completion
-    handleConversationComplete(topics) {
-        if (topics && topics.length > 0) {
-            const topicsText = topics.join(', ');            
-            // Show completion status
-            this.showStatus(`✅ Topics identified: ${topicsText}`, 'success');
+    handleConversationComplete(userInterestsDescription) {
+        if (userInterestsDescription) {
+            // Show completion status with the full description
+            this.showStatus(`✅ Your interests have been identified!`, 'success');
+            
+            // Add the description as a bot message
+            this.addMessage(`Based on our conversation, here's what I understand about your interests:\n\n${userInterestsDescription}`, 'bot');
         }
     }
 

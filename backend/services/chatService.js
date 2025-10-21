@@ -44,10 +44,10 @@ class ChatService {
             
             // Check if conversation is complete
             const isComplete = this.newsDiscoveryService.isConversationComplete(chatHistory);
-            let extractedTopics = null;
+            let userInterestsDescription = null;
             
             if (isComplete) {
-                extractedTopics = await this.newsDiscoveryService.extractTopics(chatHistory);
+                userInterestsDescription = await this.newsDiscoveryService.extractTopics(chatHistory);
             }
             
             logApiCall('chat', 'handleMessage', { 
@@ -55,7 +55,7 @@ class ChatService {
                 responseLength: conversationResult.response.length,
                 sessionId: sessionId,
                 conversationComplete: isComplete,
-                topicsExtracted: extractedTopics?.length || 0
+                interestsDescriptionLength: userInterestsDescription?.length || 0
             });
             
             return {
@@ -63,7 +63,7 @@ class ChatService {
                 response: conversationResult.response,
                 sessionId: sessionId,
                 conversationComplete: isComplete,
-                extractedTopics: extractedTopics,
+                userInterestsDescription: userInterestsDescription,
                 timestamp: new Date().toISOString()
             };
         } catch (error) {
@@ -73,7 +73,7 @@ class ChatService {
                 response: "I'm having trouble processing that right now. Could you tell me more about what topics you're interested in?",
                 sessionId: sessionId,
                 conversationComplete: false,
-                extractedTopics: null,
+                userInterestsDescription: null,
                 timestamp: new Date().toISOString()
             };
         }
