@@ -12,6 +12,7 @@ const GuardianService = require('./guardianService');
 const NewsProcessingService = require('./newsProcessingService');
 const EmailService = require('./emailService');
 const GitHubService = require('./githubService');
+const GuardianSectionsService = require('./guardianSectionsService');
 
 class SchedulerService {
     constructor() {
@@ -22,6 +23,7 @@ class SchedulerService {
         this.newsProcessingService = new NewsProcessingService();
         this.emailService = new EmailService();
         this.githubService = new GitHubService();
+        this.guardianSectionsService = new GuardianSectionsService();
     }
 
     /**
@@ -306,6 +308,24 @@ class SchedulerService {
                 duration,
                 error: error.message
             };
+        }
+    }
+
+    /**
+     * Update Guardian sections cache
+     * Fetches fresh sections from Guardian API and uploads to GitHub
+     * @returns {Promise<Array>} Array of section names
+     */
+    async updateGuardianSections() {
+        logger.info('🔄 Starting Guardian sections cache update...');
+        
+        try {
+            const sections = await this.guardianSectionsService.getSections();
+            logger.info(`✅ Guardian sections cache updated: ${sections.length} sections`);
+            return sections;
+        } catch (error) {
+            logger.error('❌ Failed to update Guardian sections cache:', error.message);
+            throw error;
         }
     }
 

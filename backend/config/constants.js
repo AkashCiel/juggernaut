@@ -2,6 +2,9 @@ module.exports = {
     // Single source of truth for number of ArXiv papers per topic
     NUM_PAPERS_PER_TOPIC: 10,
     
+    // Guardian API page size (maximum allowed)
+    GUARDIAN_PAGE_SIZE: 200,
+    
     // System prompt for conversational news discovery
     CHAT_SYSTEM_PROMPT: `
 You are an excellent conversationalist who is an expert in figuring out what people want.
@@ -20,6 +23,17 @@ End the conversation sooner if the user indicates it.
     CHAT_WELCOME_MESSAGE: `
 Hello! I'm here to help you discover news you care about.
 What topics interest you?
+`,
+    
+    // AI prompt for mapping topics to Guardian sections
+    SECTION_MAPPING_PROMPT: `
+Given these news topics: {topics}
+
+Map each topic to the most relevant Guardian API sections.
+Available sections: {sections}
+
+Return ONLY a pipe-separated list of relevant sections (e.g., "technology|business|science").
+Do not include explanations or other text.
 `
 };
 

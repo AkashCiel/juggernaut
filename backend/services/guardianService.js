@@ -1,6 +1,7 @@
 const https = require('https');
 const { logger, logApiCall } = require('../utils/logger');
 const { retry, RETRY_CONFIGS } = require('../utils/retryUtils');
+const { GUARDIAN_PAGE_SIZE } = require('../config/constants');
 
 class GuardianService {
     constructor() {
@@ -35,11 +36,16 @@ class GuardianService {
         const {
             fromDate,
             toDate,
-            pageSize = 10,
+            pageSize = GUARDIAN_PAGE_SIZE,
             orderBy = 'newest',
-            section = 'technology',
+            section,
             includeBodyText = true
         } = options;
+
+        // Section is required
+        if (!section) {
+            throw new Error('Section parameter is required for Guardian API calls');
+        }
 
         const fields = this.buildShowFields(includeBodyText);
         const params = new URLSearchParams();
@@ -49,7 +55,7 @@ class GuardianService {
         if (fromDate) params.set('from-date', fromDate);
         if (toDate) params.set('to-date', toDate);
         params.set('order-by', orderBy);
-        params.set('page-size', String(Math.max(1, Math.min(50, pageSize))));
+        params.set('page-size', String(Math.max(1, Math.min(200, pageSize))));
         params.set('show-fields', fields.join(','));
         params.set('api-key', this.apiKey || '');
 

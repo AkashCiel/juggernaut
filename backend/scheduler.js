@@ -10,6 +10,7 @@
  *   node scheduler.js                    # Generate reports for all eligible users
  *   node scheduler.js --user <email>     # Generate report for specific user
  *   node scheduler.js --status           # Show scheduler status
+ *   node scheduler.js --update-sections  # Update Guardian sections cache
  */
 
 const SchedulerService = require('./services/schedulerService');
@@ -40,6 +41,10 @@ async function main() {
                 
             case '--list-users':
                 await listUsers(userService);
+                break;
+                
+            case '--update-sections':
+                await updateGuardianSections(schedulerService);
                 break;
                 
             default:
@@ -156,6 +161,20 @@ async function listUsers(userService) {
         console.log(`   Created: ${user.createdAt}`);
         console.log(`   Last Report: ${user.lastReportDate || 'Never'}`);
     });
+}
+
+async function updateGuardianSections(schedulerService) {
+    console.log('🔄 Updating Guardian sections cache...');
+    
+    try {
+        const sections = await schedulerService.updateGuardianSections();
+        console.log(`✅ Guardian sections cache updated successfully!`);
+        console.log(`📊 Sections count: ${sections.length}`);
+        console.log(`📝 Sample sections: ${sections.slice(0, 5).join(', ')}${sections.length > 5 ? '...' : ''}`);
+    } catch (error) {
+        console.error('❌ Failed to update Guardian sections cache:', error.message);
+        process.exit(1);
+    }
 }
 
 // Handle graceful shutdown
