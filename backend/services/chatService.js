@@ -1,11 +1,11 @@
 const { logger, logApiCall } = require('../utils/logger');
-const ConversationService = require('./conversationService');
+const NewsDiscoveryService = require('./conversationService');
 const { CHAT_WELCOME_MESSAGE } = require('../config/constants');
 
 class ChatService {
     constructor() {
         this.welcomeMessage = CHAT_WELCOME_MESSAGE;
-        this.conversationService = new ConversationService();
+        this.newsDiscoveryService = new NewsDiscoveryService();
         this.sessions = new Map(); // Store chat history per session
     }
 
@@ -26,7 +26,7 @@ class ChatService {
             const chatHistory = this.sessions.get(sessionId);
             
             // Generate AI response (without adding user message to history yet)
-            const conversationResult = await this.conversationService.generateResponse(message, chatHistory);
+            const conversationResult = await this.newsDiscoveryService.generateResponse(message, chatHistory);
             
             // Add user message to history
             chatHistory.push({
@@ -43,11 +43,11 @@ class ChatService {
             });
             
             // Check if conversation is complete
-            const isComplete = this.conversationService.isConversationComplete(chatHistory);
+            const isComplete = this.newsDiscoveryService.isConversationComplete(chatHistory);
             let extractedTopics = null;
             
             if (isComplete) {
-                extractedTopics = await this.conversationService.extractTopics(chatHistory);
+                extractedTopics = await this.newsDiscoveryService.extractTopics(chatHistory);
             }
             
             logApiCall('chat', 'handleMessage', { 

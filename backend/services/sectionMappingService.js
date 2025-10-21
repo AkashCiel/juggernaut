@@ -1,6 +1,6 @@
 const { logger } = require('../utils/logger');
 const { SECTION_MAPPING_PROMPT } = require('../config/constants');
-const ConversationService = require('./conversationService');
+const NewsDiscoveryService = require('./conversationService');
 const GuardianSectionsCacheService = require('./guardianSectionsCacheService');
 
 /**
@@ -9,7 +9,7 @@ const GuardianSectionsCacheService = require('./guardianSectionsCacheService');
  */
 class SectionMappingService {
     constructor() {
-        this.conversationService = new ConversationService();
+        this.newsDiscoveryService = new NewsDiscoveryService();
         this.sectionsCacheService = new GuardianSectionsCacheService();
     }
 
@@ -35,8 +35,7 @@ class SectionMappingService {
             const prompt = this.buildMappingPrompt(topics, sections);
             
             // Use AI to map topics to sections
-            const result = await this.conversationService.generateResponse(prompt, []);
-            const mappedSections = result.response.trim();
+            const mappedSections = await this.newsDiscoveryService.mapTopicsToSections(topics, sections);
             
             // Validate the response
             const validatedSections = this.validateMappedSections(mappedSections, sections);

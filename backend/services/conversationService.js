@@ -2,7 +2,7 @@ const { logger, logApiCall } = require('../utils/logger');
 const { retry, RETRY_CONFIGS } = require('../utils/retryUtils');
 const { CHAT_SYSTEM_PROMPT, CHAT_WELCOME_MESSAGE } = require('../config/constants');
 
-class ConversationService {
+class NewsDiscoveryService {
     constructor() {
         this.openaiApiKey = process.env.OPENAI_API_KEY;
         this.model = 'gpt-4o';
@@ -256,6 +256,41 @@ Topics:`;
         
         return [];
     }
+
+    /**
+     * Map topics to Guardian sections using AI
+     * This is a dedicated method separate from chat functionality
+     * @param {Array<string>} topics - Array of news topics
+     * @param {Array<string>} sections - Array of available Guardian sections
+     * @returns {Promise<string>} Pipe-separated string of relevant sections
+     */
+    async mapTopicsToSections(topics, sections) {
+        const { SECTION_MAPPING_PROMPT } = require('../config/constants');
+        
+        const prompt = SECTION_MAPPING_PROMPT
+            .replace('{topics}', topics.join(', '))
+            .replace('{sections}', sections.join(', '));
+
+        const messages = [
+            {
+                role: 'system',
+                content: 'You are a news section mapping expert. Map topics to the most relevant Guardian API sections.'
+            },
+            {
+                role: 'user',
+                content: prompt
+            }
+        ];
+
+        try {
+            const result = await this.callOpenAI(messages);
+            return result.trim();
+        } catch (error) {
+            logger.error(`❌ Failed to map topics to sections: ${error.message}`);
+            // Fallback to generic sections
+            return 'news|world';
+        }
+    }
 }
 
-module.exports = ConversationService;
+module.exports = NewsDiscoveryService;

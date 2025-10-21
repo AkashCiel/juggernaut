@@ -12,12 +12,12 @@
 
 require('dotenv').config();
 const GuardianService = require('./services/guardianService');
-const ConversationService = require('./services/conversationService');
+const NewsDiscoveryService = require('./services/conversationService');
 
 class GuardianTestSuite {
     constructor() {
         this.guardianService = new GuardianService();
-        this.conversationService = new ConversationService();
+        this.newsDiscoveryService = new NewsDiscoveryService();
     }
 
     /**
