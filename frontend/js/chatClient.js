@@ -194,9 +194,6 @@ class ChatClient {
         if (userInterestsDescription) {
             // Show completion status with the full description
             this.showStatus(`✅ Your interests have been identified!`, 'success');
-            
-            // Add the description as a bot message
-            this.addMessage(`Based on our conversation, here's what I understand about your interests:\n\n${userInterestsDescription}`, 'bot');
         }
     }
 
