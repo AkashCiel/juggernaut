@@ -26,34 +26,39 @@ class ChatService {
             
             const chatHistory = this.sessions.get(sessionId);
             
-            // Generate AI response (without adding user message to history yet)
+            // 1. Generate AI response
             const conversationResult = await this.newsDiscoveryService.generateResponse(message, chatHistory);
             
-            // Add user message to history
-            chatHistory.push({
-                role: 'user',
-                content: message,
-                timestamp: new Date().toISOString()
-            });
+            // 2. Check if conversation is complete from AI response
+            const isComplete = this.newsDiscoveryService.isConversationComplete(conversationResult.response);
             
-            // Add AI response to history
-            chatHistory.push({
-                role: 'assistant',
-                content: conversationResult.response,
-                timestamp: new Date().toISOString()
-            });
-            
-            // Check if conversation is complete
-            const isComplete = this.newsDiscoveryService.isConversationComplete(chatHistory);
+            let cleanedResponse = conversationResult.response;
             let userInterestsDescription = null;
             
             if (isComplete) {
+                // 3a. Clean the response for display
+                cleanedResponse = conversationResult.response.replace(/\[CONVERSATION_COMPLETE\]/g, '').trim();
+                
+                // 3b. Extract topics for registration
                 userInterestsDescription = await this.newsDiscoveryService.extractTopics(chatHistory);
                 
-                // Register user if email is provided
+                // 3c. Register user if email is provided
                 if (email && userInterestsDescription) {
                     await this.registerUser(email, userInterestsDescription);
                 }
+            } else {
+                // 4. If not complete, add messages to history and continue
+                chatHistory.push({
+                    role: 'user',
+                    content: message,
+                    timestamp: new Date().toISOString()
+                });
+                
+                chatHistory.push({
+                    role: 'assistant',
+                    content: cleanedResponse,
+                    timestamp: new Date().toISOString()
+                });
             }
             
             logApiCall('chat', 'handleMessage', { 
@@ -66,7 +71,7 @@ class ChatService {
             
             return {
                 success: true,
-                response: conversationResult.response,
+                response: cleanedResponse,
                 sessionId: sessionId,
                 conversationComplete: isComplete,
                 userInterestsDescription: userInterestsDescription,
@@ -131,7 +136,8 @@ class ChatService {
             const topics = this.extractTopicsFromDescription(interestsDescription);
             
             // Call the existing registration endpoint
-            const response = await fetch(`${process.env.API_BASE_URL || 'http://localhost:8000'}/api/reports/register-user`, {
+            // const response = await fetch(`${process.env.API_BASE_URL || 'http://localhost:8000'}/api/reports/register-user`, {
+            const response = await fetch(`${process.env.API_BASE_URL || 'http://localhost:8000'}/api/register-user`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

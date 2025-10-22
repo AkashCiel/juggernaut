@@ -79,23 +79,12 @@ Description:`;
     }
 
     /**
-     * Check if conversation has enough information to extract topics
-     * @param {Array} chatHistory - Conversation history
+     * Check if conversation is complete based on AI response format
+     * @param {string} response - AI response text
      * @returns {boolean} True if conversation is complete
      */
-    isConversationComplete(chatHistory) {
-        // Simple heuristic: if we have 6+ messages and user has mentioned specific topics
-        if (chatHistory.length < 6) return false;
-        
-        const userMessages = chatHistory.filter(msg => msg.role === 'user');
-        const hasSpecificTopics = userMessages.some(msg => 
-            msg.content.toLowerCase().includes('interested in') ||
-            msg.content.toLowerCase().includes('care about') ||
-            msg.content.toLowerCase().includes('follow') ||
-            msg.content.toLowerCase().includes('news about')
-        );
-        
-        return hasSpecificTopics;
+    isConversationComplete(response) {
+        return response.includes('[CONVERSATION_COMPLETE]');
     }
 
     /**

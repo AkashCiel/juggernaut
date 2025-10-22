@@ -10,5 +10,16 @@
     "createdAt": "2025-07-17T16:35:03.377Z",
     "lastReportDate": "2025-07-22T15:19:26.768Z",
     "updatedAt": "2025-07-17T22:42:16.085Z"
+  },
+  {
+    "userId": "akashsingh0762",
+    "email": "akashsingh0762@gmail.com",
+    "topics": [
+      "artificial intelligence",
+      "technology"
+    ],
+    "isActive": true,
+    "createdAt": "2025-10-22T15:43:33.809Z",
+    "lastReportDate": null
   }
 ]

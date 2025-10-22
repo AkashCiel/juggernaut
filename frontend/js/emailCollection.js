@@ -49,7 +49,7 @@ class EmailCollection {
                 sessionStorage.setItem('userEmail', email);
                 
                 // Redirect to chat page with email parameter
-                window.location.href = `index.html?email=${encodeURIComponent(email)}`;
+                window.location.href = `/?email=${encodeURIComponent(email)}`;
             } else {
                 this.showError('Please enter a valid email address');
             }

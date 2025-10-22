@@ -240,9 +240,20 @@
             const urlParams = new URLSearchParams(window.location.search);
             const email = urlParams.get('email');
             
+            // Log email parameter for debugging
+            console.log('🔍 Email parameter check:', {
+                url: window.location.href,
+                search: window.location.search,
+                email: email,
+                hasEmail: !!email
+            });
+            
             if (!email) {
+                console.log('❌ No email parameter found, redirecting to email collection');
                 // Redirect to email collection page
                 window.location.href = 'email-collection';
+            } else {
+                console.log('✅ Email parameter found:', email);
             }
         })();
     </script>
