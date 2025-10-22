@@ -5,10 +5,17 @@ class ChatClient {
         this.sessionId = null;
         this.isTyping = false;
         this.conversationComplete = false;
+        this.userEmail = this.getUserEmail();
         
         this.initializeElements();
         this.bindEvents();
         this.startChat();
+    }
+
+    // Get user email from URL parameter
+    getUserEmail() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('email');
     }
 
     // Get API URL based on environment
@@ -95,7 +102,8 @@ class ChatClient {
                 },
                 body: JSON.stringify({ 
                     message: message,
-                    sessionId: this.sessionId 
+                    sessionId: this.sessionId,
+                    email: this.userEmail
                 })
             });
             

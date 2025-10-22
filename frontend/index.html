@@ -234,6 +234,18 @@
         </div>
     </div>
 
+    <script>
+        // Check for email parameter and redirect if missing
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const email = urlParams.get('email');
+            
+            if (!email) {
+                // Redirect to email collection page
+                window.location.href = 'email-collection';
+            }
+        })();
+    </script>
     <script src="js/chatClient.js"></script>
 </body>
 </html> 

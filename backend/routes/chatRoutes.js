@@ -69,11 +69,11 @@ router.post('/message',
     validateChatMessage,
     handleValidationErrors,
     asyncHandler(async (req, res) => {
-        const { message, sessionId } = req.body;
+        const { message, sessionId, email } = req.body;
         
         
         try {
-            const result = await chatService.handleMessage(message, sessionId);
+            const result = await chatService.handleMessage(message, sessionId, email);
             
             
             res.json({
