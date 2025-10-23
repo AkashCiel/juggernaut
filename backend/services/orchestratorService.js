@@ -4,6 +4,7 @@ const NewsDiscoveryService = require('./newsDiscoveryService');
 const UserService = require('./userService');
 const GuardianSectionsCacheService = require('./guardianSectionsCacheService');
 const { CHAT_WELCOME_MESSAGE } = require('../config/constants');
+const { CONVERSATION_COMPLETE_MESSAGE } = require('../config/constants');
 
 class OrchestratorService {
     constructor() {
@@ -43,13 +44,9 @@ class OrchestratorService {
             
             if (isComplete) {
                 // 3a. Clean the response for display
-                cleanedResponse = conversationResult.response.replace(/\[CONVERSATION_COMPLETE\]/g, '').trim();
-                
-                // 3b. Extract topics for registration using ConversationService
-                userInterestsDescription = await this.conversationService.extractTopics(chatHistory);
+                userInterestsDescription = conversationResult.response.replace(/\[CONVERSATION_COMPLETE\]/g, '').trim();
                 
                 logger.info(`🔄 conversation complete, printing deets...`);
-                logger.info(`🔄 Cleaned response: ${cleanedResponse}`);
                 logger.info(`🔄 User interests description: ${userInterestsDescription}`);
                 // 3c. Register user if email is provided
                 if (email && userInterestsDescription) {
@@ -58,7 +55,7 @@ class OrchestratorService {
 
                 return {
                     success: true,
-                    response: cleanedResponse,
+                    response: CONVERSATION_COMPLETE_MESSAGE,
                     sessionId: sessionId,
                     conversationComplete: isComplete,
                     userInterestsDescription: userInterestsDescription,

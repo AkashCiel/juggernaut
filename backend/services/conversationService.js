@@ -2,7 +2,7 @@ const { logger, logApiCall } = require('../utils/logger');
 const { retry, RETRY_CONFIGS } = require('../utils/retryUtils');
 const { CHAT_SYSTEM_PROMPT, CHAT_WELCOME_MESSAGE, TOPIC_EXTRACTION_PROMPT, SYSTEM_PROMPTS } = require('../config/constants');
 
-class NewsDiscoveryService {
+class ConversationService {
     constructor() {
         this.openaiApiKey = process.env.OPENAI_API_KEY;
         this.model = 'gpt-4o';
@@ -40,41 +40,6 @@ class NewsDiscoveryService {
             };
         } catch (error) {
             throw error;
-        }
-    }
-
-    /**
-     * Extract user interests description from conversation history
-     * @param {Array} chatHistory - Full conversation history
-     * @returns {Promise<string>} 2-5 sentence description of user interests
-     */
-    async extractTopics(chatHistory) {
-        try {
-            const extractionPrompt = `${TOPIC_EXTRACTION_PROMPT}
-
-Conversation:
-${this.formatHistoryForExtraction(chatHistory)}
-
-Description:`;
-
-            const messages = [
-                { role: 'system', content: SYSTEM_PROMPTS.TOPIC_EXTRACTION },
-                { role: 'user', content: extractionPrompt }
-            ];
-
-            const response = await this.callOpenAI(messages, 0.3, 300);
-            
-            // Return the description directly (no JSON parsing needed)
-            const description = response.trim();
-            
-            logApiCall('openai', 'topicExtraction', { 
-                descriptionLength: description.length,
-                description: description.substring(0, 100) + '...'
-            });
-
-            return description;
-        } catch (error) {
-            return 'Unable to extract user interests from conversation.';
         }
     }
 
