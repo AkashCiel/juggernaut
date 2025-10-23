@@ -1,11 +1,13 @@
 const { logger, logApiCall } = require('../utils/logger');
 const NewsDiscoveryService = require('./conversationService');
+const UserService = require('./userService');
 const { CHAT_WELCOME_MESSAGE } = require('../config/constants');
 
 class ChatService {
     constructor() {
         this.welcomeMessage = CHAT_WELCOME_MESSAGE;
         this.newsDiscoveryService = new NewsDiscoveryService();
+        this.userService = new UserService();
         this.sessions = new Map(); // Store chat history per session
     }
 
@@ -42,10 +44,22 @@ class ChatService {
                 // 3b. Extract topics for registration
                 userInterestsDescription = await this.newsDiscoveryService.extractTopics(chatHistory);
                 
+                logger.info(`🔄 conversation complete, printing deets...`);
+                logger.info(`🔄 Cleaned response: ${cleanedResponse}`);
+                logger.info(`🔄 User interests description: ${userInterestsDescription}`);
                 // 3c. Register user if email is provided
                 if (email && userInterestsDescription) {
                     await this.registerUser(email, userInterestsDescription);
                 }
+
+                return {
+                    success: true,
+                    response: cleanedResponse,
+                    sessionId: sessionId,
+                    conversationComplete: isComplete,
+                    userInterestsDescription: userInterestsDescription,
+                    timestamp: new Date().toISOString()
+                };
             } else {
                 // 4. If not complete, add messages to history and continue
                 chatHistory.push({
@@ -131,12 +145,7 @@ class ChatService {
      */
     async registerUser(email, interestsDescription) {
         try {
-            // Convert interests description to topics array for the existing API
-            // For now, we'll use a simple approach - extract key topics from the description
-            const topics = this.extractTopicsFromDescription(interestsDescription);
-            
             // Call the existing registration endpoint
-            // const response = await fetch(`${process.env.API_BASE_URL || 'http://localhost:8000'}/api/reports/register-user`, {
             const response = await fetch(`${process.env.API_BASE_URL || 'http://localhost:8000'}/api/register-user`, {
                 method: 'POST',
                 headers: {
@@ -144,9 +153,11 @@ class ChatService {
                 },
                 body: JSON.stringify({
                     email: email,
-                    topics: topics
+                    user_interests: interestsDescription
                 })
             });
+
+            logger.info(`🔄 User registration response: ${response}`);
 
             const result = await response.json();
             
@@ -168,23 +179,6 @@ class ChatService {
      * @param {string} description - User's interests description
      * @returns {Array<string>} Array of topic strings
      */
-    extractTopicsFromDescription(description) {
-        // Simple keyword extraction - in a real implementation, this could use AI
-        const commonTopics = [
-            'artificial intelligence', 'machine learning', 'technology', 'science',
-            'business', 'politics', 'health', 'environment', 'climate change',
-            'space', 'medicine', 'economics', 'finance', 'cryptocurrency',
-            'blockchain', 'quantum computing', 'robotics', 'automation'
-        ];
-        
-        const lowerDescription = description.toLowerCase();
-        const foundTopics = commonTopics.filter(topic => 
-            lowerDescription.includes(topic.toLowerCase())
-        );
-        
-        // If no topics found, use default topics
-        return foundTopics.length > 0 ? foundTopics : ['artificial intelligence', 'technology'];
-    }
 }
 
 module.exports = ChatService;

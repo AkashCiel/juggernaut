@@ -16,10 +16,11 @@
     "email": "akashsingh0762@gmail.com",
     "topics": [
       "artificial intelligence",
-      "technology"
+      "machine learning"
     ],
     "isActive": true,
     "createdAt": "2025-10-22T15:43:33.809Z",
-    "lastReportDate": null
+    "lastReportDate": null,
+    "updatedAt": "2025-10-23T11:35:39.261Z"
   }
 ]

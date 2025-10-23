@@ -21,7 +21,9 @@ Keep up the conversation until:
 - Until you have identified 4-5 news topics or themes for the user.
 
 Present a 2-5 sentence summary of your understanding to the user. Ask for confirmation or correction if needed.
-End the chat session when the user is satisfied with your understanding. End your response with:
+When the user is satisfied with your understanding:
+- End the chat
+- Add the following message to the end of your response:
 [CONVERSATION_COMPLETE]
 `,
     
