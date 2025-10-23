@@ -145,29 +145,14 @@ class ChatService {
      */
     async registerUser(email, interestsDescription) {
         try {
-            // Call the existing registration endpoint
-            const response = await fetch(`${process.env.API_BASE_URL || 'http://localhost:8000'}/api/register-user`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: email,
-                    user_interests: interestsDescription
-                })
-            });
-
-            logger.info(`🔄 User registration response: ${response}`);
-
-            const result = await response.json();
+            // Convert interests description to topics array
+            const topics = this.extractTopicsFromDescription(interestsDescription);
             
-            if (result.success) {
-                logger.info(`✅ User registered via chat: ${email}`);
-                return { success: true, user: result.data };
-            } else {
-                logger.error(`❌ User registration failed: ${result.error}`);
-                return { success: false, error: result.error };
-            }
+            // Direct call to UserService - no HTTP request needed
+            const user = await this.userService.registerUser(email, topics);
+            
+            logger.info(`✅ User registered via chat: ${email} (${user.userId})`);
+            return { success: true, user: user };
         } catch (error) {
             logger.error(`❌ User registration error: ${error.message}`);
             return { success: false, error: error.message };

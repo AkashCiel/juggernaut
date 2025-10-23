@@ -187,67 +187,6 @@ router.post('/trigger-daily-reports',
     })
 );
 
-// User registration endpoint
-router.post('/register-user',
-    validateUserRegistration,
-    handleValidationErrors,
-    asyncHandler(async (req, res) => {
-        const { email, topics = ['artificial intelligence', 'machine learning'] } = req.body;
-        
-        try {
-            const sanitizedTopics = sanitizeTopics(topics);
-            const user = await userService.registerUser(email, sanitizedTopics);
-            
-            logger.info(`✅ User registered: ${email} (${user.userId})`);
-            
-            // Generate immediate report for the new user
-            logger.info(`🚀 Generating immediate report for new user: ${email}`);
-            let reportResult = null;
-            
-            try {
-                // Use the unified ReportGenerator for immediate report generation
-                reportResult = await reportGenerator.generateReport(
-                    user.email,
-                    user.topics,
-                    { isDemoMode: false }
-                );
-                
-                if (reportResult.success) {
-                    logger.info(`✅ Immediate report generated successfully for ${email}`);
-                } else {
-                    logger.warn(`⚠️ Immediate report generation failed for ${email}: ${reportResult.error}`);
-                }
-            } catch (reportError) {
-                logger.error(`❌ Immediate report generation error for ${email}:`, reportError.message);
-                // Don't fail registration if report generation fails
-            }
-            
-            res.json({
-                success: true,
-                message: 'User registered successfully for daily reports',
-                data: {
-                    userId: user.userId,
-                    email: user.email,
-                    topics: user.topics,
-                    isActive: user.isActive,
-                    immediateReport: reportResult ? {
-                        success: reportResult.success,
-                        papersCount: reportResult.papersCount,
-                        hasAISummary: reportResult.hasAISummary,
-                        reportUrl: reportResult.reportUrl,
-                        emailSent: reportResult.emailSent
-                    } : null
-                }
-            });
-        } catch (error) {
-            logger.error('❌ User registration failed:', error.message);
-            res.status(500).json({
-                success: false,
-                error: 'Failed to register user'
-            });
-        }
-    })
-);
 
 // Email validation endpoint
 router.post('/validate-email',
