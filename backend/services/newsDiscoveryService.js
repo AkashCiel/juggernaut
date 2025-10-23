@@ -241,21 +241,17 @@ Description:`;
      * @param {Array<string>} sections - Array of available Guardian sections
      * @returns {Promise<string>} Pipe-separated string of relevant sections
      */
-    async mapTopicsToSections(topics, sections) {
+    async mapUserInterestsToSections(user_interests, sections) {
         const { SECTION_MAPPING_PROMPT } = require('../config/constants');
-        
-        const prompt = SECTION_MAPPING_PROMPT
-            .replace('{topics}', topics.join(', '))
-            .replace('{sections}', sections.join(', '));
 
         const messages = [
             {
                 role: 'system',
-                content: SYSTEM_PROMPTS.SECTION_MAPPING
+                content: SECTION_MAPPING_PROMPT
             },
             {
                 role: 'user',
-                content: prompt
+                content: `This is a short summary of the user's interests: ${user_interests}. The available sections are: ${sections}.`
             }
         ];
 

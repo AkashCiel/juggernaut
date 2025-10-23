@@ -146,7 +146,7 @@ class ChatService {
     async registerUser(email, interestsDescription) {
         try {
             // Convert interests description to topics array
-            const topics = this.extractTopicsFromDescription(interestsDescription);
+            const sections = await this.extractSections(interestsDescription);
             
             // Direct call to UserService - no HTTP request needed
             const user = await this.userService.registerUser(email, topics);

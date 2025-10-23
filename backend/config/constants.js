@@ -35,9 +35,16 @@ What topics interest you?
     
     // AI prompt for mapping topics to Guardian sections
     SECTION_MAPPING_PROMPT: `
-Given these news topics: {topics}
+    You are an expert at mapping natural language descriptions of a person's interests to relevant sections of the news.
+    You have an in-depth understanding of how different sections of the news are related to each other because you 
+    understand the global context of the news. You understand how different parts of the world represented by those sections 
+    affect each other. For example, you understand that scientific discoveries accelerate developments in technology which can 
+    in turn lead to transformations in business. You also understand that deeply transformative technologies can have ripple effects
+    in geopolitics and society.
+    You will be given a short summary of the user's interests and a list of news sections. 
+    Your job is to map the user's interests to the most relevant sections.
 
-Map each topic to the most relevant Guardian API sections.
+Map this summary to the most relevant Guardian API sections.
 Available sections: {sections}
 
 Return ONLY a pipe-separated list of relevant sections (e.g., "technology|business|science").
