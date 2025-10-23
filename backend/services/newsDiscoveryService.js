@@ -12,127 +12,9 @@ class NewsDiscoveryService {
         this.systemPrompt = CHAT_SYSTEM_PROMPT;
     }
 
-    /**
-     * Generate conversational response using OpenAI
-     * @param {string} message - User's current message
-     * @param {Array} chatHistory - Previous conversation messages
-     * @returns {Promise<Object>} Response object
-     */
-    async generateResponse(message, chatHistory = []) {
-        try {
 
-            // Build conversation context
-            const messages = this.buildConversationContext(message, chatHistory);
-            
-            // Call OpenAI API
-            const response = await this.callOpenAI(messages);
-            
-            logApiCall('openai', 'conversation', { 
-                messageLength: message.length,
-                responseLength: response.length,
-                historyLength: chatHistory.length
-            });
 
-            return {
-                success: true,
-                response: response,
-                timestamp: new Date().toISOString()
-            };
-        } catch (error) {
-            throw error;
-        }
-    }
 
-    /**
-     * Extract user interests description from conversation history
-     * @param {Array} chatHistory - Full conversation history
-     * @returns {Promise<string>} 2-5 sentence description of user interests
-     */
-    async extractTopics(chatHistory) {
-        try {
-            const extractionPrompt = `${TOPIC_EXTRACTION_PROMPT}
-
-Conversation:
-${this.formatHistoryForExtraction(chatHistory)}
-
-Description:`;
-
-            const messages = [
-                { role: 'system', content: SYSTEM_PROMPTS.TOPIC_EXTRACTION },
-                { role: 'user', content: extractionPrompt }
-            ];
-
-            const response = await this.callOpenAI(messages, 0.3, 300);
-            
-            // Return the description directly (no JSON parsing needed)
-            const description = response.trim();
-            
-            logApiCall('openai', 'topicExtraction', { 
-                descriptionLength: description.length,
-                description: description.substring(0, 100) + '...'
-            });
-
-            return description;
-        } catch (error) {
-            return 'Unable to extract user interests from conversation.';
-        }
-    }
-
-    /**
-     * Check if conversation has enough information to extract topics
-     * @param {Array} chatHistory - Conversation history
-     * @returns {boolean} True if conversation is complete
-     */
-    isConversationComplete(chatHistory) {
-        // Simple heuristic: if we have 6+ messages and user has mentioned specific topics
-        if (chatHistory.length < 6) return false;
-        
-        const userMessages = chatHistory.filter(msg => msg.role === 'user');
-        const hasSpecificTopics = userMessages.some(msg => 
-            msg.content.toLowerCase().includes('interested in') ||
-            msg.content.toLowerCase().includes('care about') ||
-            msg.content.toLowerCase().includes('follow') ||
-            msg.content.toLowerCase().includes('news about')
-        );
-        
-        return hasSpecificTopics;
-    }
-
-    /**
-     * Build conversation context for OpenAI API
-     * @param {string} message - Current user message
-     * @param {Array} chatHistory - Previous messages
-     * @returns {Array} Formatted messages for OpenAI
-     */
-    buildConversationContext(message, chatHistory) {
-        const messages = [
-            { role: 'system', content: this.systemPrompt }
-        ];
-
-        // If this is the first message (no chat history), add welcome message
-        if (chatHistory.length === 0) {
-            messages.push({
-                role: 'assistant',
-                content: CHAT_WELCOME_MESSAGE
-            });
-        }
-
-        // Add conversation history
-        chatHistory.forEach(msg => {
-            messages.push({
-                role: msg.role,
-                content: msg.content
-            });
-        });
-
-        // Add current message
-        messages.push({
-            role: 'user',
-            content: message
-        });
-
-        return messages;
-    }
 
     /**
      * Call OpenAI API with retry logic
@@ -222,22 +104,11 @@ Description:`;
         });
     }
 
-    /**
-     * Format chat history for topic extraction
-     * @param {Array} chatHistory - Conversation history
-     * @returns {string} Formatted history
-     */
-    formatHistoryForExtraction(chatHistory) {
-        return chatHistory.map(msg => 
-            `${msg.role}: ${msg.content}`
-        ).join('\n');
-    }
 
 
     /**
-     * Map topics to Guardian sections using AI
-     * This is a dedicated method separate from chat functionality
-     * @param {Array<string>} topics - Array of news topics
+     * Map user interests to Guardian sections using AI
+     * @param {string} user_interests - User's interests description
      * @param {Array<string>} sections - Array of available Guardian sections
      * @returns {Promise<string>} Pipe-separated string of relevant sections
      */

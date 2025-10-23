@@ -1,13 +1,17 @@
 const { logger, logApiCall } = require('../utils/logger');
-const NewsDiscoveryService = require('./conversationService');
+const ConversationService = require('./conversationService');
+const NewsDiscoveryService = require('./newsDiscoveryService');
 const UserService = require('./userService');
+const GuardianSectionsCacheService = require('./guardianSectionsCacheService');
 const { CHAT_WELCOME_MESSAGE } = require('../config/constants');
 
-class ChatService {
+class OrchestratorService {
     constructor() {
         this.welcomeMessage = CHAT_WELCOME_MESSAGE;
+        this.conversationService = new ConversationService();
         this.newsDiscoveryService = new NewsDiscoveryService();
         this.userService = new UserService();
+        this.sectionsCacheService = new GuardianSectionsCacheService();
         this.sessions = new Map(); // Store chat history per session
     }
 
@@ -28,11 +32,11 @@ class ChatService {
             
             const chatHistory = this.sessions.get(sessionId);
             
-            // 1. Generate AI response
-            const conversationResult = await this.newsDiscoveryService.generateResponse(message, chatHistory);
+            // 1. Generate AI response using ConversationService
+            const conversationResult = await this.conversationService.generateResponse(message, chatHistory);
             
             // 2. Check if conversation is complete from AI response
-            const isComplete = this.newsDiscoveryService.isConversationComplete(conversationResult.response);
+            const isComplete = this.conversationService.isConversationComplete(conversationResult.response);
             
             let cleanedResponse = conversationResult.response;
             let userInterestsDescription = null;
@@ -41,8 +45,8 @@ class ChatService {
                 // 3a. Clean the response for display
                 cleanedResponse = conversationResult.response.replace(/\[CONVERSATION_COMPLETE\]/g, '').trim();
                 
-                // 3b. Extract topics for registration
-                userInterestsDescription = await this.newsDiscoveryService.extractTopics(chatHistory);
+                // 3b. Extract topics for registration using ConversationService
+                userInterestsDescription = await this.conversationService.extractTopics(chatHistory);
                 
                 logger.info(`🔄 conversation complete, printing deets...`);
                 logger.info(`🔄 Cleaned response: ${cleanedResponse}`);
@@ -145,11 +149,15 @@ class ChatService {
      */
     async registerUser(email, interestsDescription) {
         try {
-            // Convert interests description to topics array
-            const sections = await this.extractSections(interestsDescription);
+            // Get Guardian sections
+            const allSections = await this.sectionsCacheService.getSections();
             
-            // Direct call to UserService - no HTTP request needed
-            const user = await this.userService.registerUser(email, topics);
+            // Map interests to sections using NewsDiscoveryService
+            const sections = await this.newsDiscoveryService.mapUserInterestsToSections(interestsDescription, allSections);
+            const sectionArray = sections.split('|').filter(s => s.trim());
+            
+            // Register user with description and sections
+            const user = await this.userService.registerUser(email, interestsDescription, sectionArray);
             
             logger.info(`✅ User registered via chat: ${email} (${user.userId})`);
             return { success: true, user: user };
@@ -166,4 +174,4 @@ class ChatService {
      */
 }
 
-module.exports = ChatService;
+module.exports = OrchestratorService;

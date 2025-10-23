@@ -3,7 +3,7 @@ const router = express.Router();
 const { body, validationResult } = require('express-validator');
 
 // Import services
-const ChatService = require('../services/chatService');
+const OrchestratorService = require('../services/orchestratorService');
 
 // Import middleware
 const { apiLimiter } = require('../middleware/security');
@@ -11,7 +11,7 @@ const { asyncHandler } = require('../utils/errorHandler');
 const { logger } = require('../utils/logger');
 
 // Initialize services
-const chatService = new ChatService();
+const orchestratorService = new OrchestratorService();
 
 // Validation rules for chat messages
 const validateChatMessage = [
@@ -45,7 +45,7 @@ router.post('/start',
     asyncHandler(async (req, res) => {
         
         try {
-            const result = await chatService.startSession();
+            const result = await orchestratorService.startSession();
             
             
             res.json({
@@ -73,7 +73,7 @@ router.post('/message',
         
         
         try {
-            const result = await chatService.handleMessage(message, sessionId, email);
+            const result = await orchestratorService.handleMessage(message, sessionId, email);
             
             
             res.json({

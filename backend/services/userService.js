@@ -81,10 +81,11 @@ class UserService {
     /**
      * Register a new user or update existing user
      * @param {string} email - User's email address
-     * @param {Array} topics - Array of topic strings
+     * @param {string} description - User's interests description
+     * @param {Array} sections - Array of Guardian section strings
      * @returns {Object} User object
      */
-    async registerUser(email, topics) {
+    async registerUser(email, description, sections) {
         const users = this.loadUsers();
         const userId = this.generateUserId(email);
         
@@ -94,24 +95,26 @@ class UserService {
         const userData = {
             userId,
             email,
-            topics: topics || ['artificial intelligence', 'machine learning'],
+            description: description || 'No description provided',
+            sections: sections || ['technology', 'science'],
             isActive: true,
             createdAt: new Date().toISOString(),
             lastReportDate: null
         };
 
         if (existingUserIndex >= 0) {
-            // Update existing user - keep everything the same except topics
+            // Update existing user - keep everything the same except description and sections
             const existingUser = users[existingUserIndex];
             users[existingUserIndex] = {
                 ...existingUser,
-                topics: userData.topics,
+                description: userData.description,
+                sections: userData.sections,
                 isActive: true,
                 updatedAt: new Date().toISOString()
             };
-            logger.info(`🔄 Updated existing user topics: ${email} (${userId})`);
-            logger.info(`📝 Previous topics: ${existingUser.topics.join(', ')}`);
-            logger.info(`📝 New topics: ${userData.topics.join(', ')}`);
+            logger.info(`🔄 Updated existing user: ${email} (${userId})`);
+            logger.info(`📝 Previous sections: ${existingUser.sections ? existingUser.sections.join(', ') : 'None'}`);
+            logger.info(`📝 New sections: ${userData.sections.join(', ')}`);
         } else {
             // Add new user
             users.push(userData);
