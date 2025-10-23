@@ -21,15 +21,12 @@
     "isActive": true,
     "createdAt": "2025-10-22T15:43:33.809Z",
     "lastReportDate": null,
-    "updatedAt": "2025-10-23T17:34:27.031Z",
-    "description": "Great! Here's a summary of your interests: The user is deeply engaged with the topic of AI alignment, particularly concerning the existential risks posed by misaligned AI. They are interested in staying informed on a wide range of news and discussions related to AI safety, spurred by content like the AI 2027 blog.",
+    "updatedAt": "2025-10-23T17:56:25.078Z",
+    "description": "The user is deeply engaged with the topic of AI alignment, particularly concerning existential risks posed by misaligned AI, and is interested in staying informed on AI safety news and discussions, inspired by content like the AI 2027 blog. Additionally, they are primarily interested in the intersection of quantum computing and AI research, focusing on how quantum computing can enhance AI through increased processing power, improved machine learning algorithms, and efficient problem-solving.",
     "sections": [
-      "technology",
       "science",
-      "commentisfree",
-      "business",
-      "policy",
-      "world"
+      "technology",
+      "business"
     ]
   }
 ]

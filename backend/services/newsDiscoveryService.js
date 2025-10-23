@@ -1,15 +1,11 @@
 const { logger, logApiCall } = require('../utils/logger');
-const { retry, RETRY_CONFIGS } = require('../utils/retryUtils');
 const { CHAT_SYSTEM_PROMPT, CHAT_WELCOME_MESSAGE, TOPIC_EXTRACTION_PROMPT, SYSTEM_PROMPTS } = require('../config/constants');
+const OpenAIClient = require('../utils/openaiClient');
 
 class NewsDiscoveryService {
     constructor() {
-        this.openaiApiKey = process.env.OPENAI_API_KEY;
-        this.model = 'gpt-4o';
-        this.temperature = 0.7;
-        this.maxTokens = 800;
-        this.timeout = 30000;
         this.systemPrompt = CHAT_SYSTEM_PROMPT;
+        this.openaiClient = new OpenAIClient();
     }
 
 
@@ -127,7 +123,7 @@ class NewsDiscoveryService {
         ];
 
         try {
-            const result = await this.callOpenAI(messages);
+            const result = await this.openaiClient.callOpenAI(messages);
             return result.trim();
         } catch (error) {
             logger.error(`❌ Failed to map topics to sections: ${error.message}`);
@@ -179,7 +175,7 @@ Return ONLY a comma-separated list of relevant article indices (e.g., "0,3,7,12"
         ];
 
         try {
-            const result = await this.callOpenAI(messages);
+            const result = await this.openaiClient.callOpenAI(messages);
             const relevantIndices = result.trim().split(',').map(idx => parseInt(idx.trim())).filter(idx => !isNaN(idx));
             
             const relevantArticles = relevantIndices

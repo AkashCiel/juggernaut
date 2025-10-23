@@ -61,6 +61,24 @@ their interests and motivations.
 Towards the end of the conversation, the user will confirm their interests. Focus on this portion of the conversation.
 `,
 
+    // AI prompt for merging user interest descriptions
+    INTEREST_MERGE_PROMPT: `
+You are an expert at analyzing and merging user interest descriptions.
+
+You will be given:
+1. An existing user interest description (what the user previously told us)
+2. A new user interest description (from the current conversation)
+
+Your task is to create a comprehensive, updated description that:
+- Incorporates ALL relevant information from both descriptions
+- Removes any redundancy or contradictions
+- Maintains the user's voice and perspective
+- Captures the full scope of their interests
+- Is concise but complete (2-5 sentences)
+
+Return ONLY the merged description. Do not include explanations or other text.
+`,
+
     // System prompts for AI roles
     SYSTEM_PROMPTS: {
         TOPIC_EXTRACTION: 'You are a user interest analysis expert. Extract what topics and information the user cares about from conversations.',

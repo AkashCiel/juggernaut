@@ -3,6 +3,8 @@ const path = require('path');
 const { logger } = require('../utils/logger');
 const { generateUserId: generateUserIdUtil } = require('../utils/userUtils');
 const GitHubService = require('./githubService');
+const OpenAIClient = require('../utils/openaiClient');
+const { INTEREST_MERGE_PROMPT } = require('../config/constants');
 
 class UserService {
     constructor() {
@@ -10,6 +12,7 @@ class UserService {
         this.usersFile = path.join(this.dataDir, 'users.json');
         this.ensureDataDirectory();
         this.githubService = new GitHubService();
+        this.openaiClient = new OpenAIClient();
     }
 
     ensureDataDirectory() {
@@ -103,11 +106,16 @@ class UserService {
         };
 
         if (existingUserIndex >= 0) {
-            // Update existing user - keep everything the same except description and sections
+            // Update existing user - merge descriptions using LLM
             const existingUser = users[existingUserIndex];
+            const mergedDescription = await this.mergeInterestDescriptions(
+                existingUser.description, 
+                description
+            );
+            
             users[existingUserIndex] = {
                 ...existingUser,
-                description: userData.description,
+                description: mergedDescription,
                 sections: userData.sections,
                 isActive: true,
                 updatedAt: new Date().toISOString()
@@ -115,6 +123,7 @@ class UserService {
             logger.info(`🔄 Updated existing user: ${email} (${userId})`);
             logger.info(`📝 Previous sections: ${existingUser.sections ? existingUser.sections.join(', ') : 'None'}`);
             logger.info(`📝 New sections: ${userData.sections.join(', ')}`);
+            logger.info(`📝 Merged description: ${mergedDescription}`);
         } else {
             // Add new user
             users.push(userData);
@@ -208,6 +217,35 @@ class UserService {
     async getUsersForDailyReport(today) {
         const activeUsers = await this.getAllActiveUsers();
         return activeUsers.filter(user => user.lastReportDate !== today);
+    }
+
+    /**
+     * Merge existing and new user interest descriptions using LLM
+     * @param {string} existingDescription - Current user's interest description
+     * @param {string} newDescription - New interest description from current conversation
+     * @returns {Promise<string>} Merged interest description
+     */
+    async mergeInterestDescriptions(existingDescription, newDescription) {
+        const messages = [
+            {
+                role: 'system',
+                content: INTEREST_MERGE_PROMPT
+            },
+            {
+                role: 'user',
+                content: `Existing description: ${existingDescription}\n\nNew description: ${newDescription}`
+            }
+        ];
+
+        try {
+            const result = await this.openaiClient.callOpenAI(messages);
+            logger.info(`🔄 Merged interest descriptions for user`);
+            return result.trim();
+        } catch (error) {
+            logger.error(`❌ Failed to merge interest descriptions: ${error.message}`);
+            // Fallback: concatenate with separator
+            return `${existingDescription} Additionally, ${newDescription}`;
+        }
     }
 }
 

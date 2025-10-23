@@ -1,15 +1,11 @@
 const { logger, logApiCall } = require('../utils/logger');
-const { retry, RETRY_CONFIGS } = require('../utils/retryUtils');
 const { CHAT_SYSTEM_PROMPT, CHAT_WELCOME_MESSAGE, TOPIC_EXTRACTION_PROMPT, SYSTEM_PROMPTS } = require('../config/constants');
+const OpenAIClient = require('../utils/openaiClient');
 
 class ConversationService {
     constructor() {
-        this.openaiApiKey = process.env.OPENAI_API_KEY;
-        this.model = 'gpt-4o';
-        this.temperature = 0.7;
-        this.maxTokens = 800;
-        this.timeout = 30000;
         this.systemPrompt = CHAT_SYSTEM_PROMPT;
+        this.openaiClient = new OpenAIClient();
     }
 
     /**
@@ -25,7 +21,7 @@ class ConversationService {
             const messages = this.buildConversationContext(message, chatHistory);
             
             // Call OpenAI API
-            const response = await this.callOpenAI(messages);
+            const response = await this.openaiClient.callOpenAI(messages);
             
             logApiCall('openai', 'conversation', { 
                 messageLength: message.length,
@@ -88,93 +84,6 @@ class ConversationService {
         return messages;
     }
 
-    /**
-     * Call OpenAI API with retry logic
-     * @param {Array} messages - Conversation messages
-     * @param {number} temperature - Response temperature
-     * @param {number} maxTokens - Maximum tokens
-     * @returns {Promise<string>} AI response
-     */
-    async callOpenAI(messages, temperature = this.temperature, maxTokens = this.maxTokens) {
-        // Temporarily bypass retry to see actual error
-        try {
-            return await this.makeOpenAIRequest(messages, temperature, maxTokens);
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    /**
-     * Make actual OpenAI API request
-     * @param {Array} messages - Conversation messages
-     * @param {number} temperature - Response temperature
-     * @param {number} maxTokens - Maximum tokens
-     * @returns {Promise<string>} AI response
-     */
-    async makeOpenAIRequest(messages, temperature, maxTokens) {
-        const https = require('https');
-        
-        
-        const requestData = {
-            model: this.model,
-            messages: messages,
-            temperature: temperature,
-            max_tokens: maxTokens
-        };
-        
-        let data;
-        try {
-            data = JSON.stringify(requestData);
-        } catch (jsonError) {
-            throw new Error(`JSON serialization failed: ${jsonError.message}`);
-        }
-        console.log('🔍 Request data:', data);
-        const options = {
-            hostname: 'api.openai.com',
-            port: 443,
-            path: '/v1/chat/completions',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.openaiApiKey}`,
-                'Content-Length': Buffer.byteLength(data, 'utf8')
-            }
-        };
-
-        return new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => reject(new Error('OpenAI API request timeout')), this.timeout);
-            
-            const req = https.request(options, (res) => {
-                clearTimeout(timeout);
-                let responseData = '';
-                
-                res.on('data', (chunk) => {
-                    responseData += chunk;
-                });
-                
-                res.on('end', () => {
-                    try {
-                        const json = JSON.parse(responseData);
-                        if (json.error) {
-                            reject(new Error(`OpenAI API error: ${json.error.message}`));
-                        } else {
-                            resolve(json.choices[0].message.content);
-                        }
-                    } catch (e) {
-                        reject(new Error(`Failed to parse OpenAI response: ${e.message}`));
-                    }
-                });
-            });
-
-            req.on('error', (err) => {
-                clearTimeout(timeout);
-                reject(err);
-            });
-
-            req.write(data);
-            req.end();
-        });
-    }
 
     /**
      * Format chat history for topic extraction
