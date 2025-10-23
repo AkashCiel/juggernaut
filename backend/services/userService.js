@@ -1,5 +1,3 @@
-const fs = require('fs');
-const path = require('path');
 const { logger } = require('../utils/logger');
 const { generateUserId: generateUserIdUtil } = require('../utils/userUtils');
 const GitHubService = require('./githubService');
@@ -8,68 +6,21 @@ const { INTEREST_MERGE_PROMPT } = require('../config/constants');
 
 class UserService {
     constructor() {
-        this.dataDir = path.join(__dirname, '../data');
-        this.usersFile = path.join(this.dataDir, 'users.json');
-        this.ensureDataDirectory();
         this.githubService = new GitHubService();
         this.openaiClient = new OpenAIClient();
     }
 
-    ensureDataDirectory() {
-        if (!fs.existsSync(this.dataDir)) {
-            fs.mkdirSync(this.dataDir, { recursive: true });
-        }
-    }
-
     /**
-     * Load all users from storage
-     * @returns {Array} Array of user objects
+     * Load all users from GitHub
+     * @returns {Promise<Array>} Array of user objects
      */
-    loadUsers() {
-        try {
-            if (!fs.existsSync(this.usersFile)) {
-                return [];
-            }
-            const data = fs.readFileSync(this.usersFile, 'utf8');
-            return JSON.parse(data);
-        } catch (error) {
-            logger.error('❌ Error loading users:', error.message);
+    async loadUsers() {
+        const githubToken = process.env.GITHUB_TOKEN;
+        if (!githubToken) {
+            logger.warn('⚠️ GITHUB_TOKEN not set, returning empty users array');
             return [];
         }
-    }
-
-    /**
-     * Save users to storage
-     * @param {Array} users - Array of user objects
-     */
-    saveUsers(users) {
-        try {
-            fs.writeFileSync(this.usersFile, JSON.stringify(users, null, 2));
-            logger.info(`✅ Saved ${users.length} users to storage`);
-            
-            // Also push to GitHub main branch
-            const githubToken = process.env.GITHUB_TOKEN;
-            logger.info(`🔍 GITHUB_TOKEN status: ${githubToken ? 'Present' : 'Missing'}`);
-            
-            if (githubToken) {
-                logger.info(`📤 Uploading complete users.json with ${users.length} users to GitHub`);
-                
-                this.githubService.uploadUsersJsonFile(users, githubToken, 'Update users.json via registration')
-                    .then(result => {
-                        logger.info('✅ Synced users.json to GitHub main branch');
-                        logger.info(`🔗 GitHub file URL: ${result.fileUrl}`);
-                    })
-                    .catch(err => {
-                        logger.error('❌ Failed to sync users.json to GitHub:', err.message);
-                        logger.error('❌ Error stack:', err.stack);
-                    });
-            } else {
-                logger.warn('⚠️ GITHUB_TOKEN not set, skipping GitHub sync for users.json');
-            }
-        } catch (error) {
-            logger.error('❌ Error saving users:', error.message);
-            throw error;
-        }
+        return await this.githubService.getUsersFromGitHub(githubToken);
     }
 
     /**
@@ -89,7 +40,7 @@ class UserService {
      * @returns {Object} User object
      */
     async registerUser(email, description, sections) {
-        const users = this.loadUsers();
+        const users = await this.loadUsers();
         const userId = this.generateUserId(email);
         
         // Check if user already exists
@@ -116,7 +67,7 @@ class UserService {
             users[existingUserIndex] = {
                 ...existingUser,
                 description: mergedDescription,
-                sections: userData.sections,
+                sections: existingUser.sections.concat(userData.sections),
                 isActive: true,
                 updatedAt: new Date().toISOString()
             };
@@ -130,68 +81,111 @@ class UserService {
             logger.info(`✅ Registered new user: ${email} (${userId})`);
         }
 
-        this.saveUsers(users);
+        // Upload updated users to GitHub
+        const githubToken = process.env.GITHUB_TOKEN;
+        if (githubToken) {
+            try {
+                await this.githubService.uploadUsersJsonFile(users, githubToken, 'Update users.json via registration');
+                logger.info('✅ Synced users.json to GitHub main branch');
+            } catch (error) {
+                logger.error('❌ Failed to sync users.json to GitHub:', error.message);
+                throw error;
+            }
+        } else {
+            logger.warn('⚠️ GITHUB_TOKEN not set, skipping GitHub sync for users.json');
+        }
+        
         return userData;
     }
 
     /**
      * Get all active users
-     * @returns {Array} Array of active user objects
+     * @returns {Promise<Array>} Array of active user objects
      */
     async getAllActiveUsers() {
-        const users = this.loadUsers();
-        return users.filter(user => user.isActive);
+        const githubToken = process.env.GITHUB_TOKEN;
+        if (!githubToken) {
+            logger.warn('⚠️ GITHUB_TOKEN not set, returning empty users array');
+            return [];
+        }
+        return await this.githubService.getActiveUsersFromGitHub(githubToken);
     }
 
     /**
      * Get user by ID
      * @param {string} userId - User ID
-     * @returns {Object|null} User object or null
+     * @returns {Promise<Object|null>} User object or null
      */
     async getUserById(userId) {
-        const users = this.loadUsers();
-        return users.find(user => user.userId === userId) || null;
+        const githubToken = process.env.GITHUB_TOKEN;
+        if (!githubToken) {
+            logger.warn('⚠️ GITHUB_TOKEN not set, returning null');
+            return null;
+        }
+        return await this.githubService.getUserByIdFromGitHub(userId, githubToken);
     }
 
     /**
      * Update user preferences
      * @param {string} userId - User ID
      * @param {Array} topics - New topics array
-     * @returns {Object|null} Updated user object or null
+     * @returns {Promise<Object|null>} Updated user object or null
      */
     async updateUserPreferences(userId, topics) {
-        const users = this.loadUsers();
-        const userIndex = users.findIndex(user => user.userId === userId);
-        
-        if (userIndex === -1) {
+        const githubToken = process.env.GITHUB_TOKEN;
+        if (!githubToken) {
+            logger.warn('⚠️ GITHUB_TOKEN not set, cannot update user preferences');
             return null;
         }
 
-        users[userIndex].topics = topics;
-        this.saveUsers(users);
-        
-        logger.info(`🔄 Updated preferences for user: ${userId}`);
-        return users[userIndex];
+        try {
+            const users = await this.loadUsers();
+            const userIndex = users.findIndex(user => user.userId === userId);
+            
+            if (userIndex === -1) {
+                return null;
+            }
+
+            users[userIndex].topics = topics;
+            await this.githubService.uploadUsersJsonFile(users, githubToken, 'Update user preferences');
+            
+            logger.info(`🔄 Updated preferences for user: ${userId}`);
+            return users[userIndex];
+        } catch (error) {
+            logger.error(`❌ Failed to update user preferences: ${error.message}`);
+            throw error;
+        }
     }
 
     /**
      * Deactivate a user
      * @param {string} userId - User ID
-     * @returns {boolean} Success status
+     * @returns {Promise<boolean>} Success status
      */
     async deactivateUser(userId) {
-        const users = this.loadUsers();
-        const userIndex = users.findIndex(user => user.userId === userId);
-        
-        if (userIndex === -1) {
+        const githubToken = process.env.GITHUB_TOKEN;
+        if (!githubToken) {
+            logger.warn('⚠️ GITHUB_TOKEN not set, cannot deactivate user');
             return false;
         }
 
-        users[userIndex].isActive = false;
-        this.saveUsers(users);
-        
-        logger.info(`⏸️ Deactivated user: ${userId}`);
-        return true;
+        try {
+            const users = await this.loadUsers();
+            const userIndex = users.findIndex(user => user.userId === userId);
+            
+            if (userIndex === -1) {
+                return false;
+            }
+
+            users[userIndex].isActive = false;
+            await this.githubService.uploadUsersJsonFile(users, githubToken, 'Deactivate user');
+            
+            logger.info(`⏸️ Deactivated user: ${userId}`);
+            return true;
+        } catch (error) {
+            logger.error(`❌ Failed to deactivate user: ${error.message}`);
+            throw error;
+        }
     }
 
     /**
@@ -200,12 +194,23 @@ class UserService {
      * @param {string} reportDate - Report date (YYYY-MM-DD)
      */
     async updateLastReportDate(userId, reportDate) {
-        const users = this.loadUsers();
-        const userIndex = users.findIndex(user => user.userId === userId);
-        
-        if (userIndex !== -1) {
-            users[userIndex].lastReportDate = reportDate;
-            this.saveUsers(users);
+        const githubToken = process.env.GITHUB_TOKEN;
+        if (!githubToken) {
+            logger.warn('⚠️ GITHUB_TOKEN not set, cannot update last report date');
+            return;
+        }
+
+        try {
+            const users = await this.loadUsers();
+            const userIndex = users.findIndex(user => user.userId === userId);
+            
+            if (userIndex !== -1) {
+                users[userIndex].lastReportDate = reportDate;
+                await this.githubService.uploadUsersJsonFile(users, githubToken, 'Update last report date');
+            }
+        } catch (error) {
+            logger.error(`❌ Failed to update last report date: ${error.message}`);
+            throw error;
         }
     }
 
