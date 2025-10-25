@@ -97,6 +97,32 @@ class SchedulerService {
                     const emailContent = this.emailCompositionService.generateEmailContent(user, curatedArticles);
                     logger.info(`📧 Generated email content for user: ${user.email} (${emailContent.articleCount} articles)`);
 
+                    // Send email to user (skip in demo mode)
+                    let emailResult = null;
+                    if (!isDemoMode) {
+                        try {
+                            // Initialize email service if needed
+                            if (!this.emailService.isInitialized) {
+                                this.initializeEmailService();
+                            }
+                            
+                            // Send the composed email
+                            emailResult = await this.emailService.sendComposedEmail(emailContent, [user.email]);
+                            logger.info(`📧 Email sent successfully to ${user.email}: ${emailResult.messageId}`);
+                            
+                            logApiCall('mailgun', 'sendComposedEmail', { 
+                                recipientsCount: 1,
+                                userId: user.userId,
+                                messageId: emailResult.messageId
+                            });
+                        } catch (emailError) {
+                            logger.error(`❌ Failed to send email to ${user.email}: ${emailError.message}`);
+                            // Continue processing other users even if one email fails
+                        }
+                    } else {
+                        logger.warn(`⚠️ Skipping email sending in demo mode for ${user.email}`);
+                    }
+
                     // Update user's last report date
                     await this.userService.updateLastReportDate(user.userId, today);
 
@@ -107,7 +133,9 @@ class SchedulerService {
                         curatedArticles: curatedArticles,
                         totalArticles: userArticles.length,
                         curatedCount: curatedArticles.length,
-                        emailContent: emailContent
+                        emailContent: emailContent,
+                        emailSent: !!emailResult,
+                        messageId: emailResult?.messageId || null
                     });
 
                     logger.info(`✅ Generated curated news for user: ${user.email} (${user.userId})`);
