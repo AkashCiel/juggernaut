@@ -1,0 +1,114 @@
+/**
+ * Design System CSS Variables
+ * Auto-generated from design-system/design-system.json
+ * Version: 1.0.0
+ * Generated: 2025-10-25T13:37:43.395Z
+ */
+
+:root {
+  /* Colors */
+  --color-primary: #667eea;
+  --color-secondary: #764ba2;
+  --color-text: #333;
+  --color-text-light: #666;
+  --color-background: #f8f9fa;
+  --color-white: #ffffff;
+  --color-border: #e9ecef;
+  --color-hover: #e9ecef;
+
+  /* Fonts */
+  --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-small: 12px;
+  --font-size-medium: 14px;
+  --font-size-large: 16px;
+  --font-size-xlarge: 18px;
+  --font-size-xxlarge: 28px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Spacing */
+  --spacing-xs: 8px;
+  --spacing-small: 10px;
+  --spacing-medium: 15px;
+  --spacing-large: 20px;
+  --spacing-xl: 25px;
+  --spacing-xxl: 30px;
+
+  /* Border Radius */
+  --border-radius-small: 8px;
+  --border-radius-medium: 12px;
+
+  /* Shadows */
+  --shadow-light: 0 1px 6px rgba(0,0,0,0.08);
+  --shadow-medium: 0 2px 10px rgba(0,0,0,0.1);
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  /* Breakpoints */
+  --breakpoint-mobile: 600px;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.3s ease;
+}
+
+/* Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-primary);
+  line-height: 1.6;
+  color: var(--color-text);
+  background: var(--gradient-primary);
+  min-height: 100vh;
+}
+
+/* Utility Classes */
+.text-primary { color: var(--color-primary); }
+.text-secondary { color: var(--color-secondary); }
+.text-light { color: var(--color-text-light); }
+.bg-primary { background: var(--color-primary); }
+.bg-secondary { background: var(--color-secondary); }
+.bg-white { background: var(--color-white); }
+.bg-gradient { background: var(--gradient-primary); }
+
+.font-small { font-size: var(--font-size-small); }
+.font-medium { font-size: var(--font-size-medium); }
+.font-large { font-size: var(--font-size-large); }
+.font-xlarge { font-size: var(--font-size-xlarge); }
+.font-xxlarge { font-size: var(--font-size-xxlarge); }
+
+.font-normal { font-weight: var(--font-weight-normal); }
+.font-medium-weight { font-weight: var(--font-weight-medium); }
+.font-semibold { font-weight: var(--font-weight-semibold); }
+.font-bold { font-weight: var(--font-weight-bold); }
+
+.p-xs { padding: var(--spacing-xs); }
+.p-small { padding: var(--spacing-small); }
+.p-medium { padding: var(--spacing-medium); }
+.p-large { padding: var(--spacing-large); }
+.p-xl { padding: var(--spacing-xl); }
+.p-xxl { padding: var(--spacing-xxl); }
+
+.m-xs { margin: var(--spacing-xs); }
+.m-small { margin: var(--spacing-small); }
+.m-medium { margin: var(--spacing-medium); }
+.m-large { margin: var(--spacing-large); }
+.m-xl { margin: var(--spacing-xl); }
+.m-xxl { margin: var(--spacing-xxl); }
+
+.rounded-small { border-radius: var(--border-radius-small); }
+.rounded-medium { border-radius: var(--border-radius-medium); }
+
+.shadow-light { box-shadow: var(--shadow-light); }
+.shadow-medium { box-shadow: var(--shadow-medium); }
+
+.transition-fast { transition: var(--transition-fast); }
+.transition-medium { transition: var(--transition-medium); }

@@ -1,0 +1,47 @@
+name: Design System Propagation
+
+on:
+  push:
+    paths:
+      - 'design-system/design-system.json'
+    branches: ['*']  # Any branch
+
+jobs:
+  propagate-design:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Propagate Design System
+        run: node design-system/propagate-design.js
+      
+      - name: Check for changes
+        id: check-changes
+        run: |
+          if git diff --quiet; then
+            echo "no-changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "no-changes=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Commit Generated Files
+        if: steps.check-changes.outputs.no-changes == 'false'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add backend/config/designSystem.js frontend/config/designSystem.js frontend/css/design-system.css
+          git commit -m "Auto-update design system configs [skip ci]"
+          git push
+      
+      - name: No changes message
+        if: steps.check-changes.outputs.no-changes == 'true'
+        run: echo "No design system changes to commit"

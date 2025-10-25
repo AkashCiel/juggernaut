@@ -1,4 +1,5 @@
 const { logger } = require('../utils/logger');
+const designSystem = require('../config/designSystem');
 
 /**
  * Email composition service for generating simple news digest emails
@@ -81,80 +82,80 @@ class EmailCompositionService {
             <title>Your Daily News</title>
             <style>
                 body { 
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+                    font-family: ${designSystem.fonts.primary}; 
                     line-height: 1.6; 
-                    color: #333; 
-                    max-width: 600px; 
+                    color: ${designSystem.colors.text}; 
+                    max-width: ${designSystem.breakpoints.mobile}; 
                     margin: 0 auto; 
-                    padding: 20px; 
-                    background-color: #f8f9fa;
+                    padding: ${designSystem.spacing.large}; 
+                    background-color: ${designSystem.colors.background};
                 }
                 .header { 
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                    color: white; 
-                    padding: 30px 20px; 
+                    background: ${designSystem.gradients.primary}; 
+                    color: ${designSystem.colors.white}; 
+                    padding: ${designSystem.spacing.xxl} ${designSystem.spacing.large}; 
                     text-align: center; 
-                    border-radius: 12px 12px 0 0; 
+                    border-radius: ${designSystem.borderRadius.medium} ${designSystem.borderRadius.medium} 0 0; 
                     margin-bottom: 0;
                 }
-                .header h1 { margin: 0 0 10px 0; font-size: 28px; }
+                .header h1 { margin: 0 0 ${designSystem.spacing.small} 0; font-size: ${designSystem.fonts.size.xxlarge}; }
                 .header p { margin: 0; opacity: 0.9; }
                 .content { 
-                    background: white; 
-                    padding: 30px; 
-                    border-radius: 0 0 12px 12px;
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                    background: ${designSystem.colors.white}; 
+                    padding: ${designSystem.spacing.xxl}; 
+                    border-radius: 0 0 ${designSystem.borderRadius.medium} ${designSystem.borderRadius.medium};
+                    box-shadow: ${designSystem.shadows.medium};
                 }
                 .intro { 
-                    margin-bottom: 25px; 
-                    font-size: 16px; 
-                    color: #666; 
+                    margin-bottom: ${designSystem.spacing.xl}; 
+                    font-size: ${designSystem.fonts.size.large}; 
+                    color: ${designSystem.colors.textLight}; 
                 }
                 .article { 
-                    margin-bottom: 25px; 
-                    padding: 20px; 
-                    border-left: 4px solid #667eea; 
-                    background: #f8f9fa; 
-                    border-radius: 0 8px 8px 0;
-                    transition: all 0.2s ease;
+                    margin-bottom: ${designSystem.spacing.xl}; 
+                    padding: ${designSystem.spacing.large}; 
+                    border-left: 4px solid ${designSystem.colors.primary}; 
+                    background: ${designSystem.colors.background}; 
+                    border-radius: 0 ${designSystem.borderRadius.small} ${designSystem.borderRadius.small} 0;
+                    transition: all ${designSystem.transitions.fast};
                 }
                 .article:hover { 
-                    background: #e9ecef; 
+                    background: ${designSystem.colors.hover}; 
                     transform: translateX(2px);
                 }
                 .article-title { 
-                    margin: 0 0 12px 0; 
-                    color: #333; 
-                    font-size: 18px; 
-                    font-weight: 600;
+                    margin: 0 0 ${designSystem.spacing.medium} 0; 
+                    color: ${designSystem.colors.text}; 
+                    font-size: ${designSystem.fonts.size.xlarge}; 
+                    font-weight: ${designSystem.fonts.weight.semibold};
                     line-height: 1.4;
                 }
                 .article-summary { 
-                    margin: 0 0 15px 0; 
-                    color: #666; 
+                    margin: 0 0 ${designSystem.spacing.medium} 0; 
+                    color: ${designSystem.colors.textLight}; 
                     line-height: 1.5; 
-                    font-size: 14px;
+                    font-size: ${designSystem.fonts.size.medium};
                 }
                 .article-link { 
-                    color: #667eea; 
+                    color: ${designSystem.colors.primary}; 
                     text-decoration: none; 
-                    font-weight: 500;
-                    font-size: 14px;
+                    font-weight: ${designSystem.fonts.weight.medium};
+                    font-size: ${designSystem.fonts.size.medium};
                 }
                 .article-link:hover { 
                     text-decoration: underline; 
                 }
                 .footer { 
                     text-align: center; 
-                    padding: 20px; 
-                    color: #666; 
-                    font-size: 12px; 
-                    margin-top: 20px;
+                    padding: ${designSystem.spacing.large}; 
+                    color: ${designSystem.colors.textLight}; 
+                    font-size: ${designSystem.fonts.size.small}; 
+                    margin-top: ${designSystem.spacing.large};
                 }
                 .article-meta {
-                    font-size: 12px;
+                    font-size: ${designSystem.fonts.size.small};
                     color: #999;
-                    margin-bottom: 8px;
+                    margin-bottom: ${designSystem.spacing.xs};
                 }
             </style>
         </head>
