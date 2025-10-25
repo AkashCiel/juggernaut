@@ -15,6 +15,7 @@ const GitHubService = require('./githubService');
 const GuardianSectionsService = require('./guardianSectionsService');
 const ArticleCacheService = require('./articleCacheService');
 const CuratedNewsService = require('./curatedNewsService');
+const EmailCompositionService = require('./emailCompositionService');
 
 class SchedulerService {
     constructor() {
@@ -28,6 +29,7 @@ class SchedulerService {
         this.guardianSectionsService = new GuardianSectionsService();
         this.articleCacheService = new ArticleCacheService();
         this.curatedNewsService = new CuratedNewsService();
+        this.emailCompositionService = new EmailCompositionService();
     }
 
     /**
@@ -91,6 +93,10 @@ class SchedulerService {
                     // Get detailed curated articles
                     const curatedArticles = this.curatedNewsService.getDetailedCuratedArticles(curatedArticleIds, userArticles);
 
+                    // Generate email content
+                    const emailContent = this.emailCompositionService.generateEmailContent(user, curatedArticles);
+                    logger.info(`📧 Generated email content for user: ${user.email} (${emailContent.articleCount} articles)`);
+
                     // Update user's last report date
                     await this.userService.updateLastReportDate(user.userId, today);
 
@@ -100,7 +106,8 @@ class SchedulerService {
                         success: true,
                         curatedArticles: curatedArticles,
                         totalArticles: userArticles.length,
-                        curatedCount: curatedArticles.length
+                        curatedCount: curatedArticles.length,
+                        emailContent: emailContent
                     });
 
                     logger.info(`✅ Generated curated news for user: ${user.email} (${user.userId})`);

@@ -75,8 +75,8 @@ class CuratedNewsService {
                 ];
 
                 try {
-                    // Call OpenAI for this chunk
-                    const response = await this.openaiClient.callOpenAI(messages);
+                    // Call OpenAI for this chunk with retry logic
+                    const response = await this.callOpenAIWithRetry(messages, chunkIndex + 1);
                     
                     // Parse response to get article IDs
                     const chunkCuratedIds = this.parseCuratedResponse(response, chunk);
@@ -84,7 +84,7 @@ class CuratedNewsService {
                     
                     logger.info(`✅ Chunk ${chunkIndex + 1}: Curated ${chunkCuratedIds.length} articles`);
                 } catch (error) {
-                    logger.error(`❌ Failed to curate chunk ${chunkIndex + 1}: ${error.message}`);
+                    logger.error(`❌ Failed to curate chunk ${chunkIndex + 1} after retries: ${error.message}`);
                     // Fallback: add first 5 articles from this chunk
                     const fallbackIds = chunk.slice(0, 5).map(article => article.id);
                     allCuratedIds.push(...fallbackIds);
@@ -99,6 +99,52 @@ class CuratedNewsService {
             // Fallback: return first 10 articles
             return articles.slice(0, 10).map((article, index) => article.id || `article_${index}`);
         }
+    }
+
+    /**
+     * Call OpenAI with retry logic for rate limit handling
+     * @param {Array} messages - Messages for OpenAI API
+     * @param {number} chunkNumber - Chunk number for logging
+     * @returns {Promise<string>} OpenAI response
+     */
+    async callOpenAIWithRetry(messages, chunkNumber) {
+        const maxRetries = 5;
+        const waitTime = 15000; // 15 seconds
+        let lastError = null;
+
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                logger.info(`🤖 Attempt ${attempt}/${maxRetries} for chunk ${chunkNumber}`);
+                const response = await this.openaiClient.callOpenAI(messages);
+                return response;
+            } catch (error) {
+                lastError = error;
+                
+                // Check if it's a rate limit error
+                if (error.message && error.message.toLowerCase().includes('rate limit')) {
+                    logger.warn(`⏳ Rate limit hit for chunk ${chunkNumber}. Waiting ${waitTime}ms before retry ${attempt + 1}/${maxRetries}`);
+                    await this.sleep(waitTime);
+                    continue;
+                }
+                
+                // For non-rate-limit errors, don't retry
+                if (attempt === 1) {
+                    logger.error(`❌ Non-rate-limit error for chunk ${chunkNumber}: ${error.message}`);
+                    throw error;
+                }
+            }
+        }
+        
+        throw lastError;
+    }
+
+    /**
+     * Sleep for specified milliseconds
+     * @param {number} ms - Milliseconds to sleep
+     * @returns {Promise<void>}
+     */
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     /**
