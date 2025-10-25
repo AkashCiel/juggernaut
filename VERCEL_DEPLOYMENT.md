@@ -77,7 +77,7 @@ vercel --prod
 ## URL Structure After Deployment
 
 ```
-https://your-project.vercel.app/
+https://juggernaut-three.vercel.app/
 ├── / (frontend - index.html)
 ├── /email-collection (frontend - email-collection.html)
 ├── /css/* (static assets)
@@ -100,8 +100,8 @@ https://your-project.vercel.app/
 - API calls: `http://localhost:8000/api/*`
 
 ### Production (Vercel)
-- Frontend: `https://your-project.vercel.app/`
-- Backend: `https://your-project.vercel.app/api/*`
+- Frontend: `https://juggernaut-three.vercel.app/`
+- Backend: `https://juggernaut-three.vercel.app/api/*`
 - API calls: Same domain (no CORS issues)
 
 ## Key Benefits
@@ -152,7 +152,7 @@ vercel logs [function-name]
 ### Before (Render)
 - Frontend: GitHub Pages
 - Backend: Render.com
-- API: `https://juggernaut-37yk.onrender.com`
+- API: `https://juggernaut-three.vercel.app`
 
 ### After (Vercel)
 - Frontend + Backend: Vercel
@@ -167,7 +167,7 @@ The project supports GitHub Actions for daily report generation. Update the webh
 # In your GitHub Actions workflow
 - name: Trigger Daily Reports
   run: |
-    curl -X POST https://your-project.vercel.app/api/trigger-daily-reports \
+    curl -X POST https://juggernaut-three.vercel.app/api/trigger-daily-reports \
       -H "Content-Type: application/json" \
       -d '{"triggered_by": "github-actions"}'
 ```
