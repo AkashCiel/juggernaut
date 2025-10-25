@@ -4,7 +4,7 @@ require('dotenv').config();
 
 // Import middleware
 const { generalLimiter, securityHeaders } = require('./middleware/security');
-const { logRequest } = require('./utils/logger');
+const { logRequest } = require('./utils/logger-vercel');
 const { errorHandler } = require('./utils/errorHandler');
 
 // Import routes

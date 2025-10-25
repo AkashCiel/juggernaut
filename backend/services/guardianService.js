@@ -1,5 +1,5 @@
 const https = require('https');
-const { logger, logApiCall } = require('../utils/logger');
+const { logger, logApiCall } = require('../utils/logger-vercel');
 const { retry, RETRY_CONFIGS } = require('../utils/retryUtils');
 const { GUARDIAN_PAGE_SIZE } = require('../config/constants');
 

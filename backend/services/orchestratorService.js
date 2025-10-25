@@ -1,4 +1,4 @@
-const { logger, logApiCall } = require('../utils/logger');
+const { logger, logApiCall } = require('../utils/logger-vercel');
 const ConversationService = require('./conversationService');
 const NewsDiscoveryService = require('./newsDiscoveryService');
 const UserService = require('./userService');
@@ -46,8 +46,6 @@ class OrchestratorService {
                 // 3a. Clean the response for display
                 userInterestsDescription = conversationResult.response.replace(/\[CONVERSATION_COMPLETE\]/g, '').trim();
                 
-                logger.info(`🔄 conversation complete, printing deets...`);
-                logger.info(`🔄 User interests description: ${userInterestsDescription}`);
                 // 3c. Register user if email is provided
                 if (email && userInterestsDescription) {
                     await this.registerUser(email, userInterestsDescription);

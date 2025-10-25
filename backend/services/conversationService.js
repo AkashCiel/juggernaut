@@ -1,4 +1,4 @@
-const { logger, logApiCall } = require('../utils/logger');
+const { logger, logApiCall } = require('../utils/logger-vercel');
 const { CHAT_SYSTEM_PROMPT, CHAT_WELCOME_MESSAGE, TOPIC_EXTRACTION_PROMPT, SYSTEM_PROMPTS } = require('../config/constants');
 const OpenAIClient = require('../utils/openaiClient');
 

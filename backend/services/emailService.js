@@ -1,6 +1,6 @@
 const Mailgun = require('mailgun.js');
 const formData = require('form-data');
-const { logger, logApiCall } = require('../utils/logger');
+const { logger, logApiCall } = require('../utils/logger-vercel');
 const { handleMailgunError } = require('../utils/errorHandler');
 const { sanitizeText, sanitizeHtml } = require('../utils/sanitizer');
 
@@ -24,7 +24,6 @@ class EmailService {
 
         this.domain = domain;
         this.isInitialized = true;
-        logger.info('✅ Email service initialized');
     }
 
     async sendEmail(reportData, topics, recipients, reportDate = new Date()) {
@@ -36,8 +35,6 @@ class EmailService {
             throw new Error('No email recipients provided');
         }
 
-        logger.info('📧 Sending email...');
-
         const emailContent = this.createEmailTemplate(reportData, topics, reportDate);
         const subject = `Your Daily News - ${reportDate.toISOString().split('T')[0]}`;
         
@@ -48,11 +45,6 @@ class EmailService {
                 subject: subject,
                 html: emailContent
             };
-
-            logger.info('📧 Attempting to send email with Mailgun...');
-            logger.info(`📧 From: ${messageData.from}`);
-            logger.info(`📧 To: ${recipients.join(', ')}`);
-            logger.info(`📧 Domain: ${this.domain}`);
 
             const response = await this.mailgunClient.messages.create(this.domain, messageData);
             logger.info('✅ Email sent successfully:', response.id);
@@ -91,8 +83,6 @@ class EmailService {
         if (!emailContent || !emailContent.subject || !emailContent.html) {
             throw new Error('Invalid email content provided');
         }
-
-        logger.info('📧 Sending composed email...');
         
         try {
             const messageData = {
@@ -101,12 +91,6 @@ class EmailService {
                 subject: emailContent.subject,
                 html: emailContent.html
             };
-
-            logger.info('📧 Attempting to send composed email with Mailgun...');
-            logger.info(`📧 From: ${messageData.from}`);
-            logger.info(`📧 To: ${recipients.join(', ')}`);
-            logger.info(`📧 Subject: ${emailContent.subject}`);
-            logger.info(`📧 Domain: ${this.domain}`);
 
             const response = await this.mailgunClient.messages.create(this.domain, messageData);
             logger.info('✅ Composed email sent successfully:', response.id);

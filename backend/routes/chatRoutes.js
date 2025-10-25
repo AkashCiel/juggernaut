@@ -8,7 +8,7 @@ const OrchestratorService = require('../services/orchestratorService');
 // Import middleware
 const { apiLimiter } = require('../middleware/security');
 const { asyncHandler } = require('../utils/errorHandler');
-const { logger } = require('../utils/logger');
+const { logger } = require('../utils/logger-vercel');
 
 // Initialize services
 const orchestratorService = new OrchestratorService();

@@ -4,7 +4,7 @@ const router = express.Router();
 // Import middleware
 const { body, validationResult } = require('express-validator');
 const { asyncHandler } = require('../utils/errorHandler');
-const { logger } = require('../utils/logger');
+const { logger } = require('../utils/logger-vercel');
 
 // Daily reports trigger endpoint (for GitHub Actions)
 router.post('/trigger-daily-reports',

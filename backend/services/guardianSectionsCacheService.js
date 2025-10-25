@@ -1,5 +1,5 @@
 const https = require('https');
-const { logger } = require('../utils/logger');
+const { logger } = require('../utils/logger-vercel');
 
 /**
  * Service for fetching Guardian sections from GitHub cache

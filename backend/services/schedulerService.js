@@ -1,4 +1,4 @@
-const { logger, logApiCall } = require('../utils/logger');
+const { logger, logApiCall } = require('../utils/logger-vercel');
 const { validateEnvironment, validateApiKey } = require('../utils/errorHandler');
 
 // Import services
@@ -56,14 +56,12 @@ class SchedulerService {
             logger.info(`📊 Built union of ${allSections.length} sections from ${eligibleUsers.length} users`);
 
             // Step 2: Fetch all articles for these sections
-            logger.info('📰 Fetching all articles for sections...');
             logger.info(`📊 Sections to fetch: ${allSections.join(', ')}`);
             const allArticles = await this.guardianService.fetchAllArticlesFromSections(allSections);
             logger.info(`📰 Fetched ${allArticles.length} articles across ${allSections.length} sections`);
 
             // Step 3: Store articles in centralized cache
             this.articleCacheService.storeArticlesInCache(allArticles);
-            logger.info('💾 Articles stored in centralized cache');
 
             // Step 4: Generate curated news for each user
             const results = [];

@@ -1,5 +1,5 @@
 const https = require('https');
-const { logger, logApiCall } = require('../utils/logger');
+const { logger, logApiCall } = require('../utils/logger-vercel');
 const { handleGitHubError } = require('../utils/errorHandler');
 const { sanitizeText, sanitizeHtml } = require('../utils/sanitizer');
 const { generateUserIdFromRecipients } = require('../utils/userUtils');
@@ -79,9 +79,7 @@ class GitHubService {
      * @returns {Promise<Object>} Upload result
      */
     async uploadUsersJsonFile(users, githubToken, commitMessage = 'Update users.json') {
-        logger.info(`🚀 Starting uploadUsersJsonFile with ${users.length} users`);
         const filePath = USER_JSON_GITHUB_PATH;
-        logger.info(`📁 Target file path: ${filePath}`);
         
         // Prepare content
         const content = JSON.stringify(users, null, 2);

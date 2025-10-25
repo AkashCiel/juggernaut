@@ -1,4 +1,4 @@
-const { logger } = require('../utils/logger');
+const { logger } = require('../utils/logger-vercel');
 const OpenAIClient = require('../utils/openaiClient');
 const { ARTICLE_CURATION_PROMPT, SYSTEM_PROMPTS } = require('../config/constants');
 

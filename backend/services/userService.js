@@ -1,4 +1,4 @@
-const { logger } = require('../utils/logger');
+const { logger } = require('../utils/logger-vercel');
 const { generateUserId: generateUserIdUtil } = require('../utils/userUtils');
 const GitHubService = require('./githubService');
 const OpenAIClient = require('../utils/openaiClient');
