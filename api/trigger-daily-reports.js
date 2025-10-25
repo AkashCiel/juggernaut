@@ -1,5 +1,5 @@
 const { asyncHandler } = require('../backend/utils/errorHandler');
-const { logger } = require('../backend/utils/logger');
+const { logger } = require('../backend/utils/logger-vercel');
 
 module.exports = asyncHandler(async (req, res) => {
     // Set CORS headers

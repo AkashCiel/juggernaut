@@ -1,4 +1,4 @@
-const { logger } = require('../backend/utils/logger');
+const { logger } = require('../backend/utils/logger-vercel');
 const { validateEnvironment } = require('../backend/utils/errorHandler');
 
 module.exports = async (req, res) => {
