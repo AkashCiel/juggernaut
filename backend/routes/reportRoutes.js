@@ -11,6 +11,7 @@ const ReportGenerator = require('../services/reportGenerator');
 
 // Import middleware
 const { validateReportRequest, validateUserRegistration, validateArxivTest, validateSummaryTest, handleValidationErrors } = require('../middleware/validation');
+const { body, validationResult } = require('express-validator');
 const { reportGenerationLimiter, optionalAuth } = require('../middleware/security');
 const { sanitizeTopics, sanitizeEmails, sanitizePapers } = require('../utils/sanitizer');
 const { asyncHandler, handleArxivError, handleOpenAIError, handleMailgunError, handleGitHubError, validateEnvironment, validateApiKey } = require('../utils/errorHandler');
@@ -186,63 +187,61 @@ router.post('/trigger-daily-reports',
     })
 );
 
-// User registration endpoint
-router.post('/register-user',
-    validateUserRegistration,
-    handleValidationErrors,
+
+// Email validation endpoint
+router.post('/validate-email',
     asyncHandler(async (req, res) => {
-        const { email, topics = ['artificial intelligence', 'machine learning'] } = req.body;
+        const { email } = req.body;
         
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                error: 'Email is required'
+            });
+        }
+
         try {
-            const sanitizedTopics = sanitizeTopics(topics);
-            const user = await userService.registerUser(email, sanitizedTopics);
+            // Use the same validation as user registration
+            const validateUserRegistration = [
+                body('email')
+                    .isEmail()
+                    .normalizeEmail()
+                    .withMessage('Email must be a valid email address')
+                    .isLength({ max: 254 })
+                    .withMessage('Email must be less than 254 characters')
+            ];
+
+            // Create a mock request object for validation
+            const mockReq = { body: { email } };
             
-            logger.info(`✅ User registered: ${email} (${user.userId})`);
-            
-            // Generate immediate report for the new user
-            logger.info(`🚀 Generating immediate report for new user: ${email}`);
-            let reportResult = null;
-            
-            try {
-                // Use the unified ReportGenerator for immediate report generation
-                reportResult = await reportGenerator.generateReport(
-                    user.email,
-                    user.topics,
-                    { isDemoMode: false }
-                );
-                
-                if (reportResult.success) {
-                    logger.info(`✅ Immediate report generated successfully for ${email}`);
-                } else {
-                    logger.warn(`⚠️ Immediate report generation failed for ${email}: ${reportResult.error}`);
-                }
-            } catch (reportError) {
-                logger.error(`❌ Immediate report generation error for ${email}:`, reportError.message);
-                // Don't fail registration if report generation fails
+            // Run validation
+            for (const validator of validateUserRegistration) {
+                await validator.run(mockReq);
             }
+
+            const errors = validationResult(mockReq);
+            
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Invalid email address',
+                    details: errors.array()
+                });
+            }
+
+            // Log successful email verification
+            logger.info(`✅ Email successfully verified: ${email} -> ${mockReq.body.email}`);
             
             res.json({
                 success: true,
-                message: 'User registered successfully for daily reports',
-                data: {
-                    userId: user.userId,
-                    email: user.email,
-                    topics: user.topics,
-                    isActive: user.isActive,
-                    immediateReport: reportResult ? {
-                        success: reportResult.success,
-                        papersCount: reportResult.papersCount,
-                        hasAISummary: reportResult.hasAISummary,
-                        reportUrl: reportResult.reportUrl,
-                        emailSent: reportResult.emailSent
-                    } : null
-                }
+                message: 'Email is valid',
+                normalizedEmail: mockReq.body.email
             });
         } catch (error) {
-            logger.error('❌ User registration failed:', error.message);
+            logger.error('❌ Email validation error:', error.message);
             res.status(500).json({
                 success: false,
-                error: 'Failed to register user'
+                error: 'Email validation failed'
             });
         }
     })

@@ -553,6 +553,68 @@ class GitHubService {
         });
     }
 
+    /**
+     * Fetch users.json from GitHub repository
+     * @param {string} githubToken - GitHub personal access token
+     * @returns {Promise<Array>} Array of user objects
+     */
+    async getUsersFromGitHub(githubToken) {
+        const filePath = USER_JSON_GITHUB_PATH;
+        
+        try {
+            logger.info('📖 Fetching users.json from GitHub...');
+            const response = await this.githubApiRequest(
+                `/repos/${this.repoOwner}/${this.repoName}/contents/${filePath}?ref=${this.branch}`,
+                'GET',
+                githubToken
+            );
+            
+            const content = Buffer.from(response.content, 'base64').toString('utf8');
+            const users = JSON.parse(content);
+            
+            logger.info(`✅ Fetched ${users.length} users from GitHub`);
+            return users;
+        } catch (error) {
+            if (error.message.includes('404')) {
+                logger.info('📝 No users.json found on GitHub, returning empty array');
+                return [];
+            }
+            logger.error(`❌ Failed to fetch users from GitHub: ${error.message}`);
+            throw error;
+        }
+    }
+
+    /**
+     * Get specific user by ID from GitHub
+     * @param {string} userId - User ID to find
+     * @param {string} githubToken - GitHub personal access token
+     * @returns {Promise<Object|null>} User object or null
+     */
+    async getUserByIdFromGitHub(userId, githubToken) {
+        try {
+            const users = await this.getUsersFromGitHub(githubToken);
+            return users.find(user => user.userId === userId) || null;
+        } catch (error) {
+            logger.error(`❌ Failed to get user by ID from GitHub: ${error.message}`);
+            return null;
+        }
+    }
+
+    /**
+     * Get all active users from GitHub
+     * @param {string} githubToken - GitHub personal access token
+     * @returns {Promise<Array>} Array of active user objects
+     */
+    async getActiveUsersFromGitHub(githubToken) {
+        try {
+            const users = await this.getUsersFromGitHub(githubToken);
+            return users.filter(user => user.isActive);
+        } catch (error) {
+            logger.error(`❌ Failed to get active users from GitHub: ${error.message}`);
+            return [];
+        }
+    }
+
     async githubApiRequest(path, method = 'GET', githubToken, payload = {}) {
         return new Promise((resolve, reject) => {
             const options = {

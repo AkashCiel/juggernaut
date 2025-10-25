@@ -1,6 +1,7 @@
 const https = require('https');
 const { logger, logApiCall } = require('../utils/logger');
 const { retry, RETRY_CONFIGS } = require('../utils/retryUtils');
+const { GUARDIAN_PAGE_SIZE } = require('../config/constants');
 
 class GuardianService {
     constructor() {
@@ -35,11 +36,16 @@ class GuardianService {
         const {
             fromDate,
             toDate,
-            pageSize = 10,
+            pageSize = GUARDIAN_PAGE_SIZE,
             orderBy = 'newest',
-            section = 'technology',
+            section,
             includeBodyText = true
         } = options;
+
+        // Section is required
+        if (!section) {
+            throw new Error('Section parameter is required for Guardian API calls');
+        }
 
         const fields = this.buildShowFields(includeBodyText);
         const params = new URLSearchParams();
@@ -49,7 +55,7 @@ class GuardianService {
         if (fromDate) params.set('from-date', fromDate);
         if (toDate) params.set('to-date', toDate);
         params.set('order-by', orderBy);
-        params.set('page-size', String(Math.max(1, Math.min(50, pageSize))));
+        params.set('page-size', String(Math.max(1, Math.min(200, pageSize))));
         params.set('show-fields', fields.join(','));
         params.set('api-key', this.apiKey || '');
 
@@ -101,17 +107,121 @@ class GuardianService {
                 shortUrl: fields.shortUrl || item.webUrl || '',
                 byline: fields.byline || '',
                 publication: fields.publication || 'The Guardian',
-                section: item.sectionName || '',
+                section: topic || '',
                 publishedAt: item.webPublicationDate || '',
                 summarySource: bodyText || trailText || '',
                 thumbnail: fields.thumbnail || '',
-                topic: topic
+                topic: item.sectionName || ''
             };
         });
     }
 
     stripHtml(html) {
         return String(html).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+
+    /**
+     * Fetch ALL articles from specified sections without topic filtering
+     * Makes one API call per section
+     * @param {Array|string} sections - Array of section names or pipe-separated string
+     * @param {Object} options - Query options
+     * @returns {Promise<Array>} Array of all articles from sections
+     */
+    async fetchAllArticlesFromSections(sections, options = {}) {
+        const {
+            fromDate,
+            toDate,
+            pageSize = GUARDIAN_PAGE_SIZE,
+            orderBy = 'newest',
+            includeBodyText = false
+        } = options;
+
+        // Convert to array if needed
+        const sectionsArray = Array.isArray(sections) ? sections : sections.split('|');
+        
+        logger.info(`📰 Making ${sectionsArray.length} API calls for sections: ${sectionsArray.join(', ')}`);
+        
+        const allArticles = [];
+        
+        // Make one API call per section
+        for (const section of sectionsArray) {
+            try {
+                const articles = await this.fetchArticlesForSection(section, {
+                    fromDate,
+                    toDate,
+                    pageSize,
+                    orderBy,
+                    includeBodyText
+                });
+                
+                allArticles.push(...articles);
+                logger.info(`📰 Section '${section}': ${articles.length} articles`);
+                
+            } catch (error) {
+                logger.warn(`⚠️ Failed to fetch articles for section '${section}': ${error.message}`);
+            }
+        }
+        
+        logger.info(`📰 Total articles fetched: ${allArticles.length} across ${sectionsArray.length} sections`);
+        return allArticles;
+    }
+
+    /**
+     * Fetch articles for a single section
+     * @param {string} section - Section name
+     * @param {Object} options - Query options
+     * @returns {Promise<Array>} Array of articles from the section
+     */
+    async fetchArticlesForSection(section, options = {}) {
+        const {
+            fromDate,
+            toDate,
+            pageSize = GUARDIAN_PAGE_SIZE,
+            orderBy = 'newest',
+            includeBodyText = false
+        } = options;
+        logger.info(`📰 Fetching articles for section: ${section}`);
+        const fields = this.buildShowFields(includeBodyText);
+        const params = new URLSearchParams();
+        
+        // No 'q' parameter - this fetches ALL articles from the section
+        params.set('section', section);
+        params.set('type', 'article');
+        if (fromDate) params.set('from-date', fromDate);
+        if (toDate) params.set('to-date', toDate);
+        params.set('order-by', orderBy);
+        params.set('page-size', String(Math.max(1, Math.min(200, pageSize))));
+        params.set('show-fields', fields.join(','));
+        params.set('api-key', this.apiKey || '');
+
+        const url = `${this.baseUrl}?${params.toString()}`;
+        logApiCall('guardian', 'fetchSection', { section, pageSize, fromDate, toDate, orderBy });
+
+        return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => reject(new Error('Guardian API request timeout')), 30000);
+            https.get(url, (res) => {
+                clearTimeout(timeout);
+                if (res.statusCode !== 200) {
+                    reject(new Error(`Guardian API returned status ${res.statusCode}`));
+                    return;
+                }
+                let data = '';
+                res.on('data', (chunk) => { data += chunk; });
+                res.on('end', () => {
+                    try {
+                        const json = JSON.parse(data);
+                        const results = Array.isArray(json?.response?.results) ? json.response.results : [];
+                        const articles = this.mapResultsToNormalizedArticles(results, section);
+                        resolve(articles);
+                    } catch (e) {
+                        reject(new Error(`Failed to parse Guardian response: ${e.message}`));
+                    }
+                });
+            }).on('error', (err) => {
+                clearTimeout(timeout);
+                reject(err);
+            });
+        });
     }
 }
 

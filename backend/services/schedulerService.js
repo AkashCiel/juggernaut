@@ -12,6 +12,10 @@ const GuardianService = require('./guardianService');
 const NewsProcessingService = require('./newsProcessingService');
 const EmailService = require('./emailService');
 const GitHubService = require('./githubService');
+const GuardianSectionsService = require('./guardianSectionsService');
+const ArticleCacheService = require('./articleCacheService');
+const CuratedNewsService = require('./curatedNewsService');
+const EmailCompositionService = require('./emailCompositionService');
 
 class SchedulerService {
     constructor() {
@@ -22,6 +26,10 @@ class SchedulerService {
         this.newsProcessingService = new NewsProcessingService();
         this.emailService = new EmailService();
         this.githubService = new GitHubService();
+        this.guardianSectionsService = new GuardianSectionsService();
+        this.articleCacheService = new ArticleCacheService();
+        this.curatedNewsService = new CuratedNewsService();
+        this.emailCompositionService = new EmailCompositionService();
     }
 
     /**
@@ -56,22 +64,55 @@ class SchedulerService {
                 return;
             }
 
-            // Initialize email service
-            this.initializeEmailService();
+            // Step 1: Build union of all sections from users
+            const allSections = this.articleCacheService.buildUnionOfSections(eligibleUsers);
+            logger.info(`📊 Built union of ${allSections.length} sections from ${eligibleUsers.length} users`);
 
-            // Generate reports for each user
+            // Step 2: Fetch all articles for these sections
+            logger.info('📰 Fetching all articles for sections...');
+            logger.info(`📊 Sections to fetch: ${allSections.join(', ')}`);
+            const allArticles = await this.guardianService.fetchAllArticlesFromSections(allSections);
+            logger.info(`📰 Fetched ${allArticles.length} articles across ${allSections.length} sections`);
+
+            // Step 3: Store articles in centralized cache
+            this.articleCacheService.storeArticlesInCache(allArticles);
+            logger.info('💾 Articles stored in centralized cache');
+
+            // Step 4: Generate curated news for each user
             const results = [];
             for (const user of eligibleUsers) {
                 try {
-                    const result = await this.generateUserReport(user, isDemoMode);
-                    results.push(result);
-                    
+                    // Get articles for user's sections
+                    const userArticles = this.articleCacheService.getArticlesForSections(user.sections || []);
+                    logger.info(`📖 Retrieved ${userArticles.length} articles for user: ${user.email}`);
+
+                    // Curate articles using LLM
+                    const curatedArticleIds = await this.curatedNewsService.curateArticlesForUser(user, userArticles);
+                    logger.info(`🎯 Curated ${curatedArticleIds.length} articles for user: ${user.email}`);
+
+                    // Get detailed curated articles
+                    const curatedArticles = this.curatedNewsService.getDetailedCuratedArticles(curatedArticleIds, userArticles);
+
+                    // Generate email content
+                    const emailContent = this.emailCompositionService.generateEmailContent(user, curatedArticles);
+                    logger.info(`📧 Generated email content for user: ${user.email} (${emailContent.articleCount} articles)`);
+
                     // Update user's last report date
                     await this.userService.updateLastReportDate(user.userId, today);
-                    
-                    logger.info(`✅ Generated report for user: ${user.email} (${user.userId})`);
+
+                    results.push({
+                        userId: user.userId,
+                        email: user.email,
+                        success: true,
+                        curatedArticles: curatedArticles,
+                        totalArticles: userArticles.length,
+                        curatedCount: curatedArticles.length,
+                        emailContent: emailContent
+                    });
+
+                    logger.info(`✅ Generated curated news for user: ${user.email} (${user.userId})`);
                 } catch (error) {
-                    logger.error(`❌ Failed to generate report for user ${user.email}:`, error.message);
+                    logger.error(`❌ Failed to generate curated news for user ${user.email}:`, error.message);
                     results.push({
                         userId: user.userId,
                         email: user.email,
@@ -306,6 +347,24 @@ class SchedulerService {
                 duration,
                 error: error.message
             };
+        }
+    }
+
+    /**
+     * Update Guardian sections cache
+     * Fetches fresh sections from Guardian API and uploads to GitHub
+     * @returns {Promise<Array>} Array of section names
+     */
+    async updateGuardianSections() {
+        logger.info('🔄 Starting Guardian sections cache update...');
+        
+        try {
+            const sections = await this.guardianSectionsService.getSections();
+            logger.info(`✅ Guardian sections cache updated: ${sections.length} sections`);
+            return sections;
+        } catch (error) {
+            logger.error('❌ Failed to update Guardian sections cache:', error.message);
+            throw error;
         }
     }
 

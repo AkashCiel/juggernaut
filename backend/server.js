@@ -10,6 +10,7 @@ const { errorHandler } = require('./utils/errorHandler');
 // Import routes
 const healthRoutes = require('./routes/healthRoutes');
 const reportRoutes = require('./routes/reportRoutes');
+const chatRoutes = require('./routes/chatRoutes');
 
 // Initialize Express app
 const app = express();
@@ -41,6 +42,7 @@ app.use(generalLimiter);
 // Routes
 app.use('/', healthRoutes);
 app.use('/api', reportRoutes);
+app.use('/api/chat', chatRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -56,12 +58,10 @@ app.use(errorHandler);
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-    console.log('SIGTERM received, shutting down gracefully');
     process.exit(0);
 });
 
 process.on('SIGINT', () => {
-    console.log('SIGINT received, shutting down gracefully');
     process.exit(0);
 });
 

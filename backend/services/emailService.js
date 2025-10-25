@@ -3,7 +3,6 @@ const formData = require('form-data');
 const { logger, logApiCall } = require('../utils/logger');
 const { handleMailgunError } = require('../utils/errorHandler');
 const { sanitizeText, sanitizeHtml } = require('../utils/sanitizer');
-const { buildEmailReportHtml } = require('./reportTemplateService');
 
 // Email Service for sending reports via Mailgun
 class EmailService {
@@ -39,9 +38,8 @@ class EmailService {
 
         logger.info('📧 Sending email...');
 
-        const includeNews = process.env.INCLUDE_NEWS_IN_EMAIL !== 'false';
-        const emailContent = this.createEmailTemplate(reportData, topics, reportDate, includeNews);
-        const subject = `AI Research Report - ${reportDate.toISOString().split('T')[0]}`;
+        const emailContent = this.createEmailTemplate(reportData, topics, reportDate);
+        const subject = `Your Daily News - ${reportDate.toISOString().split('T')[0]}`;
         
         try {
             const messageData = {
@@ -75,20 +73,108 @@ class EmailService {
         }
     }
 
-    createEmailTemplate(reportData, topics, reportDate, includeNewsInEmail = true) {
-        return buildEmailReportHtml(reportData, topics, reportDate, includeNewsInEmail);
+    /**
+     * Send email with pre-composed content
+     * @param {Object} emailContent - Pre-composed email content with subject and html
+     * @param {Array} recipients - Array of recipient email addresses
+     * @returns {Promise<Object>} Email sending result
+     */
+    async sendComposedEmail(emailContent, recipients) {
+        if (!this.isInitialized) {
+            throw new Error('Email service not initialized');
+        }
+
+        if (!recipients || recipients.length === 0) {
+            throw new Error('No email recipients provided');
+        }
+
+        if (!emailContent || !emailContent.subject || !emailContent.html) {
+            throw new Error('Invalid email content provided');
+        }
+
+        logger.info('📧 Sending composed email...');
+        
+        try {
+            const messageData = {
+                from: `AI News Agent <your-personal-news@${this.domain}>`,
+                to: recipients,
+                subject: emailContent.subject,
+                html: emailContent.html
+            };
+
+            logger.info('📧 Attempting to send composed email with Mailgun...');
+            logger.info(`📧 From: ${messageData.from}`);
+            logger.info(`📧 To: ${recipients.join(', ')}`);
+            logger.info(`📧 Subject: ${emailContent.subject}`);
+            logger.info(`📧 Domain: ${this.domain}`);
+
+            const response = await this.mailgunClient.messages.create(this.domain, messageData);
+            logger.info('✅ Composed email sent successfully:', response.id);
+            
+            logApiCall('mailgun', 'sendComposedEmail', { 
+                recipientsCount: recipients.length,
+                messageId: response.id,
+                subject: emailContent.subject
+            });
+            
+            return { success: true, messageId: response.id };
+        } catch (error) {
+            logger.error('❌ Mailgun error details:', {
+                message: error.message,
+                statusCode: error.statusCode,
+                details: error.details || 'No details available'
+            });
+            handleMailgunError(error);
+        }
     }
 
-    generateMetadata(reportData) {
-        const researchPapers = reportData.papers ? reportData.papers.length : 0;
-        const newsArticles = 0; // Server-side only fetches research papers currently
-        const totalItems = researchPapers + newsArticles;
+    createEmailTemplate(reportData, topics, reportDate) {
+        // Simple HTML template for curated news articles
+        const dateStr = reportDate.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
         
-        return {
-            totalItems: totalItems,
-            newsArticles: newsArticles,
-            researchPapers: researchPapers
-        };
+        const articles = reportData.curatedArticles || [];
+        const articlesHtml = articles.map(article => `
+            <div style="margin-bottom: 20px; padding: 15px; border-left: 3px solid #667eea; background: #f8f9fa;">
+                <h3 style="margin: 0 0 10px 0; color: #333;">${article.title}</h3>
+                <p style="margin: 0 0 10px 0; color: #666; line-height: 1.5;">${article.summary}</p>
+                <a href="${article.url}" style="color: #667eea; text-decoration: none;">Read full article →</a>
+            </div>
+        `).join('');
+        
+        return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Your Daily News</title>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; border-radius: 8px; margin-bottom: 20px; }
+                .content { background: white; padding: 20px; border-radius: 8px; }
+                .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>📰 Your Daily News</h1>
+                <p>${dateStr}</p>
+            </div>
+            <div class="content">
+                <p>Here are your personalized news articles for today:</p>
+                ${articlesHtml}
+            </div>
+            <div class="footer">
+                <p>Generated by AI News Agent</p>
+            </div>
+        </body>
+        </html>
+        `;
     }
 }
 
