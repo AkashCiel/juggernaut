@@ -73,6 +73,61 @@ class EmailService {
         }
     }
 
+    /**
+     * Send email with pre-composed content
+     * @param {Object} emailContent - Pre-composed email content with subject and html
+     * @param {Array} recipients - Array of recipient email addresses
+     * @returns {Promise<Object>} Email sending result
+     */
+    async sendComposedEmail(emailContent, recipients) {
+        if (!this.isInitialized) {
+            throw new Error('Email service not initialized');
+        }
+
+        if (!recipients || recipients.length === 0) {
+            throw new Error('No email recipients provided');
+        }
+
+        if (!emailContent || !emailContent.subject || !emailContent.html) {
+            throw new Error('Invalid email content provided');
+        }
+
+        logger.info('📧 Sending composed email...');
+        
+        try {
+            const messageData = {
+                from: `AI News Agent <your-personal-news@${this.domain}>`,
+                to: recipients,
+                subject: emailContent.subject,
+                html: emailContent.html
+            };
+
+            logger.info('📧 Attempting to send composed email with Mailgun...');
+            logger.info(`📧 From: ${messageData.from}`);
+            logger.info(`📧 To: ${recipients.join(', ')}`);
+            logger.info(`📧 Subject: ${emailContent.subject}`);
+            logger.info(`📧 Domain: ${this.domain}`);
+
+            const response = await this.mailgunClient.messages.create(this.domain, messageData);
+            logger.info('✅ Composed email sent successfully:', response.id);
+            
+            logApiCall('mailgun', 'sendComposedEmail', { 
+                recipientsCount: recipients.length,
+                messageId: response.id,
+                subject: emailContent.subject
+            });
+            
+            return { success: true, messageId: response.id };
+        } catch (error) {
+            logger.error('❌ Mailgun error details:', {
+                message: error.message,
+                statusCode: error.statusCode,
+                details: error.details || 'No details available'
+            });
+            handleMailgunError(error);
+        }
+    }
+
     createEmailTemplate(reportData, topics, reportDate) {
         // Simple HTML template for curated news articles
         const dateStr = reportDate.toLocaleDateString('en-US', { 
