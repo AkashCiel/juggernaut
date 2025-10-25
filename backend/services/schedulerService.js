@@ -1,18 +1,10 @@
 const { logger, logApiCall } = require('../utils/logger');
-const { handleArxivError, handleOpenAIError, handleGitHubError, handleMailgunError, validateEnvironment, validateApiKey } = require('../utils/errorHandler');
-const { sanitizeTopics, sanitizePapers } = require('../utils/sanitizer');
-const { retry, RETRY_CONFIGS } = require('../utils/retryUtils');
+const { validateEnvironment, validateApiKey } = require('../utils/errorHandler');
 
 // Import services
 const UserService = require('./userService');
-const ArxivService = require('./arxivService');
-const SummaryService = require('./summaryService');
-const { NUM_PAPERS_PER_TOPIC } = require('../config/constants');
 const GuardianService = require('./guardianService');
-const NewsProcessingService = require('./newsProcessingService');
 const EmailService = require('./emailService');
-const GitHubService = require('./githubService');
-const GuardianSectionsService = require('./guardianSectionsService');
 const ArticleCacheService = require('./articleCacheService');
 const CuratedNewsService = require('./curatedNewsService');
 const EmailCompositionService = require('./emailCompositionService');
@@ -20,13 +12,8 @@ const EmailCompositionService = require('./emailCompositionService');
 class SchedulerService {
     constructor() {
         this.userService = new UserService();
-        this.arxivService = new ArxivService();
-        this.summaryService = new SummaryService();
         this.guardianService = new GuardianService();
-        this.newsProcessingService = new NewsProcessingService();
         this.emailService = new EmailService();
-        this.githubService = new GitHubService();
-        this.guardianSectionsService = new GuardianSectionsService();
         this.articleCacheService = new ArticleCacheService();
         this.curatedNewsService = new CuratedNewsService();
         this.emailCompositionService = new EmailCompositionService();
@@ -166,217 +153,6 @@ class SchedulerService {
         }
     }
 
-    /**
-     * Generate a report for a specific user
-     * @param {Object} user - User object
-     * @param {boolean} isDemoMode - Whether running in demo mode
-     * @returns {Object} Report generation result
-     */
-    async generateUserReport(user, isDemoMode = false) {
-        const startTime = Date.now();
-        
-        try {
-            logger.info(`📝 Generating report for user: ${user.email} (${user.userId})`);
-            logger.info(`🔍 Topics: ${user.topics.join(', ')}`);
-
-            // Initialize email service
-            this.initializeEmailService();
-
-            // Step 1: Fetch papers and generate summaries per topic
-            const sanitizedTopics = sanitizeTopics(user.topics);
-            const maxPapers = NUM_PAPERS_PER_TOPIC; // Global per-topic default
-            
-            logger.info('📚 Fetching papers and generating summaries per topic...');
-            logApiCall('arxiv', 'fetchPapers', { 
-                topics: sanitizedTopics, 
-                maxPapers,
-                userId: user.userId 
-            });
-            
-            let allPapers = [];
-            let topicSummaries = [];
-            
-            for (const topic of sanitizedTopics) {
-                try {
-                    // Fetch papers for this specific topic
-                    logger.info(`📚 Fetching papers for topic: ${topic}`);
-                    const topicPapers = await retry(
-                        () => this.arxivService.fetchPapers([topic], NUM_PAPERS_PER_TOPIC),
-                        RETRY_CONFIGS.arxiv
-                    );
-                    const sanitizedTopicPapers = sanitizePapers(topicPapers);
-                    
-                    if (sanitizedTopicPapers.length > 0) {
-                        allPapers.push(...sanitizedTopicPapers);
-                        
-                        // Generate summary for this topic immediately
-                        if (!isDemoMode) {
-                            logger.info(`🤖 Generating summary for topic: ${topic}`);
-                            try {
-                                validateApiKey(process.env.OPENAI_API_KEY, 'OpenAI');
-                                const topicSummary = await retry(
-                                    () => this.summaryService.generateSummaryForTopic(sanitizedTopicPapers, topic, process.env.OPENAI_API_KEY, 60000),
-                                    RETRY_CONFIGS.openai
-                                );
-                                
-                                if (topicSummary) {
-                                    topicSummaries.push(topicSummary);
-                                    logApiCall('openai', 'generateTopicSummary', { 
-                                        topic: topic,
-                                        papersCount: sanitizedTopicPapers.length,
-                                        userId: user.userId 
-                                    });
-                                }
-                            } catch (error) {
-                                logger.error(`❌ Error generating summary for topic "${topic}": ${error.message}`);
-                                handleOpenAIError(error);
-                            }
-                        }
-                    } else {
-                        logger.warn(`⚠️ No papers found for topic: ${topic}`);
-                    }
-                } catch (error) {
-                    logger.error(`❌ Error fetching papers for topic "${topic}": ${error.message}`);
-                    handleArxivError(error, topic);
-                }
-            }
-            
-            if (allPapers.length === 0) {
-                throw new Error('No papers found for any of the specified topics');
-            }
-            
-            // Combine all topic summaries into one
-            let aiSummary = null;
-            if (topicSummaries.length > 0) {
-                aiSummary = this.summaryService.combineTopicSummaries(topicSummaries);
-            }
-
-            // Step 2: Fetch Guardian news and generate per-article summaries
-            let newsByTopic = [];
-            try {
-                if (process.env.GUARDIAN_API_KEY) {
-                    logger.info('📰 Fetching Guardian news by topic...');
-                    const now = new Date();
-                    const from = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
-                    const fromDate = from.toISOString().slice(0, 10);
-                    const toDate = now.toISOString().slice(0, 10);
-                    const { articlesByTopic } = await this.guardianService.fetchArticles(sanitizedTopics, {
-                        fromDate,
-                        toDate,
-                        pageSize: 10,
-                        orderBy: 'newest',
-                        section: 'technology',
-                        includeBodyText: true
-                    });
-
-                    for (const group of articlesByTopic) {
-                        const summaries = await this.newsProcessingService.process('perArticleFiveSentences', group.articles, {
-                            maxArticles: group.articles.length,
-                            maxInputChars: 1600,
-                            apiKey: process.env.OPENAI_API_KEY,
-                            timeoutMs: 60000
-                        });
-                        newsByTopic.push({ topic: group.topic, articles: group.articles, perArticleSummaries: summaries });
-                    }
-                } else {
-                    logger.warn('⚠️ GUARDIAN_API_KEY not set. Skipping news fetch.');
-                }
-            } catch (error) {
-                logger.warn(`⚠️ Guardian news integration failed: ${error.message}`);
-            }
-
-            // Step 3: Prepare report data
-            const reportDate = new Date().toISOString().split('T')[0];
-            const reportData = {
-                date: reportDate,
-                topics: sanitizedTopics,
-                papers: allPapers,
-                aiSummary: aiSummary,
-                news: newsByTopic
-            };
-
-            // Step 4: Upload report to GitHub (skip in demo mode)
-            let uploadResult = null;
-            if (!isDemoMode) {
-                logger.info('📤 Uploading report to GitHub...');
-                try {
-                    validateApiKey(process.env.GITHUB_TOKEN, 'GitHub');
-                    uploadResult = await retry(
-                        () => this.githubService.uploadReport(
-                            reportData, 
-                            process.env.GITHUB_TOKEN, 
-                            [user.email] // Pass user's email for user ID generation
-                        ),
-                        RETRY_CONFIGS.github
-                    );
-                    logApiCall('github', 'uploadReport', { 
-                        reportDate,
-                        userId: user.userId 
-                    });
-                } catch (error) {
-                    handleGitHubError(error);
-                }
-            } else {
-                logger.warn('⚠️ Skipping GitHub upload in demo mode');
-            }
-
-            // Step 5: Send email to user (skip in demo mode)
-            let emailResult = null;
-            if (!isDemoMode) {
-                logger.info('📧 Sending email to user...');
-                try {
-                    emailResult = await retry(
-                        () => this.emailService.sendEmail(
-                            reportData, 
-                            sanitizedTopics, 
-                            [user.email], 
-                            new Date()
-                        ),
-                        RETRY_CONFIGS.email
-                    );
-                    logApiCall('mailgun', 'sendEmail', { 
-                        recipientsCount: 1,
-                        userId: user.userId 
-                    });
-                } catch (error) {
-                    logger.error('❌ Email service error:', {
-                        message: error.message,
-                        userId: user.userId
-                    });
-                    handleMailgunError(error);
-                }
-            } else {
-                logger.warn('⚠️ Skipping email in demo mode');
-            }
-
-            const duration = Date.now() - startTime;
-            
-            return {
-                userId: user.userId,
-                email: user.email,
-                success: true,
-                duration,
-                papersCount: allPapers.length,
-                hasAISummary: !!aiSummary,
-                reportUrl: uploadResult?.pagesUrl || null,
-                prUrl: uploadResult?.prUrl || null,
-                emailSent: !!emailResult,
-                demoMode: isDemoMode
-            };
-
-        } catch (error) {
-            const duration = Date.now() - startTime;
-            logger.error(`❌ Report generation failed for user ${user.email}:`, error.message);
-            
-            return {
-                userId: user.userId,
-                email: user.email,
-                success: false,
-                duration,
-                error: error.message
-            };
-        }
-    }
 
     /**
      * Update Guardian sections cache
