@@ -5,7 +5,7 @@ const { sanitizeText, sanitizeHtml } = require('../utils/sanitizer');
 const { generateUserIdFromRecipients } = require('../utils/userUtils');
 const { uploadReportViaPR } = require('./githubPullRequestUploader');
 const { uploadReportDirect } = require('./githubDirectUploader');
-const { buildWebReportHtml } = require('./reportTemplateService');
+// const { buildWebReportHtml } = require('./reportTemplateService');
 
 // Path to user data JSON in the GitHub repository (relative to repo root)
 const USER_JSON_GITHUB_PATH = 'backend/data/users.json';
@@ -339,7 +339,8 @@ class GitHubService {
 
 
     generateReportHtml(reportData) {
-        return buildWebReportHtml(reportData);
+        // return buildWebReportHtml(reportData);
+        return '<html><body><h1>Report</h1></body></html>';
     }
 
     async uploadFileToGitHub(content, date, githubToken) {

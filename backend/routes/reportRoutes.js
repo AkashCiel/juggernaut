@@ -150,29 +150,34 @@ router.post('/trigger-daily-reports',
         });
         
         try {
-            // Import and use the daily report service
-            const DailyReportService = require('../services/dailyReportService');
-            const dailyReportService = new DailyReportService();
+            // Import and use the scheduler service with the new flow
+            const SchedulerService = require('../services/schedulerService');
+            const schedulerService = new SchedulerService();
             
-            // Generate daily reports for all active users
-            const result = await dailyReportService.generateDailyReports();
+            // Generate daily reports for all active users using the new curated news flow
+            const results = await schedulerService.generateDailyReports();
+            
+            // Process results from the new flow
+            const successfulReports = results.filter(r => r.success);
+            const failedReports = results.filter(r => !r.success);
+            const emailsSent = results.filter(r => r.emailSent).length;
             
             logger.info('✅ Daily reports generation completed', {
-                usersProcessed: result.usersProcessed,
-                usersSucceeded: result.usersSucceeded,
-                usersFailed: result.usersFailed,
-                duration: result.duration
+                usersProcessed: results.length,
+                usersSucceeded: successfulReports.length,
+                usersFailed: failedReports.length,
+                emailsSent: emailsSent
             });
             
             res.json({
                 success: true,
-                message: result.message,
+                message: `Processed ${results.length} users, sent ${emailsSent} emails`,
                 data: {
-                    usersProcessed: result.usersProcessed,
-                    usersSucceeded: result.usersSucceeded,
-                    usersFailed: result.usersFailed,
-                    errors: result.errors,
-                    duration: result.duration,
+                    usersProcessed: results.length,
+                    usersSucceeded: successfulReports.length,
+                    usersFailed: failedReports.length,
+                    emailsSent: emailsSent,
+                    results: results,
                     timestamp: new Date().toISOString()
                 }
             });
