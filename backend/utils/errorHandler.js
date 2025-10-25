@@ -1,4 +1,4 @@
-const { logger, logError } = require('./logger');
+const { logger, logError } = require('./logger-vercel');
 
 // Error types for categorization
 class ValidationError extends Error {

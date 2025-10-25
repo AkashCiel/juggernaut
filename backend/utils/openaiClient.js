@@ -1,4 +1,4 @@
-const { logger, logApiCall } = require('./logger');
+const { logger, logApiCall } = require('./logger-vercel');
 const { retry, RETRY_CONFIGS } = require('./retryUtils');
 
 /**
