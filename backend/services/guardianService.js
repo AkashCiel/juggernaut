@@ -107,11 +107,11 @@ class GuardianService {
                 shortUrl: fields.shortUrl || item.webUrl || '',
                 byline: fields.byline || '',
                 publication: fields.publication || 'The Guardian',
-                section: item.sectionName || '',
+                section: topic || '',
                 publishedAt: item.webPublicationDate || '',
                 summarySource: bodyText || trailText || '',
                 thumbnail: fields.thumbnail || '',
-                topic: topic
+                topic: item.sectionName || ''
             };
         });
     }
@@ -122,7 +122,8 @@ class GuardianService {
 
     /**
      * Fetch ALL articles from specified sections without topic filtering
-     * @param {string} sections - Pipe-separated sections (e.g., "technology|science|business")
+     * Makes one API call per section
+     * @param {Array|string} sections - Array of section names or pipe-separated string
      * @param {Object} options - Query options
      * @returns {Promise<Array>} Array of all articles from sections
      */
@@ -135,11 +136,56 @@ class GuardianService {
             includeBodyText = false
         } = options;
 
+        // Convert to array if needed
+        const sectionsArray = Array.isArray(sections) ? sections : sections.split('|');
+        
+        logger.info(`📰 Making ${sectionsArray.length} API calls for sections: ${sectionsArray.join(', ')}`);
+        
+        const allArticles = [];
+        
+        // Make one API call per section
+        for (const section of sectionsArray) {
+            try {
+                const articles = await this.fetchArticlesForSection(section, {
+                    fromDate,
+                    toDate,
+                    pageSize,
+                    orderBy,
+                    includeBodyText
+                });
+                
+                allArticles.push(...articles);
+                logger.info(`📰 Section '${section}': ${articles.length} articles`);
+                
+            } catch (error) {
+                logger.warn(`⚠️ Failed to fetch articles for section '${section}': ${error.message}`);
+            }
+        }
+        
+        logger.info(`📰 Total articles fetched: ${allArticles.length} across ${sectionsArray.length} sections`);
+        return allArticles;
+    }
+
+    /**
+     * Fetch articles for a single section
+     * @param {string} section - Section name
+     * @param {Object} options - Query options
+     * @returns {Promise<Array>} Array of articles from the section
+     */
+    async fetchArticlesForSection(section, options = {}) {
+        const {
+            fromDate,
+            toDate,
+            pageSize = GUARDIAN_PAGE_SIZE,
+            orderBy = 'newest',
+            includeBodyText = false
+        } = options;
+        logger.info(`📰 Fetching articles for section: ${section}`);
         const fields = this.buildShowFields(includeBodyText);
         const params = new URLSearchParams();
         
-        // No 'q' parameter - this fetches ALL articles from sections
-        if (sections) params.set('section', sections);
+        // No 'q' parameter - this fetches ALL articles from the section
+        params.set('section', section);
         params.set('type', 'article');
         if (fromDate) params.set('from-date', fromDate);
         if (toDate) params.set('to-date', toDate);
@@ -149,7 +195,7 @@ class GuardianService {
         params.set('api-key', this.apiKey || '');
 
         const url = `${this.baseUrl}?${params.toString()}`;
-        logApiCall('guardian', 'fetchAllFromSections', { sections, pageSize, fromDate, toDate, orderBy });
+        logApiCall('guardian', 'fetchSection', { section, pageSize, fromDate, toDate, orderBy });
 
         return new Promise((resolve, reject) => {
             const timeout = setTimeout(() => reject(new Error('Guardian API request timeout')), 30000);
@@ -165,7 +211,7 @@ class GuardianService {
                     try {
                         const json = JSON.parse(data);
                         const results = Array.isArray(json?.response?.results) ? json.response.results : [];
-                        const articles = this.mapResultsToNormalizedArticles(results, 'all-sections');
+                        const articles = this.mapResultsToNormalizedArticles(results, section);
                         resolve(articles);
                     } catch (e) {
                         reject(new Error(`Failed to parse Guardian response: ${e.message}`));

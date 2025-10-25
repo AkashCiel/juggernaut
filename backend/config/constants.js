@@ -79,11 +79,23 @@ Your task is to create a comprehensive, updated description that:
 Return ONLY the merged description. Do not include explanations or other text.
 `,
 
+    // AI prompt for article curation (only articles and user interests)
+    ARTICLE_CURATION_PROMPT: `
+User Interests: {userInterests}
+
+Articles:
+{articles}
+`,
+
+    // System prompt for article curation (all instructions)
+    ARTICLE_CURATION_SYSTEM: 'You are a news curation expert. Given a user\'s interests and available articles, select the most relevant articles in order of relevance. Return ONLY a comma-separated list of article IDs in order of relevance (e.g., "article_1,article_2,article_3"). Do not include explanations or other text.',
+
     // System prompts for AI roles
     SYSTEM_PROMPTS: {
         TOPIC_EXTRACTION: 'You are a user interest analysis expert. Extract what topics and information the user cares about from conversations.',
         SECTION_MAPPING: 'You are a news section mapping expert. Map topics to the most relevant Guardian API sections.',
-        ARTICLE_RELEVANCE: 'You are a news relevance expert. Analyze articles and return only the indices of articles relevant to the given topic.'
+        ARTICLE_RELEVANCE: 'You are a news relevance expert. Analyze articles and return only the indices of articles relevant to the given topic.',
+        ARTICLE_CURATION: 'You are a news curation expert. Given a user\'s interests and summaries of available articles, select the most relevant articles in order of relevance. Return ONLY a comma-separated list of article IDs in order of relevance (e.g., "article_1,article_2,article_3"). Do not include explanations or other text.'
     }
 };
 
