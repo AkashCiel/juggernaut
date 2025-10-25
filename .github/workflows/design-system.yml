@@ -38,7 +38,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add backend/config/designSystem.js frontend/config/designSystem.js
+          git add backend/config/designSystem.js frontend/config/designSystem.js frontend/css/design-system.css
           git commit -m "Auto-update design system configs [skip ci]"
           git push
       

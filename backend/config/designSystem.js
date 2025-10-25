@@ -2,7 +2,7 @@
  * Design System Configuration
  * Auto-generated from design-system/design-system.json
  * Version: 1.0.0
- * Generated: 2025-10-25T13:25:42.854Z
+ * Generated: 2025-10-25T13:37:43.388Z
  */
 
 const designSystem = {
