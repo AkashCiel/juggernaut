@@ -57,4 +57,7 @@ jspm_packages/
 .yarn-integrity
 
 # dotenv environment variables file
-.env 
+.env
+
+# Test scripts
+test-vercel-deployment.js 

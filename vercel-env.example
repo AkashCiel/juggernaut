@@ -1,0 +1,26 @@
+# Vercel Environment Variables
+# Copy these to your Vercel project settings > Environment Variables
+
+# OpenAI API Configuration
+OPENAI_API_KEY=your_openai_api_key_here
+
+# The Guardian Content API
+GUARDIAN_API_KEY=your_guardian_api_key_here
+
+# Mailgun Email Configuration
+MAILGUN_API_KEY=your_mailgun_api_key_here
+MAILGUN_DOMAIN=your_mailgun_domain_here
+
+# GitHub Configuration
+GITHUB_TOKEN=your_github_personal_access_token_here
+GITHUB_BRANCH=main
+GITHUB_DIRECT_UPLOAD=false
+
+# Security Configuration
+API_KEY=mvp-api-key-2024
+
+# Environment
+NODE_ENV=production
+
+# Optional: Logging level
+LOG_LEVEL=info

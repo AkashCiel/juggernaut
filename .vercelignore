@@ -1,0 +1,54 @@
+# Vercel ignore file
+# Files and directories to exclude from deployment
+
+# Development files
+DEV_SETUP.md
+VERCEL_DEPLOYMENT.md
+*.log
+logs/
+
+# Node modules (will be installed by Vercel)
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.test
+
+# Git files
+.git/
+.gitignore
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+build/
+
+# Test files
+test/
+tests/
+*.test.js
+*.spec.js
+
+# Documentation (optional - remove if you want to include)
+README.md
+README_NEW_ARCHITECTURE.md
+GITHUB_ACTIONS_SETUP.md
+
+# Reports directory (optional - remove if you want to include)
+reports/
+
+# Design system (optional - remove if you want to include)
+design-system/

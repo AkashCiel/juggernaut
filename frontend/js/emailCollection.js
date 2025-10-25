@@ -17,7 +17,8 @@ class EmailCollection {
         if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::]') {
             return 'http://localhost:8000';  // Local development
         }
-        return 'https://juggernaut-37yk.onrender.com';  // Production
+        // For Vercel deployment, use the same domain (no CORS issues)
+        return window.location.origin;
     }
 
     // Bind event listeners
