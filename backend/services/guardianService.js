@@ -34,25 +34,49 @@ class GuardianService {
         return { rawResponsesByTopic: rawByTopic, articlesByTopic: resultsByTopic };
     }
 
-    fetchArticlesForTopic(topic, options = {}) {
+    /**
+     * Unified method to fetch articles from Guardian API
+     * @param {Object} options - Query options
+     * @param {string} options.topic - Optional topic to search for
+     * @param {string} options.section - Section name (required if no topic)
+     * @param {string} options.fromDate - Start date for articles
+     * @param {string} options.toDate - End date for articles
+     * @param {number} options.pageSize - Number of articles per page
+     * @param {string} options.orderBy - Sort order ('newest', 'oldest', 'relevance')
+     * @param {boolean} options.includeBodyText - Whether to include article body text
+     * @param {boolean} options.returnRawResponse - Whether to return raw API response
+     * @returns {Promise<Object|Array>} Articles array or {rawResponse, articles} object
+     */
+    async fetchArticles(options = {}) {
         const {
+            topic,
+            section,
             fromDate,
             toDate,
             pageSize = GUARDIAN_PAGE_SIZE_DEFAULT,
             orderBy = 'newest',
-            section,
-            includeBodyText = true
+            includeBodyText = true,
+            returnRawResponse = false
         } = options;
 
-        // Section is required
-        if (!section) {
-            throw new Error('Section parameter is required for Guardian API calls');
+        // Validate required parameters
+        if (!topic && !section) {
+            throw new Error('Either topic or section parameter is required for Guardian API calls');
         }
 
         const fields = this.buildShowFields(includeBodyText);
         const params = new URLSearchParams();
-        params.set('q', topic);
-        if (section) params.set('section', section);
+        
+        // Add topic if provided (for search queries)
+        if (topic) {
+            params.set('q', topic);
+        }
+        
+        // Add section if provided
+        if (section) {
+            params.set('section', section);
+        }
+        
         params.set('type', 'article');
         if (fromDate) params.set('from-date', fromDate);
         if (toDate) params.set('to-date', toDate);
@@ -61,13 +85,33 @@ class GuardianService {
         params.set('show-fields', fields.join(','));
         params.set('api-key', this.apiKey || '');
 
+        const logAction = topic ? 'search' : 'fetchSection';
+        const logData = topic 
+            ? { topic, pageSize, fromDate, toDate, orderBy, section }
+            : { section, pageSize, fromDate, toDate, orderBy };
+        const topicOrSection = topic || section;
+
         return this._makeGuardianRequest(
             params,
-            'search',
-            { topic, pageSize, fromDate, toDate, orderBy, section },
-            topic,
-            true // returnRawResponse = true
+            logAction,
+            logData,
+            topicOrSection,
+            returnRawResponse
         );
+    }
+
+    /**
+     * Fetch articles for a specific topic (backward compatibility)
+     * @param {string} topic - Topic to search for
+     * @param {Object} options - Query options
+     * @returns {Promise<Object>} {rawResponse, articles} object
+     */
+    fetchArticlesForTopic(topic, options = {}) {
+        return this.fetchArticles({
+            ...options,
+            topic,
+            returnRawResponse: true
+        });
     }
 
     buildShowFields(includeBodyText) {
@@ -193,40 +237,19 @@ class GuardianService {
     }
 
     /**
-     * Fetch articles for a single section
+     * Fetch articles for a single section (backward compatibility)
      * @param {string} section - Section name
      * @param {Object} options - Query options
      * @returns {Promise<Array>} Array of articles from the section
      */
     async fetchArticlesForSection(section, options = {}) {
-        const {
-            fromDate,
-            toDate,
-            pageSize = GUARDIAN_PAGE_SIZE,
-            orderBy = 'newest',
-            includeBodyText = false
-        } = options;
         logger.info(`📰 Fetching articles for section: ${section}`);
-        const fields = this.buildShowFields(includeBodyText);
-        const params = new URLSearchParams();
-        
-        // No 'q' parameter - this fetches ALL articles from the section
-        params.set('section', section);
-        params.set('type', 'article');
-        if (fromDate) params.set('from-date', fromDate);
-        if (toDate) params.set('to-date', toDate);
-        params.set('order-by', orderBy);
-        params.set('page-size', String(Math.max(1, Math.min(GUARDIAN_PAGE_SIZE_MAX, pageSize))));
-        params.set('show-fields', fields.join(','));
-        params.set('api-key', this.apiKey || '');
-
-        return this._makeGuardianRequest(
-            params,
-            'fetchSection',
-            { section, pageSize, fromDate, toDate, orderBy },
+        return this.fetchArticles({
+            ...options,
             section,
-            false // returnRawResponse = false
-        );
+            includeBodyText: false,
+            returnRawResponse: false
+        });
     }
 }
 
