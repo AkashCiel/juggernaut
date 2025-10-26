@@ -1,15 +1,11 @@
 const { logger } = require('../backend/utils/logger-vercel');
 const { validateEnvironment } = require('../backend/utils/errorHandler');
+const { setupCors } = require('../backend/utils/corsMiddleware');
 
 module.exports = async (req, res) => {
-    // Set CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key');
-
-    // Handle preflight requests
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
+    // Handle CORS and preflight requests
+    if (!setupCors(req, res)) {
+        return; // Preflight handled, exit early
     }
 
     if (req.method !== 'GET') {

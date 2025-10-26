@@ -61,8 +61,33 @@ class GuardianService {
         params.set('show-fields', fields.join(','));
         params.set('api-key', this.apiKey || '');
 
+        return this._makeGuardianRequest(
+            params,
+            'search',
+            { topic, pageSize, fromDate, toDate, orderBy, section },
+            topic,
+            true // returnRawResponse = true
+        );
+    }
+
+    buildShowFields(includeBodyText) {
+        if (includeBodyText) return this.defaultFields;
+        return this.defaultFields.filter(f => f !== 'bodyText');
+    }
+
+    /**
+     * Private method to make Guardian API HTTP requests
+     * Consolidates common HTTP request logic used by both fetchArticlesForTopic and fetchArticlesForSection
+     * @param {URLSearchParams} params - Query parameters
+     * @param {string} logAction - Action name for logging
+     * @param {Object} logData - Additional data for logging
+     * @param {string} topicOrSection - Topic or section name for result mapping
+     * @param {boolean} returnRawResponse - Whether to return raw response along with articles
+     * @returns {Promise<Object|Array>} Articles array or {rawResponse, articles} object
+     */
+    async _makeGuardianRequest(params, logAction, logData, topicOrSection, returnRawResponse = false) {
         const url = `${this.baseUrl}?${params.toString()}`;
-        logApiCall('guardian', 'search', { topic, pageSize, fromDate, toDate, orderBy, section });
+        logApiCall('guardian', logAction, logData);
 
         return new Promise((resolve, reject) => {
             const timeout = setTimeout(() => reject(new Error('Guardian API request timeout')), GUARDIAN_API_TIMEOUT);
@@ -77,10 +102,14 @@ class GuardianService {
                 res.on('end', () => {
                     try {
                         const json = JSON.parse(data);
-                        const rawResponse = json;
                         const results = Array.isArray(json?.response?.results) ? json.response.results : [];
-                        const articles = this.mapResultsToNormalizedArticles(results, topic);
-                        resolve({ rawResponse, articles });
+                        const articles = this.mapResultsToNormalizedArticles(results, topicOrSection);
+                        
+                        if (returnRawResponse) {
+                            resolve({ rawResponse: json, articles });
+                        } else {
+                            resolve(articles);
+                        }
                     } catch (e) {
                         reject(new Error(`Failed to parse Guardian response: ${e.message}`));
                     }
@@ -90,11 +119,6 @@ class GuardianService {
                 reject(err);
             });
         });
-    }
-
-    buildShowFields(includeBodyText) {
-        if (includeBodyText) return this.defaultFields;
-        return this.defaultFields.filter(f => f !== 'bodyText');
     }
 
     mapResultsToNormalizedArticles(results, topic) {
@@ -196,34 +220,13 @@ class GuardianService {
         params.set('show-fields', fields.join(','));
         params.set('api-key', this.apiKey || '');
 
-        const url = `${this.baseUrl}?${params.toString()}`;
-        logApiCall('guardian', 'fetchSection', { section, pageSize, fromDate, toDate, orderBy });
-
-        return new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => reject(new Error('Guardian API request timeout')), GUARDIAN_API_TIMEOUT);
-            https.get(url, (res) => {
-                clearTimeout(timeout);
-                if (res.statusCode !== 200) {
-                    reject(new Error(`Guardian API returned status ${res.statusCode}`));
-                    return;
-                }
-                let data = '';
-                res.on('data', (chunk) => { data += chunk; });
-                res.on('end', () => {
-                    try {
-                        const json = JSON.parse(data);
-                        const results = Array.isArray(json?.response?.results) ? json.response.results : [];
-                        const articles = this.mapResultsToNormalizedArticles(results, section);
-                        resolve(articles);
-                    } catch (e) {
-                        reject(new Error(`Failed to parse Guardian response: ${e.message}`));
-                    }
-                });
-            }).on('error', (err) => {
-                clearTimeout(timeout);
-                reject(err);
-            });
-        });
+        return this._makeGuardianRequest(
+            params,
+            'fetchSection',
+            { section, pageSize, fromDate, toDate, orderBy },
+            section,
+            false // returnRawResponse = false
+        );
     }
 }
 
