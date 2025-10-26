@@ -1,6 +1,7 @@
 const { logger } = require('../utils/logger-vercel');
 const OpenAIClient = require('../utils/openaiClient');
 const { ARTICLE_CURATION_PROMPT, SYSTEM_PROMPTS } = require('../config/constants');
+const { MAX_ARTICLES_PER_LLM_CALL, FALLBACK_ARTICLE_COUNT, SUMMARY_TRUNCATION_LENGTH, RETRY_WAIT_TIME } = require('../config/limits');
 
 /**
  * LLM-based article curation service for personalized news feeds
@@ -38,7 +39,7 @@ class CuratedNewsService {
             });
 
             // Split articles into chunks of max 100
-            const MAX_ARTICLES_PER_CALL = 100;
+            const MAX_ARTICLES_PER_CALL = MAX_ARTICLES_PER_LLM_CALL;
             const chunks = [];
             for (let i = 0; i < articleMetadata.length; i += MAX_ARTICLES_PER_CALL) {
                 chunks.push(articleMetadata.slice(i, i + MAX_ARTICLES_PER_CALL));
@@ -55,7 +56,7 @@ class CuratedNewsService {
 
                 // Format articles for LLM prompt
                 const formattedArticles = chunk.map(article => 
-                    `[ID: ${article.id}] ${article.title} (${article.section}) - ${article.summary.substring(0, 150)}...`
+                    `[ID: ${article.id}] ${article.title} (${article.section}) - ${article.summary.substring(0, SUMMARY_TRUNCATION_LENGTH)}...`
                 ).join('\n');
 
                 // Build LLM prompt
@@ -97,7 +98,7 @@ class CuratedNewsService {
         } catch (error) {
             logger.error(`❌ Failed to curate articles for user ${user.email}: ${error.message}`);
             // Fallback: return first 10 articles
-            return articles.slice(0, 10).map((article, index) => article.id || `article_${index}`);
+            return articles.slice(0, FALLBACK_ARTICLE_COUNT).map((article, index) => article.id || `article_${index}`);
         }
     }
 
@@ -109,7 +110,7 @@ class CuratedNewsService {
      */
     async callOpenAIWithRetry(messages, chunkNumber) {
         const maxRetries = 5;
-        const waitTime = 15000; // 15 seconds
+        const waitTime = RETRY_WAIT_TIME; // 15 seconds
         let lastError = null;
 
         for (let attempt = 1; attempt <= maxRetries; attempt++) {

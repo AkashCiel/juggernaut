@@ -3,6 +3,7 @@ const { logger, logApiCall } = require('../utils/logger-vercel');
 const { handleGitHubError } = require('../utils/errorHandler');
 const { sanitizeText, sanitizeHtml } = require('../utils/sanitizer');
 const { generateUserIdFromRecipients } = require('../utils/userUtils');
+const { GITHUB_API_TIMEOUT } = require('../config/timeouts');
 
 // Path to user data JSON in the GitHub repository (relative to repo root)
 const USER_JSON_GITHUB_PATH = 'backend/data/users.json';
@@ -317,7 +318,7 @@ class GitHubService {
             const timeout = setTimeout(() => {
                 req.destroy();
                 reject(new Error('GitHub request timeout'));
-            }, 30000);
+            }, GITHUB_API_TIMEOUT);
 
             const req = https.request(options, (res) => {
                 clearTimeout(timeout);

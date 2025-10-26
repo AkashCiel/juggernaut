@@ -1,5 +1,6 @@
 const https = require('https');
 const { logger } = require('../utils/logger-vercel');
+const { SECTIONS_CACHE_DURATION, GITHUB_CACHE_TIMEOUT } = require('../config/cache');
 
 /**
  * Service for fetching Guardian sections from GitHub cache
@@ -10,7 +11,7 @@ class GuardianSectionsCacheService {
         this.cacheUrl = 'https://raw.githubusercontent.com/AkashCiel/juggernaut-reports/main/backend/data/guardian-sections.json';
         this.cache = null;
         this.cacheExpiry = null;
-        this.CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+        this.CACHE_DURATION = SECTIONS_CACHE_DURATION; // 24 hours
     }
 
     /**
@@ -57,7 +58,7 @@ class GuardianSectionsCacheService {
      */
     async fetchFromGitHub() {
         return new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => reject(new Error('GitHub cache request timeout')), 10000);
+            const timeout = setTimeout(() => reject(new Error('GitHub cache request timeout')), GITHUB_CACHE_TIMEOUT);
             
             https.get(this.cacheUrl, (res) => {
                 clearTimeout(timeout);

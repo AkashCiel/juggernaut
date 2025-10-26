@@ -1,4 +1,5 @@
 const { logger } = require('../utils/logger-vercel');
+const { EMAIL_SUMMARY_LENGTH } = require('../config/limits');
 const designSystem = require('../config/designSystem');
 
 /**
@@ -190,7 +191,7 @@ class EmailCompositionService {
                 day: 'numeric' 
             }) : 'Today';
         
-        const summary = this.truncateText(article.summary || article.summarySource || 'No summary available', 200);
+        const summary = this.truncateText(article.summary || article.summarySource || 'No summary available', EMAIL_SUMMARY_LENGTH);
         
         return `
         <div class="article">

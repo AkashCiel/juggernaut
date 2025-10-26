@@ -9,6 +9,7 @@ const OrchestratorService = require('../services/orchestratorService');
 const { apiLimiter } = require('../middleware/security');
 const { asyncHandler } = require('../utils/errorHandler');
 const { logger } = require('../utils/logger-vercel');
+const { MAX_MESSAGE_LENGTH, MIN_MESSAGE_LENGTH } = require('../config/limits');
 
 // Initialize services
 const orchestratorService = new OrchestratorService();
@@ -18,7 +19,7 @@ const validateChatMessage = [
     body('message')
         .isString()
         .trim()
-        .isLength({ min: 1, max: 1000 })
+        .isLength({ min: MIN_MESSAGE_LENGTH, max: MAX_MESSAGE_LENGTH })
         .withMessage('Message must be between 1-1000 characters')
 ];
 

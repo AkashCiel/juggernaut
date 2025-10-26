@@ -1,5 +1,6 @@
 const { logger, logApiCall } = require('./logger-vercel');
 const { retry, RETRY_CONFIGS } = require('./retryUtils');
+const { OPENAI_API_TIMEOUT } = require('../config/timeouts');
 
 /**
  * Shared OpenAI client for consistent API calls across all services
@@ -10,7 +11,7 @@ class OpenAIClient {
         this.model = 'gpt-4o';
         this.temperature = 0.7;
         this.maxTokens = 800;
-        this.timeout = 30000;
+        this.timeout = OPENAI_API_TIMEOUT;
     }
 
     /**

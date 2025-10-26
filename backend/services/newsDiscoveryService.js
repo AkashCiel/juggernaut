@@ -1,6 +1,7 @@
 const { logger, logApiCall } = require('../utils/logger-vercel');
 const { CHAT_SYSTEM_PROMPT, CHAT_WELCOME_MESSAGE, TOPIC_EXTRACTION_PROMPT, SYSTEM_PROMPTS } = require('../config/constants');
 const OpenAIClient = require('../utils/openaiClient');
+const { FALLBACK_ARTICLE_COUNT, ARTICLE_PREVIEW_LENGTH } = require('../config/limits');
 
 class NewsDiscoveryService {
     constructor() {
@@ -158,7 +159,7 @@ class NewsDiscoveryService {
 
 Articles:
 ${articleSummaries.map(article => 
-    `${article.index}. ${article.title} (${article.section}) - ${article.summary.substring(0, 100)}...`
+    `${article.index}. ${article.title} (${article.section}) - ${article.summary.substring(0, ARTICLE_PREVIEW_LENGTH)}...`
 ).join('\n')}
 
 Return ONLY a comma-separated list of relevant article indices (e.g., "0,3,7,12"). No explanations.`;
@@ -188,7 +189,7 @@ Return ONLY a comma-separated list of relevant article indices (e.g., "0,3,7,12"
         } catch (error) {
             logger.error(`❌ Failed to filter articles for relevance: ${error.message}`);
             // Fallback: return first 10 articles if filtering fails
-            return articles.slice(0, 10);
+            return articles.slice(0, FALLBACK_ARTICLE_COUNT);
         }
     }
 }

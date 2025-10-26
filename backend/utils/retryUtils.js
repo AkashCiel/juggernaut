@@ -1,4 +1,5 @@
 const { logger } = require('./logger-vercel');
+const { REQUEST_TIMEOUT } = require('../config/timeouts');
 
 /**
  * Retry configuration options
@@ -16,7 +17,7 @@ const { logger } = require('./logger-vercel');
 const DEFAULT_RETRY_CONFIG = {
     maxAttempts: 3,
     baseDelay: 1000,
-    maxDelay: 10000,
+    maxDelay: REQUEST_TIMEOUT,
     backoffMultiplier: 2,
     shouldRetry: (error) => {
         // Retry on network errors, timeouts, and 5xx server errors

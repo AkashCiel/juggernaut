@@ -2,6 +2,8 @@ const https = require('https');
 const { logger, logApiCall } = require('../utils/logger-vercel');
 const { retry, RETRY_CONFIGS } = require('../utils/retryUtils');
 const { GUARDIAN_PAGE_SIZE } = require('../config/constants');
+const { GUARDIAN_API_TIMEOUT } = require('../config/timeouts');
+const { GUARDIAN_PAGE_SIZE_MAX, GUARDIAN_PAGE_SIZE_DEFAULT } = require('../config/limits');
 
 class GuardianService {
     constructor() {
@@ -36,7 +38,7 @@ class GuardianService {
         const {
             fromDate,
             toDate,
-            pageSize = GUARDIAN_PAGE_SIZE,
+            pageSize = GUARDIAN_PAGE_SIZE_DEFAULT,
             orderBy = 'newest',
             section,
             includeBodyText = true
@@ -55,7 +57,7 @@ class GuardianService {
         if (fromDate) params.set('from-date', fromDate);
         if (toDate) params.set('to-date', toDate);
         params.set('order-by', orderBy);
-        params.set('page-size', String(Math.max(1, Math.min(200, pageSize))));
+        params.set('page-size', String(Math.max(1, Math.min(GUARDIAN_PAGE_SIZE_MAX, pageSize))));
         params.set('show-fields', fields.join(','));
         params.set('api-key', this.apiKey || '');
 
@@ -63,7 +65,7 @@ class GuardianService {
         logApiCall('guardian', 'search', { topic, pageSize, fromDate, toDate, orderBy, section });
 
         return new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => reject(new Error('Guardian API request timeout')), 30000);
+            const timeout = setTimeout(() => reject(new Error('Guardian API request timeout')), GUARDIAN_API_TIMEOUT);
             https.get(url, (res) => {
                 clearTimeout(timeout);
                 if (res.statusCode !== 200) {
@@ -131,7 +133,7 @@ class GuardianService {
         const {
             fromDate,
             toDate,
-            pageSize = GUARDIAN_PAGE_SIZE,
+            pageSize = GUARDIAN_PAGE_SIZE_DEFAULT,
             orderBy = 'newest',
             includeBodyText = false
         } = options;
@@ -190,7 +192,7 @@ class GuardianService {
         if (fromDate) params.set('from-date', fromDate);
         if (toDate) params.set('to-date', toDate);
         params.set('order-by', orderBy);
-        params.set('page-size', String(Math.max(1, Math.min(200, pageSize))));
+        params.set('page-size', String(Math.max(1, Math.min(GUARDIAN_PAGE_SIZE_MAX, pageSize))));
         params.set('show-fields', fields.join(','));
         params.set('api-key', this.apiKey || '');
 
@@ -198,7 +200,7 @@ class GuardianService {
         logApiCall('guardian', 'fetchSection', { section, pageSize, fromDate, toDate, orderBy });
 
         return new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => reject(new Error('Guardian API request timeout')), 30000);
+            const timeout = setTimeout(() => reject(new Error('Guardian API request timeout')), GUARDIAN_API_TIMEOUT);
             https.get(url, (res) => {
                 clearTimeout(timeout);
                 if (res.statusCode !== 200) {

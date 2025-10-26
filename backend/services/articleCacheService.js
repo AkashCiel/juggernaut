@@ -1,5 +1,6 @@
 const { logger } = require('../utils/logger-vercel');
 const GuardianService = require('./guardianService');
+const { ARTICLE_CACHE_DURATION } = require('../config/cache');
 
 /**
  * Centralized article cache service for scheduled reports
@@ -9,7 +10,7 @@ class ArticleCacheService {
         this.guardianService = new GuardianService();
         this.cache = new Map(); // section -> articles
         this.cacheTimestamp = null;
-        this.CACHE_DURATION = 6 * 60 * 60 * 1000; // 6 hours
+        this.CACHE_DURATION = ARTICLE_CACHE_DURATION; // 6 hours
     }
 
     /**
