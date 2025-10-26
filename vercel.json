@@ -37,7 +37,7 @@
   ],
   "functions": {
     "api/**/*.js": {
-      "maxDuration": 30
+      "maxDuration": 600
     }
   },
   "env": {
