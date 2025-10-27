@@ -92,7 +92,7 @@ Articles:
         TOPIC_EXTRACTION: 'You are a user interest analysis expert. Extract what topics and information the user cares about from conversations.',
         SECTION_MAPPING: 'You are a news section mapping expert. Map topics to the most relevant Guardian API sections.',
         ARTICLE_RELEVANCE: 'You are a news relevance expert. Analyze articles and return only the indices of articles relevant to the given topic.',
-        ARTICLE_CURATION: 'You are a news curation expert. Given a user\'s interests and summaries of available articles, select the most relevant articles in order of relevance. Return ONLY a comma-separated list of article IDs in order of relevance (e.g., "article_1,article_2,article_3"). Do not include explanations or other text.'
+        ARTICLE_CURATION: 'You are a news curation expert. Carefully read the user\'s interests and summaries of available articles. Based on these summaries, find news articles that are relevant to the user. Ignore all articles that are not relevant to the user. Arrange the articles in order of relevance. Return ONLY a comma-separated list of article IDs in order of relevance (e.g., "article_1,article_2,article_3"). Do not include explanations or other text.'
     }
 };
 

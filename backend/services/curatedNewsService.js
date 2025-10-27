@@ -1,7 +1,7 @@
 const { logger } = require('../utils/logger-vercel');
 const OpenAIClient = require('../utils/openaiClient');
 const { ARTICLE_CURATION_PROMPT, SYSTEM_PROMPTS } = require('../config/constants');
-
+const { SUMMARY_TRUNCATION_LENGTH } = 500
 /**
  * LLM-based article curation service for personalized news feeds
  */
@@ -55,7 +55,7 @@ class CuratedNewsService {
 
                 // Format articles for LLM prompt
                 const formattedArticles = chunk.map(article => 
-                    `[ID: ${article.id}] ${article.title} (${article.section}) - ${article.summary.substring(0, 150)}...`
+                    `[ID: ${article.id}] ${article.title} (${article.section}) - ${article.summary.substring(0, SUMMARY_TRUNCATION_LENGTH)}...`
                 ).join('\n');
 
                 // Build LLM prompt
