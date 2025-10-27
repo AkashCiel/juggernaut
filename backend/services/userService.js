@@ -159,7 +159,8 @@ class UserService {
      */
     async getUsersForDailyReport(today) {
         const activeUsers = await this.getAllActiveUsers();
-        return activeUsers.filter(user => user.lastReportDate !== today);
+        // return activeUsers.filter(user => user.lastReportDate !== today);
+        return activeUsers; // TODO: Remove this after testing
     }
 
     /**
