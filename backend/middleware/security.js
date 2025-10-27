@@ -30,11 +30,6 @@ const generalLimiter = createRateLimiter(
     'Too many requests from this IP, please try again later'
 );
 
-const reportGenerationLimiter = createRateLimiter(
-    60 * 60 * 1000, // 1 hour
-    10, // 10 report generations per hour
-    'Too many report generation requests, please try again later'
-);
 
 const apiLimiter = createRateLimiter(
     15 * 60 * 1000, // 15 minutes
@@ -42,40 +37,6 @@ const apiLimiter = createRateLimiter(
     'Too many API requests from this IP, please try again later'
 );
 
-// Basic API key authentication middleware
-const authenticateApiKey = (req, res, next) => {
-    const apiKey = req.headers['x-api-key'] || req.query.apiKey;
-    
-    // For MVP, we'll use a simple API key check
-    // In production, this should be replaced with proper JWT or OAuth
-    const validApiKey = process.env.API_KEY || 'mvp-api-key-2024';
-    
-    if (!apiKey || apiKey !== validApiKey) {
-        return res.status(401).json({
-            error: 'Unauthorized',
-            message: 'Valid API key required'
-        });
-    }
-    
-    next();
-};
-
-// Optional authentication - only apply to sensitive endpoints
-const optionalAuth = (req, res, next) => {
-    const apiKey = req.headers['x-api-key'] || req.query.apiKey;
-    
-    if (apiKey) {
-        const validApiKey = process.env.API_KEY || 'mvp-api-key-2024';
-        if (apiKey !== validApiKey) {
-            return res.status(401).json({
-                error: 'Unauthorized',
-                message: 'Invalid API key'
-            });
-        }
-    }
-    
-    next();
-};
 
 // Security headers middleware
 const securityHeaders = helmet({
@@ -103,9 +64,6 @@ const securityHeaders = helmet({
 
 module.exports = {
     generalLimiter,
-    reportGenerationLimiter,
     apiLimiter,
-    authenticateApiKey,
-    optionalAuth,
     securityHeaders
 }; 

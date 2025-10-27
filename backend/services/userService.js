@@ -125,68 +125,6 @@ class UserService {
         return await this.githubService.getUserByIdFromGitHub(userId, githubToken);
     }
 
-    /**
-     * Update user preferences
-     * @param {string} userId - User ID
-     * @param {Array} topics - New topics array
-     * @returns {Promise<Object|null>} Updated user object or null
-     */
-    async updateUserPreferences(userId, topics) {
-        const githubToken = process.env.GITHUB_TOKEN;
-        if (!githubToken) {
-            logger.warn('⚠️ GITHUB_TOKEN not set, cannot update user preferences');
-            return null;
-        }
-
-        try {
-            const users = await this.loadUsers();
-            const userIndex = users.findIndex(user => user.userId === userId);
-            
-            if (userIndex === -1) {
-                return null;
-            }
-
-            users[userIndex].topics = topics;
-            await this.githubService.uploadUsersJsonFile(users, githubToken, 'Update user preferences');
-            
-            logger.info(`🔄 Updated preferences for user: ${userId}`);
-            return users[userIndex];
-        } catch (error) {
-            logger.error(`❌ Failed to update user preferences: ${error.message}`);
-            throw error;
-        }
-    }
-
-    /**
-     * Deactivate a user
-     * @param {string} userId - User ID
-     * @returns {Promise<boolean>} Success status
-     */
-    async deactivateUser(userId) {
-        const githubToken = process.env.GITHUB_TOKEN;
-        if (!githubToken) {
-            logger.warn('⚠️ GITHUB_TOKEN not set, cannot deactivate user');
-            return false;
-        }
-
-        try {
-            const users = await this.loadUsers();
-            const userIndex = users.findIndex(user => user.userId === userId);
-            
-            if (userIndex === -1) {
-                return false;
-            }
-
-            users[userIndex].isActive = false;
-            await this.githubService.uploadUsersJsonFile(users, githubToken, 'Deactivate user');
-            
-            logger.info(`⏸️ Deactivated user: ${userId}`);
-            return true;
-        } catch (error) {
-            logger.error(`❌ Failed to deactivate user: ${error.message}`);
-            throw error;
-        }
-    }
 
     /**
      * Update user's last report date

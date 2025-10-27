@@ -85,14 +85,6 @@ const logApiCall = (service, action, data = {}) => {
     });
 };
 
-const logReportGeneration = (topics, papersCount, hasSummary, demoMode) => {
-    logger.info('Report Generation', {
-        topics: topics.join(', '),
-        papersCount,
-        hasSummary,
-        demoMode
-    });
-};
 
 // Override console methods to use structured logging
 const originalConsole = {
@@ -115,6 +107,5 @@ module.exports = {
     logRequest,
     logError,
     logApiCall,
-    logReportGeneration,
     originalConsole
 };

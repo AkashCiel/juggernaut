@@ -152,40 +152,6 @@ class SchedulerService {
     }
 
 
-    /**
-     * Update Guardian sections cache
-     * Fetches fresh sections from Guardian API and uploads to GitHub
-     * @returns {Promise<Array>} Array of section names
-     */
-    async updateGuardianSections() {
-        logger.info('🔄 Starting Guardian sections cache update...');
-        
-        try {
-            const sections = await this.guardianSectionsService.getSections();
-            logger.info(`✅ Guardian sections cache updated: ${sections.length} sections`);
-            return sections;
-        } catch (error) {
-            logger.error('❌ Failed to update Guardian sections cache:', error.message);
-            throw error;
-        }
-    }
-
-    /**
-     * Get scheduler status and statistics
-     * @returns {Object} Scheduler status information
-     */
-    async getStatus() {
-        const activeUsers = await this.userService.getAllActiveUsers();
-        const today = new Date().toISOString().split('T')[0];
-        const eligibleUsers = await this.userService.getUsersForDailyReport(today);
-        
-        return {
-            totalActiveUsers: activeUsers.length,
-            eligibleForToday: eligibleUsers.length,
-            lastRun: new Date().toISOString(),
-            isDemoMode: !validateEnvironment()
-        };
-    }
 }
 
 module.exports = SchedulerService; 

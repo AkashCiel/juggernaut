@@ -102,58 +102,6 @@ const asyncHandler = (fn) => {
     };
 };
 
-// Service error handlers
-const handleArxivError = (error, topic) => {
-    if (error.code === 'ENOTFOUND' || error.code === 'ECONNREFUSED') {
-        throw new ExternalServiceError(
-            `ArXiv service unavailable for topic: ${topic}`,
-            'arxiv',
-            error
-        );
-    }
-    
-    if (error.message.includes('timeout')) {
-        throw new ExternalServiceError(
-            `ArXiv request timeout for topic: ${topic}`,
-            'arxiv',
-            error
-        );
-    }
-    
-    throw new ExternalServiceError(
-        `ArXiv API error for topic: ${topic}`,
-        'arxiv',
-        error
-    );
-};
-
-const handleOpenAIError = (error) => {
-    if (error.message.includes('API key')) {
-        throw new AuthenticationError('Invalid OpenAI API key');
-    }
-    
-    if (error.message.includes('quota') || error.message.includes('billing')) {
-        throw new ExternalServiceError(
-            'OpenAI quota exceeded or billing issue',
-            'openai',
-            error
-        );
-    }
-    
-    if (error.message.includes('timeout')) {
-        throw new ExternalServiceError(
-            'OpenAI request timeout',
-            'openai',
-            error
-        );
-    }
-    
-    throw new ExternalServiceError(
-        'OpenAI API error',
-        'openai',
-        error
-    );
-};
 
 const handleMailgunError = (error) => {
     if (error.message.includes('API key')) {
@@ -226,8 +174,6 @@ module.exports = {
     asyncHandler,
     
     // Service error handlers
-    handleArxivError,
-    handleOpenAIError,
     handleMailgunError,
     handleGitHubError,
     

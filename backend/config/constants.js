@@ -1,7 +1,4 @@
 module.exports = {
-    // Single source of truth for number of ArXiv papers per topic
-    NUM_PAPERS_PER_TOPIC: 10,
-    
     // Guardian API page size (maximum allowed)
     GUARDIAN_PAGE_SIZE: 200,
     
