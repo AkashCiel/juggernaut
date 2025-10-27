@@ -9,8 +9,7 @@ class OpenAIClient {
     constructor() {
         this.apiKey = process.env.OPENAI_API_KEY;
         this.model = OPENAI_MODEL;
-        this.temperature = 0.7;
-        this.maxTokens = 800;
+        this.temperature = 1;
         this.timeout = 30000;
     }
 
@@ -18,21 +17,19 @@ class OpenAIClient {
      * Make OpenAI API call with retry logic and error handling
      * @param {Array} messages - Conversation messages
      * @param {number} temperature - Response temperature (optional)
-     * @param {number} maxTokens - Maximum tokens (optional)
      * @returns {Promise<string>} AI response
      */
-    async callOpenAI(messages, temperature = this.temperature, maxTokens = this.maxTokens) {
+    async callOpenAI(messages, temperature = this.temperature) {
         try {
             const response = await retry(
-                () => this.makeOpenAIRequest(messages, temperature, maxTokens),
+                () => this.makeOpenAIRequest(messages, temperature),
                 RETRY_CONFIGS.OPENAI
             );
             
             logApiCall('openai', 'callOpenAI', { 
                 messageCount: messages.length,
                 responseLength: response.length,
-                temperature,
-                maxTokens
+                temperature
             });
             
             return response;
@@ -46,17 +43,15 @@ class OpenAIClient {
      * Make actual OpenAI API request
      * @param {Array} messages - Conversation messages
      * @param {number} temperature - Response temperature
-     * @param {number} maxTokens - Maximum tokens
      * @returns {Promise<string>} AI response
      */
-    async makeOpenAIRequest(messages, temperature, maxTokens) {
+    async makeOpenAIRequest(messages, temperature) {
         const https = require('https');
         
         const requestData = {
             model: this.model,
             messages: messages,
-            temperature: temperature,
-            max_tokens: maxTokens
+            temperature: temperature
         };
         
         let data;

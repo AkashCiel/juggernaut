@@ -60,4 +60,4 @@ jspm_packages/
 .env
 
 # Test scripts
-test-vercel-deployment.js 
+test* 

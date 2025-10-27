@@ -2,7 +2,7 @@ module.exports = {
     // Guardian API page size (maximum allowed)
     GUARDIAN_PAGE_SIZE: 200,
     
-    OPENAI_MODEL: 'gpt-4o-mini',
+    OPENAI_MODEL: 'o4-mini',
 
     CONVERSATION_COMPLETE_MESSAGE: `Perfect! I will get to work. You will shortly find your first news feed in your inbox. 
     Come back anytime if you want me to update your news feed.`,
