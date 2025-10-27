@@ -1,5 +1,6 @@
 const { logger, logApiCall } = require('./logger-vercel');
 const { retry, RETRY_CONFIGS } = require('./retryUtils');
+const { OPENAI_MODEL } = require('../config/constants');
 
 /**
  * Shared OpenAI client for consistent API calls across all services
@@ -7,7 +8,7 @@ const { retry, RETRY_CONFIGS } = require('./retryUtils');
 class OpenAIClient {
     constructor() {
         this.apiKey = process.env.OPENAI_API_KEY;
-        this.model = 'gpt-4o';
+        this.model = OPENAI_MODEL;
         this.temperature = 0.7;
         this.maxTokens = 800;
         this.timeout = 30000;
