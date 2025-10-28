@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { logger } = require('../utils/logger');
-const { SYSTEM_PROMPT, formatUserPrompt } = require('../config/prompts');
+const { SYSTEM_PROMPT, OPENAI_MODEL, formatUserPrompt } = require('../config/constants');
 const Validator = require('../utils/validator');
 
 /**
@@ -87,7 +87,7 @@ class BatchFormatter {
             method: 'POST',
             url: '/v1/chat/completions',
             body: {
-                model: 'gpt-5',
+                model: OPENAI_MODEL,
                 messages: [
                     {
                         role: 'system',

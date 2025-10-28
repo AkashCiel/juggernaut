@@ -23,7 +23,7 @@ library_builder/
 │   ├── stateManager.js         # Batch state management
 │   └── validator.js            # Data validation
 ├── config/             # Configuration
-│   └── prompts.js              # OpenAI prompts
+│   └── constants.js            # OpenAI prompts & config
 ├── commands/           # CLI command handlers
 │   ├── fetch.js                # Fetch articles command
 │   ├── submit.js               # Submit batch command
