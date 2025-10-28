@@ -146,6 +146,11 @@ async function complete() {
         logger.info('✅ Uploaded to GitHub');
         logger.info(`   URL: ${uploadResult.fileUrl}`);
         
+        if (uploadResult.mergeInfo) {
+            logger.info(`   Merge: +${uploadResult.mergeInfo.new_articles} new, ~${uploadResult.mergeInfo.updated_articles} updated`);
+            logger.info(`   Total: ${uploadResult.mergeInfo.total_count} articles (was ${uploadResult.mergeInfo.previous_count})`);
+        }
+        
         // Step 7: Clear state
         logger.subsection('Step 6: Cleaning up');
         stateManager.clearState();
@@ -155,6 +160,12 @@ async function complete() {
         logger.section('🎉 COMPLETE!');
         logger.info(`Section: ${state.section}`);
         logger.info(`Articles: ${library.articles.length}`);
+        
+        if (uploadResult.mergeInfo) {
+            logger.info(`New articles: ${uploadResult.mergeInfo.new_articles}`);
+            logger.info(`Updated articles: ${uploadResult.mergeInfo.updated_articles}`);
+        }
+        
         logger.info(`Retries: ${retryCount}`);
         logger.info(`Total tokens: ${results.statistics.tokens.total.toLocaleString()}`);
         logger.info(`Average tokens/summary: ${results.statistics.averageTokensPerSummary}`);

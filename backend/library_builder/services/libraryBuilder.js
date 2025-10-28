@@ -49,6 +49,7 @@ class LibraryBuilder {
                 apiUrl: article.apiUrl,
                 section: article.section,
                 publishedDate: article.publishedDate,
+                trailText: article.trailText || '',
                 summary: summary.summary,
                 summaryTokens: summary.summaryTokens,
                 generatedAt: new Date().toISOString()
@@ -130,6 +131,126 @@ class LibraryBuilder {
         }
         
         logger.debug('Completeness validation passed');
+    }
+
+    /**
+     * Merge new library with existing library at article level
+     * @param {Object} existingLibrary - Existing library from GitHub
+     * @param {Object} newLibrary - Newly generated library
+     * @returns {Object} - Merged library
+     */
+    mergeLibraries(existingLibrary, newLibrary) {
+        logger.info('Merging libraries', {
+            existingCount: existingLibrary.articles?.length || 0,
+            newCount: newLibrary.articles?.length || 0
+        });
+        
+        // Validate inputs
+        if (!existingLibrary.articles || !Array.isArray(existingLibrary.articles)) {
+            throw new Error('Invalid existing library: missing articles array');
+        }
+        if (!newLibrary.articles || !Array.isArray(newLibrary.articles)) {
+            throw new Error('Invalid new library: missing articles array');
+        }
+        
+        // Step 1: Create article map from existing (id → article)
+        const articleMap = new Map();
+        existingLibrary.articles.forEach(article => {
+            articleMap.set(article.id, article);
+        });
+        
+        // Step 2: Process new articles
+        let replacedCount = 0;
+        let addedCount = 0;
+        
+        newLibrary.articles.forEach(article => {
+            if (articleMap.has(article.id)) {
+                replacedCount++;
+                logger.debug('Replacing article', { id: article.id });
+            } else {
+                addedCount++;
+                logger.debug('Adding new article', { id: article.id });
+            }
+            articleMap.set(article.id, article); // Replace or add
+        });
+        
+        // Step 3: Convert map back to array
+        const mergedArticles = Array.from(articleMap.values());
+        
+        // Step 4: Sort by publishedDate (newest first)
+        mergedArticles.sort((a, b) => {
+            const dateA = new Date(a.publishedDate);
+            const dateB = new Date(b.publishedDate);
+            return dateB - dateA; // Descending (newest first)
+        });
+        
+        // Step 5: Calculate merged metadata
+        const mergedMetadata = {
+            section: newLibrary.metadata.section,
+            generated_at: new Date().toISOString(),
+            date_range: {
+                from: this.calculateOldestDate(mergedArticles),
+                to: this.calculateNewestDate(mergedArticles)
+            },
+            article_count: mergedArticles.length,
+            merge_info: {
+                previous_count: existingLibrary.articles.length,
+                new_articles: addedCount,
+                updated_articles: replacedCount,
+                total_count: mergedArticles.length
+            },
+            batch_info: newLibrary.metadata.batch_info
+        };
+        
+        // Step 6: Build merged library
+        const mergedLibrary = {
+            metadata: mergedMetadata,
+            articles: mergedArticles
+        };
+        
+        logger.info('Libraries merged successfully', {
+            totalArticles: mergedArticles.length,
+            newArticles: addedCount,
+            updatedArticles: replacedCount
+        });
+        
+        return mergedLibrary;
+    }
+
+    /**
+     * Calculate oldest date from articles array
+     * @param {Array} articles - Array of articles
+     * @returns {string|null} - Oldest date in YYYY-MM-DD format or null
+     */
+    calculateOldestDate(articles) {
+        if (!articles || articles.length === 0) {
+            return null;
+        }
+        
+        const dates = articles
+            .map(a => new Date(a.publishedDate))
+            .filter(d => !isNaN(d.getTime()))
+            .sort((a, b) => a - b);
+        
+        return dates.length > 0 ? dates[0].toISOString().split('T')[0] : null;
+    }
+
+    /**
+     * Calculate newest date from articles array
+     * @param {Array} articles - Array of articles
+     * @returns {string|null} - Newest date in YYYY-MM-DD format or null
+     */
+    calculateNewestDate(articles) {
+        if (!articles || articles.length === 0) {
+            return null;
+        }
+        
+        const dates = articles
+            .map(a => new Date(a.publishedDate))
+            .filter(d => !isNaN(d.getTime()))
+            .sort((a, b) => b - a);
+        
+        return dates.length > 0 ? dates[0].toISOString().split('T')[0] : null;
     }
 
     /**

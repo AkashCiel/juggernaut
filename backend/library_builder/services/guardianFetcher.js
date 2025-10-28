@@ -78,10 +78,10 @@ class GuardianFetcher {
             title: rawArticle.title,
             webUrl: rawArticle.url || rawArticle.shortUrl,
             apiUrl: `https://content.guardianapis.com/${rawArticle.id}`,
-            section: rawArticle.section || rawArticle.topic,
+            section: rawArticle.section,
             publishedDate: rawArticle.publishedAt,
-            bodyText: rawArticle.summarySource || '',
-            trailText: rawArticle.summarySource || ''
+            bodyText: rawArticle.bodyText || '',
+            trailText: rawArticle.trailText || ''
         };
     }
 }

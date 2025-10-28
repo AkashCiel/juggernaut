@@ -25,6 +25,7 @@ library_builder/
 ├── config/             # Configuration
 │   └── prompts.js              # OpenAI prompts
 ├── commands/           # CLI command handlers
+│   ├── fetch.js                # Fetch articles command
 │   ├── submit.js               # Submit batch command
 │   ├── check.js                # Check status command
 │   └── complete.js             # Complete & upload command
@@ -53,24 +54,37 @@ cd backend/library_builder
 
 ## Usage
 
-### Step 1: Submit Batch
+### Step 1: Fetch Articles
 
-Fetch articles and submit to OpenAI:
+Fetch articles from Guardian and create batch file:
 
 ```bash
-node generate-library.js submit --section technology --days 40
+node generate-library.js fetch --section technology --days 2
 ```
 
 **Output:**
 - Fetches articles from Guardian
-- Creates JSONL batch file
-- Uploads to OpenAI
+- Creates JSONL batch file in `data/batches/`
+- Saves state to `data/state.json` (status: "fetched")
+
+**Next:** Review the batch file to verify the input looks correct
+
+### Step 2: Submit Batch
+
+Submit the batch to OpenAI:
+
+```bash
+node generate-library.js submit
+```
+
+**Output:**
+- Uploads batch file to OpenAI
 - Creates batch job
-- Saves state to `data/state.json`
+- Updates state (status: "submitted")
 
 **Next:** Wait ~24 hours for batch processing
 
-### Step 2: Check Status
+### Step 3: Check Status
 
 Check batch processing progress:
 
@@ -85,7 +99,7 @@ node generate-library.js check
 
 **Repeat** this command periodically until status is "completed"
 
-### Step 3: Complete
+### Step 4: Complete
 
 Download results and build library:
 

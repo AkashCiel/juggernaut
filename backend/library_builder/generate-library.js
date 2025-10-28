@@ -4,12 +4,14 @@
  * Article Library Generator - Main CLI
  * 
  * Commands:
- *   submit    - Fetch articles & submit batch to OpenAI
+ *   fetch     - Fetch articles & create batch file
+ *   submit    - Submit batch to OpenAI
  *   check     - Check batch processing status  
  *   complete  - Download results & build library
  * 
  * Usage:
- *   node generate-library.js submit --section technology --days 40
+ *   node generate-library.js fetch --section technology --days 2
+ *   node generate-library.js submit
  *   node generate-library.js check
  *   node generate-library.js complete
  */
@@ -19,6 +21,7 @@ require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const { logger, logFilePath } = require('./utils/logger');
 
 // Import commands
+const fetch = require('./commands/fetch');
 const submit = require('./commands/submit');
 const check = require('./commands/check');
 const complete = require('./commands/complete');
@@ -56,16 +59,18 @@ Usage:
   node generate-library.js <command> [options]
 
 Commands:
-  submit     Fetch articles and submit batch to OpenAI
+  fetch      Fetch articles and create batch file (without submitting)
+  submit     Submit fetched batch to OpenAI
   check      Check batch processing status
   complete   Download results and build library
 
-Submit Options:
+Fetch Options:
   --section <name>    Guardian section name (required)
   --days <number>     Days to look back (default: 40)
 
 Examples:
-  node generate-library.js submit --section technology --days 40
+  node generate-library.js fetch --section technology --days 2
+  node generate-library.js submit
   node generate-library.js check
   node generate-library.js complete
 
@@ -88,17 +93,21 @@ async function main() {
         let result;
         
         switch (command) {
-            case 'submit':
+            case 'fetch':
                 if (!options.section) {
-                    logger.error('--section is required for submit command');
+                    logger.error('--section is required for fetch command');
                     printUsage();
                     process.exit(1);
                 }
                 
-                result = await submit({
+                result = await fetch({
                     section: options.section,
                     days: parseInt(options.days) || 40
                 });
+                break;
+                
+            case 'submit':
+                result = await submit();
                 break;
                 
             case 'check':

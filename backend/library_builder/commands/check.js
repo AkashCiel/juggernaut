@@ -14,7 +14,18 @@ async function check() {
     const state = stateManager.loadState();
     if (!state) {
         logger.error('No batch in progress');
-        throw new Error('No batch found. Run submit command first.');
+        throw new Error('No batch found. Run fetch and submit commands first.');
+    }
+    
+    // Validate state
+    if (state.status === 'fetched') {
+        logger.error('Batch not submitted yet');
+        throw new Error('Batch has been fetched but not submitted. Run submit command first.');
+    }
+    
+    if (!state.batchId) {
+        logger.error('Missing batch ID in state');
+        throw new Error('Invalid state: no batch ID found. Run submit command first.');
     }
     
     logger.info('Checking batch', { 
