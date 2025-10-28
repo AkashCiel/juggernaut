@@ -1,0 +1,23 @@
+# Library Builder - Ignore temporary/generated files
+
+# Working data
+data/raw/
+data/batches/*.jsonl
+data/results/*.jsonl
+data/logs/*.log
+data/state.json
+data/*.json
+
+# But keep directory structure
+!data/.gitkeep
+!data/raw/.gitkeep
+!data/batches/.gitkeep
+!data/results/.gitkeep
+!data/logs/.gitkeep
+
+# Node modules (if any local dependencies)
+node_modules/
+
+# OS files
+.DS_Store
+
