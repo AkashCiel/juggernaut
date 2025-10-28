@@ -55,9 +55,9 @@ async function submit(options) {
         // Step 4: Create batch job
         logger.subsection('Step 4: Creating batch job');
         const batch = await submitter.createBatch(fileId, {
-            section,
-            days,
-            article_count: articles.length
+            section: String(section),
+            days: String(days),
+            article_count: String(articles.length)
         });
         
         logger.info(`✅ Batch created: ${batch.id}`);

@@ -178,14 +178,32 @@ class ResultsProcessor {
             const content = responseBody.choices[0].message.content;
             const parsed = JSON.parse(content);
             
-            // Handle both formats: {id, summary} or {summaries: [{id, summary}]}
+            // Format 1: {id, summary}
             if (parsed.id && parsed.summary) {
                 return parsed;
-            } else if (parsed.summaries && Array.isArray(parsed.summaries) && parsed.summaries.length > 0) {
+            }
+            
+            // Format 2: {summaries: [{id, summary}]}
+            if (parsed.summaries && Array.isArray(parsed.summaries) && parsed.summaries.length > 0) {
                 return parsed.summaries[0];
             }
             
-            logger.warn('Unexpected summary format', { content });
+            // Format 3: {"article-id": "summary text"} - article ID as key
+            // This is the actual format returned by GPT-5
+            const keys = Object.keys(parsed);
+            if (keys.length > 0) {
+                const articleId = keys[0];
+                const summaryText = parsed[articleId];
+                
+                if (typeof summaryText === 'string' && summaryText.length > 0) {
+                    return {
+                        id: articleId,
+                        summary: summaryText
+                    };
+                }
+            }
+            
+            logger.warn('Unexpected summary format', { content: content.substring(0, 200) });
             return null;
             
         } catch (e) {

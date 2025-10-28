@@ -68,39 +68,39 @@ async function complete() {
             logger.info(`Retrying ${failedArticles.length} articles`);
             
             // Create retry batch
-            logger.subsection('Creating retry batch');
-            const formatter = new BatchFormatter();
-            const retryBatchFile = await formatter.createBatchFile(
-                failedArticles,
-                `${state.section}-retry${retryCount}`
-            );
+            // logger.subsection('Creating retry batch');
+            // const formatter = new BatchFormatter();
+            // const retryBatchFile = await formatter.createBatchFile(
+            //     failedArticles,
+            //     `${state.section}-retry${retryCount}`
+            // );
             
-            // Submit retry batch
-            const submitter = new BatchSubmitter();
-            const retryFileId = await submitter.uploadFile(retryBatchFile.filePath);
-            const retryBatch = await submitter.createBatch(retryFileId, {
-                section: state.section,
-                retry: retryCount,
-                article_count: failedArticles.length
-            });
+            // // Submit retry batch
+            // const submitter = new BatchSubmitter();
+            // const retryFileId = await submitter.uploadFile(retryBatchFile.filePath);
+            // const retryBatch = await submitter.createBatch(retryFileId, {
+            //     section: String(state.section),
+            //     retry: String(retryCount),
+            //     article_count: String(failedArticles.length)
+            // });
             
-            retryBatches.push(retryBatch.id);
-            logger.info(`Retry batch created: ${retryBatch.id}`);
+            // retryBatches.push(retryBatch.id);
+            // logger.info(`Retry batch created: ${retryBatch.id}`);
             
-            // Wait for retry batch to complete
-            logger.info('Waiting for retry batch to complete...');
-            const retryStatus = await monitor.pollUntilComplete(retryBatch.id, 5);
+            // // Wait for retry batch to complete
+            // logger.info('Waiting for retry batch to complete...');
+            // const retryStatus = await monitor.pollUntilComplete(retryBatch.id, 5);
             
-            // Download retry results
-            logger.info('Downloading retry results');
-            const retryJsonl = await processor.downloadResults(retryStatus.outputFileId);
-            const retryResults = processor.parseResults(retryJsonl);
+            // // Download retry results
+            // logger.info('Downloading retry results');
+            // const retryJsonl = await processor.downloadResults(retryStatus.outputFileId);
+            // const retryResults = processor.parseResults(retryJsonl);
             
-            logger.info('Retry results:', retryResults.statistics);
+            // logger.info('Retry results:', retryResults.statistics);
             
-            // Update results
-            allSuccessful = [...allSuccessful, ...retryResults.successful];
-            remainingFailed = retryResults.failed;
+            // // Update results
+            // allSuccessful = [...allSuccessful, ...retryResults.successful];
+            // remainingFailed = retryResults.failed;
         }
         
         // Final validation
