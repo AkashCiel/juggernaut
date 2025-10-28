@@ -31,9 +31,10 @@ class GuardianService {
                 publication: fields.publication || 'The Guardian',
                 section: topic || '',
                 publishedAt: item.webPublicationDate || '',
-                summarySource: bodyText || trailText || '',
+                bodyText: bodyText || '',
+                trailText: trailText || '',
                 thumbnail: fields.thumbnail || '',
-                topic: item.sectionName || ''
+                api_section_name: item.sectionName || ''
             };
         });
     }
