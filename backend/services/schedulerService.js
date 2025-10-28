@@ -35,6 +35,8 @@ class SchedulerService {
         const today = new Date().toISOString().split('T')[0];
         logger.info(`🚀 Starting daily report generation for ${today}`);
 
+        // THIS FUNCTION HAS BEEN DECOMMISSINED FOR NOW, LATER
+        
         try {
             // Check for demo mode
             const isDemoMode = !validateEnvironment();
@@ -111,17 +113,19 @@ class SchedulerService {
                     // Update user's last report date
                     await this.userService.updateLastReportDate(user.userId, today);
 
-                    results.push({
-                        userId: user.userId,
-                        email: user.email,
-                        success: true,
-                        curatedArticles: curatedArticles,
-                        totalArticles: userArticles.length,
-                        curatedCount: curatedArticles.length,
-                        emailContent: emailContent,
-                        emailSent: !!emailResult,
-                        messageId: emailResult?.messageId || null
-                    });
+                    // results.push({
+                    //     userId: user.userId,
+                    //     email: user.email,
+                    //     success: true,
+                    //     curatedArticles: curatedArticles,
+                    //     totalArticles: userArticles.length,
+                    //     curatedCount: curatedArticles.length,
+                    //     emailContent: emailContent,
+                    //     emailSent: !!emailResult,
+                    //     messageId: emailResult?.messageId || null
+                    // });
+
+                    results.push({}); // this function needs to be rewritten
 
                     logger.info(`✅ Generated curated news for user: ${user.email} (${user.userId})`);
                 } catch (error) {
