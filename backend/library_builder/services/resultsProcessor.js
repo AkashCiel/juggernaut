@@ -170,6 +170,7 @@ class ResultsProcessor {
 
     /**
      * Extract summary from OpenAI response body
+     * GPT-5 returns format: {"article-id": "summary text"}
      * @param {Object} responseBody - Response body from OpenAI
      * @returns {Object|null} - {id, summary} or null
      */
@@ -178,33 +179,36 @@ class ResultsProcessor {
             const content = responseBody.choices[0].message.content;
             const parsed = JSON.parse(content);
             
-            // Format 1: {id, summary}
-            if (parsed.id && parsed.summary) {
-                return parsed;
-            }
-            
-            // Format 2: {summaries: [{id, summary}]}
-            if (parsed.summaries && Array.isArray(parsed.summaries) && parsed.summaries.length > 0) {
-                return parsed.summaries[0];
-            }
-            
-            // Format 3: {"article-id": "summary text"} - article ID as key
-            // This is the actual format returned by GPT-5
+            // Expected format: {"article-id": "summary text"}
             const keys = Object.keys(parsed);
-            if (keys.length > 0) {
-                const articleId = keys[0];
-                const summaryText = parsed[articleId];
-                
-                if (typeof summaryText === 'string' && summaryText.length > 0) {
-                    return {
-                        id: articleId,
-                        summary: summaryText
-                    };
-                }
+            
+            if (keys.length === 0) {
+                logger.warn('Empty response object', { content });
+                return null;
             }
             
-            logger.warn('Unexpected summary format', { content: content.substring(0, 200) });
-            return null;
+            if (keys.length > 1) {
+                logger.warn('Multiple keys in response (expected 1)', { 
+                    keyCount: keys.length,
+                    keys: keys
+                });
+            }
+            
+            const articleId = keys[0];
+            const summaryText = parsed[articleId];
+            
+            if (typeof summaryText !== 'string' || summaryText.length === 0) {
+                logger.warn('Invalid summary format', { 
+                    articleId,
+                    summaryType: typeof summaryText
+                });
+                return null;
+            }
+            
+            return {
+                id: articleId,
+                summary: summaryText
+            };
             
         } catch (e) {
             logger.error('Failed to extract summary', { error: e.message });
