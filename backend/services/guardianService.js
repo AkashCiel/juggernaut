@@ -31,9 +31,10 @@ class GuardianService {
                 publication: fields.publication || 'The Guardian',
                 section: topic || '',
                 publishedAt: item.webPublicationDate || '',
-                summarySource: bodyText || trailText || '',
+                bodyText: bodyText || '',
+                trailText: trailText || '',
                 thumbnail: fields.thumbnail || '',
-                topic: item.sectionName || ''
+                api_section_name: item.sectionName || ''
             };
         });
     }
@@ -89,10 +90,10 @@ class GuardianService {
     }
 
     /**
-     * Fetch articles for a single section
+     * Fetch articles for a single section with automatic pagination
      * @param {string} section - Section name
      * @param {Object} options - Query options
-     * @returns {Promise<Array>} Array of articles from the section
+     * @returns {Promise<Array>} Array of ALL articles from the section
      */
     async fetchArticlesForSection(section, options = {}) {
         const {
@@ -102,13 +103,67 @@ class GuardianService {
             orderBy = 'newest',
             includeBodyText = false
         } = options;
+        
         logger.info(`📰 Fetching articles for section: ${section}`);
+        
+        // Fetch first page to get total pages
+        const firstPageData = await this.fetchSinglePage(section, 1, {
+            fromDate,
+            toDate,
+            pageSize,
+            orderBy,
+            includeBodyText
+        });
+        
+        const totalPages = firstPageData.pages;
+        const allArticles = [...firstPageData.articles];
+        
+        logger.info(`📰 Section '${section}': Page 1/${totalPages} (${firstPageData.articles.length} articles)`);
+        
+        // Fetch remaining pages if any
+        if (totalPages > 1) {
+            logger.info(`📰 Fetching ${totalPages - 1} additional pages for section '${section}'`);
+            
+            for (let page = 2; page <= totalPages; page++) {
+                const pageData = await this.fetchSinglePage(section, page, {
+                    fromDate,
+                    toDate,
+                    pageSize,
+                    orderBy,
+                    includeBodyText
+                });
+                
+                allArticles.push(...pageData.articles);
+                logger.info(`📰 Section '${section}': Page ${page}/${totalPages} (${pageData.articles.length} articles)`);
+            }
+        }
+        
+        logger.info(`📰 Section '${section}': Total ${allArticles.length} articles across ${totalPages} page(s)`);
+        return allArticles;
+    }
+
+    /**
+     * Fetch a single page of articles
+     * @param {string} section - Section name
+     * @param {number} page - Page number
+     * @param {Object} options - Query options
+     * @returns {Promise<Object>} - {articles, pages, total}
+     */
+    async fetchSinglePage(section, page, options = {}) {
+        const {
+            fromDate,
+            toDate,
+            pageSize = GUARDIAN_PAGE_SIZE,
+            orderBy = 'newest',
+            includeBodyText = false
+        } = options;
+        
         const fields = this.buildShowFields(includeBodyText);
         const params = new URLSearchParams();
         
-        // No 'q' parameter - this fetches ALL articles from the section
         params.set('section', section);
         params.set('type', 'article');
+        params.set('page', String(page));
         if (fromDate) params.set('from-date', fromDate);
         if (toDate) params.set('to-date', toDate);
         params.set('order-by', orderBy);
@@ -117,7 +172,7 @@ class GuardianService {
         params.set('api-key', this.apiKey || '');
 
         const url = `${this.baseUrl}?${params.toString()}`;
-        logApiCall('guardian', 'fetchSection', { section, pageSize, fromDate, toDate, orderBy });
+        logApiCall('guardian', 'fetchPage', { section, page, pageSize, fromDate, toDate });
 
         return new Promise((resolve, reject) => {
             const timeout = setTimeout(() => reject(new Error('Guardian API request timeout')), 30000);
@@ -132,9 +187,16 @@ class GuardianService {
                 res.on('end', () => {
                     try {
                         const json = JSON.parse(data);
-                        const results = Array.isArray(json?.response?.results) ? json.response.results : [];
+                        const response = json?.response || {};
+                        const results = Array.isArray(response.results) ? response.results : [];
                         const articles = this.mapResultsToNormalizedArticles(results, section);
-                        resolve(articles);
+                        
+                        resolve({
+                            articles: articles,
+                            pages: response.pages || 1,
+                            currentPage: response.currentPage || page,
+                            total: response.total || articles.length
+                        });
                     } catch (e) {
                         reject(new Error(`Failed to parse Guardian response: ${e.message}`));
                     }
