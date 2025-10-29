@@ -28,7 +28,9 @@ class SectionSummaryStorage {
     async discoverSections() {
         console.log('\n🔍 Discovering section libraries from GitHub...');
         
-        const url = `/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${LIBRARY_PATH_PREFIX}?ref=${GITHUB_BRANCH}`;
+        // Remove trailing slash for directory listing (GitHub API redirects otherwise)
+        const dirPath = LIBRARY_PATH_PREFIX.replace(/\/$/, '');
+        const url = `/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${dirPath}?ref=${GITHUB_BRANCH}`;
         
         return new Promise((resolve, reject) => {
             const options = {
