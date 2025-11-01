@@ -119,7 +119,7 @@ class ChatClient {
                 // Check if conversation is complete
                 if (result.data.conversationComplete) {
                     this.conversationComplete = true;
-                    this.handleConversationComplete(result.data.userInterestsDescription);
+                    this.handleConversationComplete(result.data);
                 }
             } else {
                 this.addMessage('Sorry, I encountered an error. Please try again.', 'bot');
@@ -199,10 +199,68 @@ class ChatClient {
     }
 
     // Handle conversation completion
-    handleConversationComplete(userInterestsDescription) {
-        if (userInterestsDescription) {
-            // Show completion status with the full description
-            this.showStatus(`✅ Your interests have been identified!`, 'success');
+    async handleConversationComplete(responseData) {
+        const { userInterestsDescription, selectedSections, preparedArticleData } = responseData;
+        
+        if (!userInterestsDescription || !selectedSections || !preparedArticleData) {
+            console.error('Missing data for curation:', { userInterestsDescription, selectedSections, preparedArticleData });
+            this.showStatus('⚠️ Missing data for curation. Please try again.', 'error');
+            return;
+        }
+
+        if (!this.userEmail) {
+            console.error('User email not found');
+            this.showStatus('⚠️ Email not found. Please try again.', 'error');
+            return;
+        }
+
+        // Show status that curation is starting
+        this.showStatus('🎯 Curating your personalized news feed...', 'info');
+        this.setInputState(false); // Disable input during curation
+
+        try {
+            console.log('🚀 Calling curate-feed API...', {
+                email: this.userEmail,
+                selectedSections,
+                articleCount: preparedArticleData.articleCount
+            });
+
+            const response = await fetch(`${this.apiUrl}/api/chat/curate-feed`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: this.userEmail,
+                    userInterests: userInterestsDescription,
+                    selectedSections: selectedSections,
+                    preparedArticleData: preparedArticleData
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                this.showStatus(`✅ News feed curated and sent to ${this.userEmail}!`, 'success');
+                this.addMessage(`Your personalized news feed has been curated and sent to your email inbox. Check your inbox for the latest articles!`, 'bot');
+                
+                console.log('✅ Curation completed:', {
+                    articlesCurated: result.data.articlesCurated,
+                    emailSent: result.data.emailSent
+                });
+            } else {
+                console.error('Curation failed:', result);
+                this.showStatus('⚠️ Failed to curate news feed. Please try again.', 'error');
+                this.addMessage('Sorry, there was an error curating your news feed. Please try again.', 'bot');
+            }
+        } catch (error) {
+            console.error('Curation API error:', error);
+            this.showStatus('⚠️ Network error during curation. Please try again.', 'error');
+            this.addMessage('Sorry, there was a network error. Please try again.', 'bot');
+        } finally {
+            // Keep input disabled since conversation is complete
+            this.chatInput.disabled = true;
+            this.sendButton.disabled = true;
         }
     }
 

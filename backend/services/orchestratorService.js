@@ -1,8 +1,7 @@
 const { logger, logApiCall } = require('../utils/logger-vercel');
 const ConversationService = require('./conversationService');
 const NewsDiscoveryService = require('./newsDiscoveryService');
-const UserService = require('./userService');
-const GuardianSectionsCacheService = require('./guardianSectionsCacheService');
+const PreLoadService = require('./preLoadService');
 const { CHAT_WELCOME_MESSAGE } = require('../config/constants');
 const { CONVERSATION_COMPLETE_MESSAGE } = require('../config/constants');
 
@@ -11,8 +10,7 @@ class OrchestratorService {
         this.welcomeMessage = CHAT_WELCOME_MESSAGE;
         this.conversationService = new ConversationService();
         this.newsDiscoveryService = new NewsDiscoveryService();
-        this.userService = new UserService();
-        this.sectionsCacheService = new GuardianSectionsCacheService();
+        this.preLoadService = new PreLoadService();
         this.sessions = new Map(); // Store chat history per session
     }
 
@@ -46,9 +44,30 @@ class OrchestratorService {
                 // 3a. Clean the response for display
                 userInterestsDescription = conversationResult.response.replace(/\[CONVERSATION_COMPLETE\]/g, '').trim();
                 
-                // 3c. Register user if email is provided
+                // 3b. Map user interests to sections and prepare data for curation
+                let selectedSections = null;
+                let preparedArticleData = null;
+                
                 if (email && userInterestsDescription) {
-                    await this.registerUser(email, userInterestsDescription);
+                    logger.info('🗺️ Mapping user interests to sections...');
+                    
+                    // Get section summaries to derive section list
+                    const sectionSummaries = this.preLoadService.getSectionSummaries();
+                    const sections = sectionSummaries ? Object.keys(sectionSummaries.sections) : null;
+                    
+                    // Map interests to sections
+                    selectedSections = await this.newsDiscoveryService.mapUserInterestsToSections(userInterestsDescription, sections);
+                    logger.info(`✅ Selected sections: ${selectedSections}`);
+                    
+                    // Prepare article data for curation (filters to selected sections, applies 1000 limit)
+                    logger.info('🔧 Preparing article data for curation...');
+                    preparedArticleData = this.preLoadService.prepare_data_for_curation(selectedSections);
+                    logger.info(`✅ Prepared ${preparedArticleData.articleCount} articles for curation`);
+                    
+                    // Log section breakdown
+                    preparedArticleData.sectionsData.forEach(sectionData => {
+                        logger.info(`📊 Section '${sectionData.section}': ${sectionData.selectedCount} articles selected (from ${sectionData.articleCount} available)`);
+                    });
                 }
 
                 return {
@@ -57,6 +76,8 @@ class OrchestratorService {
                     sessionId: sessionId,
                     conversationComplete: isComplete,
                     userInterestsDescription: userInterestsDescription,
+                    selectedSections: selectedSections,
+                    preparedArticleData: preparedArticleData,
                     timestamp: new Date().toISOString()
                 };
             } else {
@@ -115,6 +136,17 @@ class OrchestratorService {
             // Initialize empty session
             this.sessions.set(sessionId, []);
             
+            // Pre-fetch section summaries and article libraries asynchronously (don't wait for it)
+            this.preLoadService.fetchSectionSummaries()
+                .catch(error => {
+                    logger.warn(`⚠️ Failed to pre-fetch section summaries: ${error.message}`);
+                });
+            
+            this.preLoadService.fetchAllArticleLibraries()
+                .catch(error => {
+                    logger.warn(`⚠️ Failed to pre-fetch article libraries: ${error.message}`);
+                });
+            
             logApiCall('chat', 'startSession', { sessionId: sessionId });
             
             return {
@@ -134,32 +166,6 @@ class OrchestratorService {
      */
     generateSessionId() {
         return `chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    }
-
-    /**
-     * Register user with their interests description
-     * @param {string} email - User's email address
-     * @param {string} interestsDescription - User's interests description
-     * @returns {Promise<Object>} Registration result
-     */
-    async registerUser(email, interestsDescription) {
-        try {
-            // Get Guardian sections
-            const allSections = await this.sectionsCacheService.getSections();
-            
-            // Map interests to sections using NewsDiscoveryService
-            const sections = await this.newsDiscoveryService.mapUserInterestsToSections(interestsDescription, allSections);
-            const sectionArray = sections.split('|').filter(s => s.trim());
-            
-            // Register user with description and sections
-            const user = await this.userService.registerUser(email, interestsDescription, sectionArray);
-            
-            logger.info(`✅ User registered via chat: ${email} (${user.userId})`);
-            return { success: true, user: user };
-        } catch (error) {
-            logger.error(`❌ User registration error: ${error.message}`);
-            return { success: false, error: error.message };
-        }
     }
 
     /**

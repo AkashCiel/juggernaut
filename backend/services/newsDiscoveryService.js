@@ -1,37 +1,64 @@
 const { logger, logApiCall } = require('../utils/logger-vercel');
-const { CHAT_SYSTEM_PROMPT, CHAT_WELCOME_MESSAGE, TOPIC_EXTRACTION_PROMPT, SYSTEM_PROMPTS } = require('../config/constants');
+const { CHAT_SYSTEM_PROMPT } = require('../config/constants');
 const OpenAIClient = require('../utils/openaiClient');
+const PreLoadService = require('./preLoadService');
 
 class NewsDiscoveryService {
     constructor() {
         this.systemPrompt = CHAT_SYSTEM_PROMPT;
         this.openaiClient = new OpenAIClient();
+        this.preLoadService = new PreLoadService();
     }
-
-
-
-
-
-
-
 
     /**
      * Map user interests to Guardian sections using AI
      * @param {string} user_interests - User's interests description
-     * @param {Array<string>} sections - Array of available Guardian sections
+     * @param {Array<string>} sections - Array of available Guardian sections (optional, will be derived from summaries if not provided)
      * @returns {Promise<string>} Pipe-separated string of relevant sections
      */
-    async mapUserInterestsToSections(user_interests, sections) {
+    async mapUserInterestsToSections(user_interests, sections = null) {
         const { SECTION_MAPPING_PROMPT } = require('../config/constants');
+
+        // Get section summaries from preLoadService
+        const sectionSummaries = this.preLoadService.getSectionSummaries();
+
+        // If summaries not loaded yet, wait for them
+        if (!sectionSummaries) {
+            logger.info('⏳ Waiting for section summaries to load...');
+            await this.preLoadService.fetchSectionSummaries();
+        }
+
+        // Derive sections from summaries if not provided
+        if (!sections && sectionSummaries && sectionSummaries.sections) {
+            sections = Object.keys(sectionSummaries.sections);
+        }
+
+        // Build user message with section summaries if available
+        let userMessage = `This is a short summary of the user's interests: ${user_interests}.`;
+        
+        if (sectionSummaries && sectionSummaries.sections) {
+            // Format section summaries for the prompt
+            const summariesText = Object.entries(sectionSummaries.sections)
+                .map(([sectionName, sectionData]) => {
+                    const summary = sectionData.summary || 'No summary available';
+                    return `${sectionName}:\n${summary}`;
+                })
+                .join('\n\n');
+            
+            userMessage += `\n\nHere are detailed summaries of what each section covers:\n\n${summariesText}`;
+        }
+
+        // Format sections list for prompt
+        const sectionsList = sections && sections.length > 0 ? sections.join('|') : 'news|world';
 
         const messages = [
             {
                 role: 'system',
-                content: SECTION_MAPPING_PROMPT
+                content: SECTION_MAPPING_PROMPT.replace('{sections}', sectionsList)
             },
             {
                 role: 'user',
-                content: `This is a short summary of the user's interests: ${user_interests}. The available sections are: ${sections}.`
+                content: userMessage
             }
         ];
 

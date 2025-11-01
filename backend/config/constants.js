@@ -3,6 +3,14 @@ module.exports = {
     GUARDIAN_PAGE_SIZE: 200,
     
     OPENAI_MODEL: 'o4-mini',
+    OPENAI_TEMPERATURE: 1.0,
+
+    // Article curation limits
+    MAX_ARTICLES_FOR_CURATION: 1000,
+    ARTICLE_CHUNK_SIZE: 75, // Articles per OpenAI API call
+    RELEVANCE_THRESHOLD: 70, // Minimum relevance score (0-100)
+    RETRY_DELAY_MS: 15000, // 15 seconds delay before retry
+    MAX_RETRY_ATTEMPTS: 3, // Max retries per chunk
 
     CONVERSATION_COMPLETE_MESSAGE: `Perfect! I will get to work. You will shortly find your first news feed in your inbox. 
     Come back anytime if you want me to update your news feed.`,
@@ -25,7 +33,7 @@ Keep up the conversation until:
 Once you have sufficiently identified the user's interests and motivations, follow this procedure precisely:
 1. Present a 2-5 sentence summary of your understanding and explicitly ask for confirmation or corrections.
 2. If the user provides corrections, update your understanding and go back to step 1.
-3. If the user indicates that they are satisfied, prepare a 2-5 sentence summary of the user's interests and motivations. Refer to
+3. If the user indicates that they are satisfied, prepare a 3-5 sentence summary of the user's interests and motivations. Refer to
 the user in the third person. End your response with: [CONVERSATION_COMPLETE]
 `,
     
@@ -53,49 +61,26 @@ Return ONLY a pipe-separated list of relevant sections (e.g., "technology|busine
 Do not include explanations or other text.
 `,
 
-    // AI prompt for extracting user interests from conversation
-    TOPIC_EXTRACTION_PROMPT: `
-Analyze this conversation and prepare a brief, information dense description of what news should the user follow, based on
-their interests and motivations.
-Towards the end of the conversation, the user will confirm their interests. Focus on this portion of the conversation.
-`,
-
-    // AI prompt for merging user interest descriptions
-    INTEREST_MERGE_PROMPT: `
-You are an expert at analyzing and merging user interest descriptions.
+    // AI prompt for scoring article relevance
+    RELEVANCE_SCORING_PROMPT: `
+You are an expert at scoring the relevance of news articles to a user's interests.
 
 You will be given:
-1. An existing user interest description (what the user previously told us)
-2. A new user interest description (from the current conversation)
+1. A description of the user's interests and motivations
+2. A list of article summaries with their titles, trail text, and a short summary of the article.
 
-Your task is to create a comprehensive, updated description that:
-- Incorporates ALL relevant information from both descriptions
-- Removes any redundancy or contradictions
-- Maintains the user's voice and perspective
-- Captures the full scope of their interests
-- Is concise but complete (2-5 sentences)
+Your job is to score each article on a scale of 0-100 based on how relevant it is to the user's interests:
+- 0-30: Not relevant or only tangentially related
+- 31-50: Somewhat relevant but not directly aligned
+- 51-70: Relevant and aligned with user interests
+- 71-85: Highly relevant and strongly aligned
+- 86-100: Extremely relevant and perfectly aligned
 
-Return ONLY the merged description. Do not include explanations or other text.
+Return ONLY a valid JSON object with article IDs as keys and relevance scores (0-100 integers) as values.
+Example: {"technology/2025/oct/27/article-id": 85, "business/2025/oct/26/article-id": 72}
+
+Do not include any explanations or additional text outside the JSON object.
 `,
-
-    // AI prompt for article curation (only articles and user interests)
-    ARTICLE_CURATION_PROMPT: `
-User Interests: {userInterests}
-
-Articles:
-{articles}
-`,
-
-    // System prompt for article curation (all instructions)
-    ARTICLE_CURATION_SYSTEM: 'You are a news curation expert. Given a user\'s interests and available articles, select the most relevant articles in order of relevance. Return ONLY a comma-separated list of article IDs in order of relevance (e.g., "article_1,article_2,article_3"). Do not include explanations or other text.',
-
-    // System prompts for AI roles
-    SYSTEM_PROMPTS: {
-        TOPIC_EXTRACTION: 'You are a user interest analysis expert. Extract what topics and information the user cares about from conversations.',
-        SECTION_MAPPING: 'You are a news section mapping expert. Map topics to the most relevant Guardian API sections.',
-        ARTICLE_RELEVANCE: 'You are a news relevance expert. Analyze articles and return only the indices of articles relevant to the given topic.',
-        ARTICLE_CURATION: 'You are a news curation expert. Carefully read the user\'s interests and summaries of available articles. Based on these summaries, find news articles that are relevant to the user. Ignore all articles that are not relevant to the user. Arrange the articles in order of relevance. Return ONLY a comma-separated list of article IDs in order of relevance (e.g., "article_1,article_2,article_3"). Do not include explanations or other text.'
-    }
 };
 
 

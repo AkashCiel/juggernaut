@@ -9,6 +9,14 @@ class EmailService {
     constructor() {
         this.mailgunClient = null;
         this.isInitialized = false;
+        this.domain = null;
+        
+        // Auto-initialize from environment variables for backwards compatibility
+        const apiKey = process.env.MAILGUN_API_KEY;
+        const domain = process.env.MAILGUN_DOMAIN;
+        if (apiKey && domain) {
+            this.initialize(apiKey, domain);
+        }
     }
 
     initialize(apiKey, domain) {
@@ -73,15 +81,30 @@ class EmailService {
      */
     async sendComposedEmail(emailContent, recipients) {
         if (!this.isInitialized) {
-            throw new Error('Email service not initialized');
+            const error = new Error('Email service not initialized');
+            logger.error('❌ Email service not initialized');
+            return {
+                success: false,
+                error: error.message
+            };
         }
 
         if (!recipients || recipients.length === 0) {
-            throw new Error('No email recipients provided');
+            const error = new Error('No email recipients provided');
+            logger.error('❌ No email recipients provided');
+            return {
+                success: false,
+                error: error.message
+            };
         }
 
         if (!emailContent || !emailContent.subject || !emailContent.html) {
-            throw new Error('Invalid email content provided');
+            const error = new Error('Invalid email content provided');
+            logger.error('❌ Invalid email content provided');
+            return {
+                success: false,
+                error: error.message
+            };
         }
         
         try {
@@ -108,7 +131,119 @@ class EmailService {
                 statusCode: error.statusCode,
                 details: error.details || 'No details available'
             });
-            handleMailgunError(error);
+            
+            // Return error instead of throwing for /curate-feed compatibility
+            return {
+                success: false,
+                error: error.message
+            };
+        }
+    }
+
+    /**
+     * Compose HTML email with curated articles
+     * @param {Array} curatedArticles - Array of curated article objects
+     * @param {string} selectedSections - Selected sections string (pipe-separated)
+     * @returns {string} HTML email content
+     */
+    composeEmail(curatedArticles, selectedSections) {
+        const sections = selectedSections.split('|').join(', ');
+
+        // Compose article cards
+        const articleCards = curatedArticles.map((article, index) => {
+            const title = this.escapeHtml(article.title || 'No title');
+            const trailText = this.escapeHtml(article.trailText || 'No summary');
+            const webUrl = article.webUrl || '#';
+            const relevanceScore = article.relevanceScore || 0;
+
+            return `
+            <div style="margin-bottom: 20px; padding: 15px; border-left: 4px solid #007bff; background-color: #f8f9fa; border-radius: 4px;">
+                <h3 style="margin-top: 0; margin-bottom: 10px;">
+                    <a href="${webUrl}" style="color: #007bff; text-decoration: none;">${title}</a>
+                </h3>
+                <p style="margin: 0; color: #666; line-height: 1.5;">${trailText}</p>
+                <p style="margin-top: 8px; font-size: 12px; color: #999;">Relevance: ${relevanceScore}/100</p>
+            </div>
+            `;
+        }).join('');
+
+        const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Personalized News Feed</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background-color: #007bff; color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
+        <h1 style="margin: 0; font-size: 24px;">Your Personalized News Feed</h1>
+    </div>
+    
+    <div style="background-color: #fff; padding: 20px; border: 1px solid #ddd; border-top: none; border-radius: 0 0 8px 8px;">
+        <p style="margin-top: 0; color: #666;">
+            Based on your interests in <strong>${sections}</strong>, we've curated ${curatedArticles.length} articles for you.
+        </p>
+        
+        ${articleCards}
+        
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+        
+        <p style="color: #999; font-size: 12px; margin: 0;">
+            This news feed was personalized for you based on your interests.<br>
+        </p>
+    </div>
+</body>
+</html>
+        `;
+
+        return htmlContent;
+    }
+
+    /**
+     * Compose and send email in one step (for /curate-feed API)
+     * @param {string} email - Recipient email address
+     * @param {Array} curatedArticles - Curated articles array
+     * @param {string} selectedSections - Selected sections string (pipe-separated)
+     * @returns {Promise<Object>} Result object with success status
+     */
+    async composeAndSendEmail(email, curatedArticles, selectedSections) {
+        if (!this.isInitialized) {
+            logger.error('❌ Email service not initialized');
+            return {
+                success: false,
+                error: 'Email service not initialized'
+            };
+        }
+
+        if (!email || !curatedArticles || !selectedSections) {
+            logger.error('❌ Missing required parameters for email');
+            return {
+                success: false,
+                error: 'Missing required parameters'
+            };
+        }
+
+        try {
+            logger.info(`📧 Composing email for ${curatedArticles.length} articles to ${email}...`);
+            
+            const htmlContent = this.composeEmail(curatedArticles, selectedSections);
+            const subject = 'Your Personalized News Feed';
+            
+            const emailContent = {
+                subject: subject,
+                html: htmlContent
+            };
+
+            const result = await this.sendComposedEmail(emailContent, [email]);
+            
+            return result;
+        } catch (error) {
+            logger.error(`❌ Failed to compose and send email: ${error.message}`);
+            return {
+                success: false,
+                error: error.message
+            };
         }
     }
 
@@ -160,6 +295,23 @@ class EmailService {
         </html>
         `;
     }
+
+    /**
+     * Escape HTML to prevent XSS
+     * @param {string} text - Text to escape
+     * @returns {string} Escaped HTML
+     */
+    escapeHtml(text) {
+        if (!text) return '';
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
 }
 
-module.exports = EmailService; 
+module.exports = EmailService;

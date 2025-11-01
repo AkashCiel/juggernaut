@@ -4,7 +4,12 @@
   "description": "Juggernaut AI News Chat - Vercel Deployment",
   "main": "api/health.js",
   "scripts": {
-    "dev": "vercel dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" --names \"backend,frontend\" --prefix-colors \"blue,green\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:vercel": "vercel dev",
+    "test:curate-feed": "node test-curate-feed.js",
+    "test:email": "node test-email-service.js",
     "build": "echo 'No build step required for static files'",
     "start": "vercel dev",
     "test:deployment": "node test-vercel-deployment.js",
@@ -36,6 +41,9 @@
     "uuid": "^11.1.0",
     "winston": "^3.11.0",
     "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   },
   "engines": {
     "node": ">=18.0.0"

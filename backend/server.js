@@ -9,7 +9,7 @@ const { errorHandler } = require('./utils/errorHandler');
 
 // Import routes
 const healthRoutes = require('./routes/healthRoutes');
-const reportRoutes = require('./routes/reportRoutes');
+// const reportRoutes = require('./routes/reportRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 
 // Initialize Express app
@@ -41,7 +41,7 @@ app.use(generalLimiter);
 
 // Routes
 app.use('/', healthRoutes);
-app.use('/api', reportRoutes);
+// app.use('/api', reportRoutes);
 app.use('/api/chat', chatRoutes);
 
 // 404 handler

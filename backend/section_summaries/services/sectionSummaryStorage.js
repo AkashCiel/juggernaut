@@ -1,4 +1,5 @@
 const https = require('https');
+const { URL } = require('url');
 const {
     GITHUB_REPO_OWNER,
     GITHUB_REPO_NAME,
@@ -28,7 +29,9 @@ class SectionSummaryStorage {
     async discoverSections() {
         console.log('\n🔍 Discovering section libraries from GitHub...');
         
-        const url = `/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${LIBRARY_PATH_PREFIX}?ref=${GITHUB_BRANCH}`;
+        // Remove trailing slash for directory listing (GitHub API redirects otherwise)
+        const dirPath = LIBRARY_PATH_PREFIX.replace(/\/$/, '');
+        const url = `/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${dirPath}?ref=${GITHUB_BRANCH}`;
         
         return new Promise((resolve, reject) => {
             const options = {
@@ -118,7 +121,28 @@ class SectionSummaryStorage {
                     
                     try {
                         const json = JSON.parse(data);
-                        // Decode base64 content
+                        
+                        // Check if file is too large (>1MB) - GitHub returns encoding: "none" and empty content
+                        if (json.encoding === 'none' || !json.content || json.content.length === 0) {
+                            // File is too large, use download_url instead
+                            if (!json.download_url) {
+                                reject(new Error('File too large and no download_url available'));
+                                return;
+                            }
+                            
+                            // Fetch from download_url
+                            this.fetchFromDownloadUrl(json.download_url)
+                                .then(summaries => {
+                                    const sectionCount = Object.keys(summaries.sections || {}).length;
+                                    console.log(`   ✅ Found existing file with ${sectionCount} sections`);
+                                    summaries._sha = json.sha;
+                                    resolve(summaries);
+                                })
+                                .catch(err => reject(new Error(`Failed to download large file: ${err.message}`)));
+                            return;
+                        }
+                        
+                        // Small file (<1MB) - decode base64 content
                         const content = Buffer.from(json.content, 'base64').toString('utf8');
                         const summaries = JSON.parse(content);
                         
@@ -131,6 +155,51 @@ class SectionSummaryStorage {
                         resolve(summaries);
                     } catch (e) {
                         reject(new Error(`Failed to parse existing summaries: ${e.message}`));
+                    }
+                });
+            });
+            
+            req.on('error', reject);
+            req.end();
+        });
+    }
+    
+    /**
+     * Fetch file content from GitHub's download_url (for files >1MB)
+     * @param {string} downloadUrl - Full download URL from GitHub
+     * @returns {Promise<Object>} - Parsed JSON object
+     */
+    async fetchFromDownloadUrl(downloadUrl) {
+        const url = new URL(downloadUrl);
+        
+        return new Promise((resolve, reject) => {
+            const options = {
+                hostname: url.hostname,
+                path: url.pathname + url.search,
+                method: 'GET',
+                headers: {
+                    'User-Agent': 'Node.js'
+                }
+            };
+            
+            const req = https.request(options, (res) => {
+                let data = '';
+                
+                res.on('data', (chunk) => {
+                    data += chunk;
+                });
+                
+                res.on('end', () => {
+                    if (res.statusCode !== 200) {
+                        reject(new Error(`Download URL returned ${res.statusCode}`));
+                        return;
+                    }
+                    
+                    try {
+                        const parsed = JSON.parse(data);
+                        resolve(parsed);
+                    } catch (e) {
+                        reject(new Error(`Failed to parse downloaded file: ${e.message}`));
                     }
                 });
             });
