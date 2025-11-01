@@ -77,8 +77,6 @@ class ArticleCuratorService {
      * @returns {Promise<Object>} Object with article IDs as keys and relevance scores as values
      */
     async scoreChunkWithRetry(articles, userInterests, chunkIndex) {
-        let lastError;
-        
         for (let attempt = 1; attempt <= MAX_RETRY_ATTEMPTS; attempt++) {
             try {
                 logger.info(`📊 Processing chunk ${chunkIndex + 1}: ${articles.length} articles (attempt ${attempt}/${MAX_RETRY_ATTEMPTS})`);
@@ -88,8 +86,6 @@ class ArticleCuratorService {
                 logger.info(`✅ Chunk ${chunkIndex + 1} processed successfully: scored ${Object.keys(scores).length} articles`);
                 return scores;
             } catch (error) {
-                lastError = error;
-                
                 // Check if it's a timeout error
                 const isTimeoutError = error.message && (
                     error.message.toLowerCase().includes('timeout') ||
@@ -100,18 +96,15 @@ class ArticleCuratorService {
                     logger.warn(`⚠️ Chunk ${chunkIndex + 1} failed with timeout error (attempt ${attempt}/${MAX_RETRY_ATTEMPTS}): ${error.message}`);
                     logger.info(`⏳ Waiting ${RETRY_DELAY_MS / 1000} seconds before retry...`);
                     await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
-                } else if (attempt < MAX_RETRY_ATTEMPTS) {
-                    logger.warn(`⚠️ Chunk ${chunkIndex + 1} failed (attempt ${attempt}/${MAX_RETRY_ATTEMPTS}): ${error.message}`);
-                    logger.info(`⏳ Waiting ${RETRY_DELAY_MS / 1000} seconds before retry...`);
-                    await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
                 } else {
-                    logger.error(`❌ Chunk ${chunkIndex + 1} failed after ${MAX_RETRY_ATTEMPTS} attempts: ${error.message}`);
+                    // Non-timeout error - skip chunk immediately
+                    logger.error(`❌ Chunk ${chunkIndex + 1} failed with non-timeout error: ${error.message}`);
+                    logger.warn(`⚠️ Skipping chunk ${chunkIndex + 1} and continuing to next chunk`);
+                    return {};
                 }
             }
         }
         
-        // If all retries failed, return empty scores for this chunk
-        logger.warn(`⚠️ Skipping chunk ${chunkIndex + 1} after ${MAX_RETRY_ATTEMPTS} failed attempts`);
         return {};
     }
 
@@ -135,17 +128,20 @@ class ArticleCuratorService {
 
         logger.info(`📦 Split into ${chunks.length} chunks of up to ${ARTICLE_CHUNK_SIZE} articles each`);
 
-        // Score all chunks
+        // Score chunks sequentially
         const allScores = {};
-        const chunkPromises = chunks.map((chunk, index) => 
-            this.scoreChunkWithRetry(chunk, userInterests, index)
-                .then(scores => {
-                    Object.assign(allScores, scores);
-                    return scores;
-                })
-        );
-
-        await Promise.all(chunkPromises);
+        for (let index = 0; index < chunks.length; index++) {
+            const chunk = chunks[index];
+            try {
+                const scores = await this.scoreChunkWithRetry(chunk, userInterests, index);
+                Object.assign(allScores, scores);
+            } catch (error) {
+                // Non-timeout error occurred - log and continue to next chunk
+                logger.error(`❌ Chunk ${index + 1} failed with error: ${error.message}`);
+                logger.warn(`⚠️ Skipping chunk ${index + 1} and continuing to next chunk`);
+                // Continue to next chunk (no scores added for this chunk)
+            }
+        }
 
         logger.info(`✅ Scored ${Object.keys(allScores).length} articles out of ${articles.length} total`);
 

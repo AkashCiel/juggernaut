@@ -7,7 +7,7 @@ module.exports = {
 
     // Article curation limits
     MAX_ARTICLES_FOR_CURATION: 1000,
-    ARTICLE_CHUNK_SIZE: 100, // Articles per OpenAI API call
+    ARTICLE_CHUNK_SIZE: 75, // Articles per OpenAI API call
     RELEVANCE_THRESHOLD: 70, // Minimum relevance score (0-100)
     RETRY_DELAY_MS: 15000, // 15 seconds delay before retry
     MAX_RETRY_ATTEMPTS: 3, // Max retries per chunk

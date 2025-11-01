@@ -1,5 +1,4 @@
 const { logger, logApiCall } = require('./logger-vercel');
-const { retry, RETRY_CONFIGS } = require('./retryUtils');
 const { OPENAI_MODEL, OPENAI_TEMPERATURE } = require('../config/constants');
 
 /**
@@ -10,21 +9,17 @@ class OpenAIClient {
         this.apiKey = process.env.OPENAI_API_KEY;
         this.model = OPENAI_MODEL;
         this.temperature = OPENAI_TEMPERATURE || 1.0;
-        this.timeout = 30000;
     }
 
     /**
-     * Make OpenAI API call with retry logic and error handling
+     * Make OpenAI API call without retry logic (retry handled by caller)
      * @param {Array} messages - Conversation messages
      * @param {number} temperature - Response temperature (optional)
      * @returns {Promise<string>} AI response
      */
     async callOpenAI(messages, temperature = this.temperature) {
         try {
-            const response = await retry(
-                () => this.makeOpenAIRequest(messages, temperature),
-                RETRY_CONFIGS.OPENAI
-            );
+            const response = await this.makeOpenAIRequest(messages, temperature);
             
             logApiCall('openai', 'callOpenAI', { 
                 messageCount: messages.length,
@@ -74,10 +69,7 @@ class OpenAIClient {
         };
 
         return new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => reject(new Error('OpenAI API request timeout')), this.timeout);
-            
             const req = https.request(options, (res) => {
-                clearTimeout(timeout);
                 let responseData = '';
                 
                 res.on('data', (chunk) => {
@@ -85,6 +77,24 @@ class OpenAIClient {
                 });
                 
                 res.on('end', () => {
+                    // Check HTTP status code before parsing
+                    if (res.statusCode !== 200) {
+                        // Try to parse error response as JSON
+                        try {
+                            const errorJson = JSON.parse(responseData);
+                            if (errorJson.error && errorJson.error.message) {
+                                reject(new Error(`OpenAI API error (${res.statusCode}): ${errorJson.error.message}`));
+                            } else {
+                                reject(new Error(`OpenAI API error (${res.statusCode}): ${responseData.substring(0, 200)}`));
+                            }
+                        } catch (parseError) {
+                            // Response is not JSON (likely HTML error page)
+                            reject(new Error(`OpenAI API returned non-200 status (${res.statusCode}). Response: ${responseData.substring(0, 200)}`));
+                        }
+                        return;
+                    }
+                    
+                    // Status 200 - parse JSON response
                     try {
                         const json = JSON.parse(responseData);
                         if (json.error) {
@@ -99,7 +109,6 @@ class OpenAIClient {
             });
 
             req.on('error', (err) => {
-                clearTimeout(timeout);
                 reject(err);
             });
 
