@@ -15,7 +15,7 @@ class EmailService {
      * @param {string} selectedSections - Selected sections string
      * @returns {string} HTML email content
      */
-    composeEmail(curatedArticles, userInterests, selectedSections) {
+    composeEmail(curatedArticles, selectedSections) {
         const sections = selectedSections.split('|').join(', ');
 
         // Compose article cards
@@ -60,7 +60,6 @@ class EmailService {
         
         <p style="color: #999; font-size: 12px; margin: 0;">
             This news feed was personalized for you based on your interests.<br>
-            Come back anytime to update your preferences.
         </p>
     </div>
 </body>
@@ -183,10 +182,10 @@ class EmailService {
      * @param {string} selectedSections - Selected sections
      * @returns {Promise<Object>} Result object
      */
-    async composeAndSendEmail(email, curatedArticles, userInterests, selectedSections) {
+    async composeAndSendEmail(email, curatedArticles, selectedSections) {
         logger.info(`📧 Composing email for ${curatedArticles.length} articles to ${email}...`);
         
-        const htmlContent = this.composeEmail(curatedArticles, userInterests, selectedSections);
+        const htmlContent = this.composeEmail(curatedArticles, selectedSections);
         const result = await this.sendEmail(email, htmlContent);
 
         return result;

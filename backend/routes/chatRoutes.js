@@ -145,7 +145,6 @@ router.post('/curate-feed',
             const emailResult = await emailService.composeAndSendEmail(
                 email,
                 curatedArticles,
-                userInterests,
                 selectedSections
             );
 

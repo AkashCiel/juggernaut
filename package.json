@@ -9,6 +9,7 @@
     "dev:frontend": "cd frontend && npm run dev",
     "dev:vercel": "vercel dev",
     "test:curate-feed": "node test-curate-feed.js",
+    "test:email": "node test-email-service.js",
     "build": "echo 'No build step required for static files'",
     "start": "vercel dev",
     "test:deployment": "node test-vercel-deployment.js",
