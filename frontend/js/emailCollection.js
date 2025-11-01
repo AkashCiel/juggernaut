@@ -42,21 +42,15 @@ class EmailCollection {
         this.clearError();
 
         try {
-            // Validate email with backend
-            const isValid = await this.validateEmailWithBackend(email);
+            // Skip backend validation - assume email is valid
+            // Store email in session storage
+            sessionStorage.setItem('userEmail', email);
             
-            if (isValid) {
-                // Store email in session storage
-                sessionStorage.setItem('userEmail', email);
-                
-                // Redirect to chat page with email parameter
-                window.location.href = `/?email=${encodeURIComponent(email)}`;
-            } else {
-                this.showError('Please enter a valid email address');
-            }
+            // Redirect to chat page with email parameter
+            window.location.href = `/?email=${encodeURIComponent(email)}`;
         } catch (error) {
-            console.error('Email validation error:', error);
-            this.showError('Unable to validate email. Please try again.');
+            console.error('Error:', error);
+            this.showError('Unable to proceed. Please try again.');
         } finally {
             this.setLoading(false);
         }

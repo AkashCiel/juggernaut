@@ -1,6 +1,6 @@
 const { logger, logApiCall } = require('./logger-vercel');
 const { retry, RETRY_CONFIGS } = require('./retryUtils');
-const { OPENAI_MODEL } = require('../config/constants');
+const { OPENAI_MODEL, OPENAI_TEMPERATURE } = require('../config/constants');
 
 /**
  * Shared OpenAI client for consistent API calls across all services
@@ -9,7 +9,7 @@ class OpenAIClient {
     constructor() {
         this.apiKey = process.env.OPENAI_API_KEY;
         this.model = OPENAI_MODEL;
-        this.temperature = 1;
+        this.temperature = OPENAI_TEMPERATURE || 1.0;
         this.timeout = 30000;
     }
 

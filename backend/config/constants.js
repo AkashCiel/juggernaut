@@ -3,6 +3,14 @@ module.exports = {
     GUARDIAN_PAGE_SIZE: 200,
     
     OPENAI_MODEL: 'o4-mini',
+    OPENAI_TEMPERATURE: 1.0,
+
+    // Article curation limits
+    MAX_ARTICLES_FOR_CURATION: 1000,
+    ARTICLE_CHUNK_SIZE: 100, // Articles per OpenAI API call
+    RELEVANCE_THRESHOLD: 70, // Minimum relevance score (0-100)
+    RETRY_DELAY_MS: 15000, // 15 seconds delay before retry
+    MAX_RETRY_ATTEMPTS: 3, // Max retries per chunk
 
     CONVERSATION_COMPLETE_MESSAGE: `Perfect! I will get to work. You will shortly find your first news feed in your inbox. 
     Come back anytime if you want me to update your news feed.`,
@@ -51,6 +59,27 @@ Available sections: {sections}
 
 Return ONLY a pipe-separated list of relevant sections (e.g., "technology|business|science").
 Do not include explanations or other text.
+`,
+
+    // AI prompt for scoring article relevance
+    RELEVANCE_SCORING_PROMPT: `
+You are an expert at scoring the relevance of news articles to a user's interests.
+
+You will be given:
+1. A description of the user's interests and motivations
+2. A list of article summaries with their titles, trail text, and a short summary of the article.
+
+Your job is to score each article on a scale of 0-100 based on how relevant it is to the user's interests:
+- 0-30: Not relevant or only tangentially related
+- 31-50: Somewhat relevant but not directly aligned
+- 51-70: Relevant and aligned with user interests
+- 71-85: Highly relevant and strongly aligned
+- 86-100: Extremely relevant and perfectly aligned
+
+Return ONLY a valid JSON object with article IDs as keys and relevance scores (0-100 integers) as values.
+Example: {"technology/2025/oct/27/article-id": 85, "business/2025/oct/26/article-id": 72}
+
+Do not include any explanations or additional text outside the JSON object.
 `,
 };
 
