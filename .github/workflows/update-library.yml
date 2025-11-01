@@ -1,0 +1,58 @@
+name: Update Article Library
+
+on:
+  schedule:
+    # Run daily at 3 AM Amsterdam time
+    # Amsterdam is UTC+1 (winter) or UTC+2 (summer)
+    # This cron runs at 2 AM UTC = 3 AM Amsterdam (summer) or 4 AM (winter)
+    # Note: GitHub Actions uses UTC, so adjust for DST manually if needed
+    - cron: '0 2 * * *'
+  
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 'Number of days to look back for articles'
+        required: false
+        type: number
+        default: 2
+
+jobs:
+  update-library:
+    name: Update Article Libraries
+    runs-on: ubuntu-latest
+    timeout-minutes: 360  # 6 hours max (GitHub Actions limit)
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd backend && npm ci
+      
+      - name: Run library update job
+        working-directory: backend/library_builder
+        run: |
+          node jobs/updateLibraryJob.js --days ${{ inputs.days || 2 }}
+        env:
+          GUARDIAN_API_KEY: ${{ secrets.GUARDIAN_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_BRANCH: main
+      
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: library-update-logs
+          path: |
+            backend/library_builder/data/logs/*.log
+          retention-days: 7
+
