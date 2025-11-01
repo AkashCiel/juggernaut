@@ -1,8 +1,6 @@
 const { logger, logApiCall } = require('../utils/logger-vercel');
 const ConversationService = require('./conversationService');
 const NewsDiscoveryService = require('./newsDiscoveryService');
-const UserService = require('./userService');
-const GuardianSectionsCacheService = require('./guardianSectionsCacheService');
 const { CHAT_WELCOME_MESSAGE } = require('../config/constants');
 const { CONVERSATION_COMPLETE_MESSAGE } = require('../config/constants');
 
@@ -11,8 +9,6 @@ class OrchestratorService {
         this.welcomeMessage = CHAT_WELCOME_MESSAGE;
         this.conversationService = new ConversationService();
         this.newsDiscoveryService = new NewsDiscoveryService();
-        this.userService = new UserService();
-        this.sectionsCacheService = new GuardianSectionsCacheService();
         this.sessions = new Map(); // Store chat history per session
     }
 
@@ -48,7 +44,9 @@ class OrchestratorService {
                 
                 // 3c. Register user if email is provided
                 if (email && userInterestsDescription) {
-                    await this.registerUser(email, userInterestsDescription);
+                    console.log('Mapping user interests to sections...');
+                    const sections = await this.newsDiscoveryService.mapUserInterestsToSections(userInterestsDescription, allSections);
+                    console.log('Sections:', sections);
                 }
 
                 return {
@@ -115,6 +113,12 @@ class OrchestratorService {
             // Initialize empty session
             this.sessions.set(sessionId, []);
             
+            // Pre-fetch section summaries asynchronously (don't wait for it)
+            this.newsDiscoveryService.fetchSectionSummaries()
+                .catch(error => {
+                    logger.warn(`⚠️ Failed to pre-fetch section summaries: ${error.message}`);
+                });
+            
             logApiCall('chat', 'startSession', { sessionId: sessionId });
             
             return {
@@ -134,32 +138,6 @@ class OrchestratorService {
      */
     generateSessionId() {
         return `chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    }
-
-    /**
-     * Register user with their interests description
-     * @param {string} email - User's email address
-     * @param {string} interestsDescription - User's interests description
-     * @returns {Promise<Object>} Registration result
-     */
-    async registerUser(email, interestsDescription) {
-        try {
-            // Get Guardian sections
-            const allSections = await this.sectionsCacheService.getSections();
-            
-            // Map interests to sections using NewsDiscoveryService
-            const sections = await this.newsDiscoveryService.mapUserInterestsToSections(interestsDescription, allSections);
-            const sectionArray = sections.split('|').filter(s => s.trim());
-            
-            // Register user with description and sections
-            const user = await this.userService.registerUser(email, interestsDescription, sectionArray);
-            
-            logger.info(`✅ User registered via chat: ${email} (${user.userId})`);
-            return { success: true, user: user };
-        } catch (error) {
-            logger.error(`❌ User registration error: ${error.message}`);
-            return { success: false, error: error.message };
-        }
     }
 
     /**
