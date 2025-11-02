@@ -53,10 +53,10 @@ function parseArgs() {
  * @returns {Promise<string[]>} Array of section names
  */
 async function discoverSectionsFromGitHub() {
-    const githubToken = process.env.TOKEN_GITHUB;
+    const githubToken = process.env.GIT_TOKEN;
     
     if (!githubToken) {
-        throw new Error('TOKEN_GITHUB environment variable is required');
+        throw new Error('GIT_TOKEN environment variable is required');
     }
     
     return new Promise((resolve, reject) => {
