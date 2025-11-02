@@ -15,12 +15,13 @@ class ResultsProcessor {
     }
 
     /**
-     * Download results file from OpenAI
+     * Download results file from OpenAI with retry logic for 502 errors
      * @param {string} fileId - Output file ID
+     * @param {number} attempt - Current attempt number (default: 1)
      * @returns {Promise<string>} - JSONL content
      */
-    async downloadResults(fileId) {
-        logger.info('Downloading results file', { fileId });
+    async downloadResults(fileId, attempt = 1) {
+        logger.info('Downloading results file', { fileId, attempt });
         
         const options = {
             hostname: 'api.openai.com',
@@ -32,51 +33,90 @@ class ResultsProcessor {
             }
         };
         
-        return new Promise((resolve, reject) => {
-            const req = https.request(options, (res) => {
-                let data = '';
-                
-                res.on('data', (chunk) => {
-                    data += chunk;
-                });
-                
-                res.on('end', () => {
-                    if (res.statusCode !== 200) {
-                        logger.error('Results download failed', { 
-                            status: res.statusCode 
-                        });
-                        reject(new Error(`Download failed with status ${res.statusCode}`));
-                        return;
-                    }
+        try {
+            const result = await new Promise((resolve, reject) => {
+                const req = https.request(options, (res) => {
+                    let data = '';
                     
-                    logger.info('Results downloaded', { 
-                        size: `${(data.length / 1024).toFixed(2)} KB`
+                    res.on('data', (chunk) => {
+                        data += chunk;
                     });
                     
-                    // Save to file for backup
-                    const timestamp = new Date().toISOString().replace(/:/g, '-').split('.')[0];
-                    const filename = `results-${fileId}-${timestamp}.jsonl`;
-                    const filepath = path.join(__dirname, '../data/results', filename);
-                    
-                    const dir = path.dirname(filepath);
-                    if (!fs.existsSync(dir)) {
-                        fs.mkdirSync(dir, { recursive: true });
-                    }
-                    
-                    fs.writeFileSync(filepath, data, 'utf8');
-                    logger.debug('Results saved to file', { filepath });
-                    
-                    resolve(data);
+                    res.on('end', () => {
+                        if (res.statusCode === 200) {
+                            resolve(data);
+                        } else {
+                            reject(new Error(`Download failed with status ${res.statusCode}`));
+                        }
+                    });
                 });
+                
+                req.on('error', (err) => {
+                    reject(err);
+                });
+                
+                req.end();
             });
             
-            req.on('error', (err) => {
-                logger.error('Download request failed', { error: err.message });
-                reject(err);
+            logger.info('Results downloaded', { 
+                size: `${(result.length / 1024).toFixed(2)} KB`,
+                attempt
             });
             
-            req.end();
-        });
+            // Save to file for backup
+            const timestamp = new Date().toISOString().replace(/:/g, '-').split('.')[0];
+            const filename = `results-${fileId}-${timestamp}.jsonl`;
+            const filepath = path.join(__dirname, '../data/results', filename);
+            
+            const dir = path.dirname(filepath);
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+            }
+            
+            fs.writeFileSync(filepath, result, 'utf8');
+            logger.debug('Results saved to file', { filepath });
+            
+            return result;
+            
+        } catch (error) {
+            // Check if it's a 502 error or other 5xx server error
+            const isServerError = error.message.includes('status 50') || 
+                                  error.message.includes('status 5');
+            
+            if (isServerError) {
+                // Calculate retry delay based on attempt number
+                let delayMs;
+                if (attempt === 1) {
+                    delayMs = 5000; // 5 seconds
+                } else if (attempt === 2) {
+                    delayMs = 10000; // 10 seconds
+                } else if (attempt === 3) {
+                    delayMs = 20000; // 20 seconds
+                } else {
+                    delayMs = 30000; // 30 seconds for subsequent retries
+                }
+                
+                logger.warn(`Results download failed (attempt ${attempt}): ${error.message}`, {
+                    fileId,
+                    status: error.message.match(/status (\d+)/)?.[1],
+                    retryingIn: `${delayMs / 1000}s`
+                });
+                
+                // Wait before retrying
+                await new Promise(resolve => setTimeout(resolve, delayMs));
+                
+                // Retry
+                return this.downloadResults(fileId, attempt + 1);
+            } else {
+                // Non-retryable error, fail immediately
+                logger.error('Results download failed', { 
+                    fileId,
+                    attempt,
+                    error: error.message 
+                });
+                throw error;
+            }
+        }
     }
 
     /**
