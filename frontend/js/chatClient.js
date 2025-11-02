@@ -154,7 +154,7 @@ class ChatClient {
         
         typingDiv.innerHTML = `
             <div class="typing-indicator">
-                AI is typing
+                thinking . . .
                 <div class="typing-dots">
                     <span></span>
                     <span></span>
