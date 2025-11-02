@@ -8,10 +8,10 @@ const { logger } = require('../utils/logger');
 class GithubUploader {
     constructor() {
         this.githubService = new GitHubService();
-        this.githubToken = process.env.GITHUB_TOKEN;
+        this.githubToken = process.env.TOKEN_GITHUB;
         
         if (!this.githubToken) {
-            logger.warn('GITHUB_TOKEN not set - upload will fail');
+            logger.warn('TOKEN_GITHUB not set - upload will fail');
         }
     }
 
@@ -25,7 +25,7 @@ class GithubUploader {
         logger.info('Uploading library to GitHub', { targetPath });
         
         if (!this.githubToken) {
-            throw new Error('GITHUB_TOKEN environment variable not set');
+            throw new Error('TOKEN_GITHUB environment variable not set');
         }
         
         try {

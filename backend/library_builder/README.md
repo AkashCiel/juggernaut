@@ -43,7 +43,7 @@ library_builder/
 - Environment variables:
   - `OPENAI_API_KEY` - OpenAI API key (with GPT-5 access)
   - `GUARDIAN_API_KEY` - Guardian API key
-  - `GITHUB_TOKEN` - GitHub personal access token
+  - `TOKEN_GITHUB` - GitHub personal access token
 
 ## Installation
 
