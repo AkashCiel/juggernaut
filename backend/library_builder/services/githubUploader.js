@@ -104,7 +104,27 @@ class GithubUploader {
                 this.githubToken
             );
             
-            // Decode base64 content
+            // Check if file is too large (>1MB) - GitHub returns encoding: "none" and empty content
+            if (response.encoding === 'none' || !response.content || response.content.length === 0) {
+                // File is too large, use download_url instead
+                if (!response.download_url) {
+                    throw new Error('File too large and no download_url available');
+                }
+                
+                logger.debug('File is large (>1MB), using download_url', { 
+                    downloadUrl: response.download_url 
+                });
+                
+                const library = await this.fetchFromDownloadUrl(response.download_url);
+                logger.debug('Existing library downloaded from download_url', { 
+                    articleCount: library.articles?.length || 0,
+                    sha: response.sha.substring(0, 8)
+                });
+                
+                return library;
+            }
+            
+            // Small file (<1MB) - decode base64 content
             const content = Buffer.from(response.content, 'base64').toString('utf8');
             const library = JSON.parse(content);
             
@@ -122,6 +142,52 @@ class GithubUploader {
             }
             throw err;
         }
+    }
+
+    /**
+     * Fetch file content from GitHub's download_url (for files >1MB)
+     * @param {string} downloadUrl - Full download URL from GitHub
+     * @returns {Promise<Object>} - Parsed library object
+     */
+    async fetchFromDownloadUrl(downloadUrl) {
+        const https = require('https');
+        const url = new URL(downloadUrl);
+        
+        return new Promise((resolve, reject) => {
+            const options = {
+                hostname: url.hostname,
+                path: url.pathname + url.search,
+                method: 'GET',
+                headers: {
+                    'User-Agent': 'Node.js'
+                }
+            };
+            
+            const req = https.request(options, (res) => {
+                let data = '';
+                
+                res.on('data', (chunk) => {
+                    data += chunk;
+                });
+                
+                res.on('end', () => {
+                    if (res.statusCode !== 200) {
+                        reject(new Error(`Download URL returned ${res.statusCode}`));
+                        return;
+                    }
+                    
+                    try {
+                        const library = JSON.parse(data);
+                        resolve(library);
+                    } catch (e) {
+                        reject(new Error(`Failed to parse downloaded file: ${e.message}`));
+                    }
+                });
+            });
+            
+            req.on('error', reject);
+            req.end();
+        });
     }
 
     /**
