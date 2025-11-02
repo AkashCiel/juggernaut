@@ -24,8 +24,17 @@ class LibraryBuilder {
             summaryCount: summaries.length
         });
         
-        // Validate completeness
-        this.validateCompleteness(articles, summaries);
+        // Check for missing summaries (but don't throw - we'll skip them)
+        const missingInfo = this.checkCompleteness(articles, summaries);
+        
+        if (missingInfo.missingCount > 0) {
+            logger.warn('⚠️ Some articles are missing summaries and will be skipped', { 
+                missingCount: missingInfo.missingCount,
+                totalArticles: articles.length,
+                willInclude: articles.length - missingInfo.missingCount,
+                examples: missingInfo.examples
+            });
+        }
         
         // Create lookup map for summaries
         const summaryMap = new Map();
@@ -33,16 +42,23 @@ class LibraryBuilder {
             summaryMap.set(summary.articleId, summary);
         });
         
-        // Build library articles array
-        const libraryArticles = articles.map(article => {
+        // Build library articles array - only include articles with summaries
+        const libraryArticles = [];
+        const skippedArticles = [];
+        
+        articles.forEach(article => {
             const summary = summaryMap.get(article.id);
             
             if (!summary) {
-                logger.warn('No summary found for article', { articleId: article.id });
-                throw new Error(`Missing summary for article: ${article.id}`);
+                logger.warn('Skipping article - no summary found', { 
+                    articleId: article.id,
+                    title: article.title?.substring(0, 50) || 'Unknown'
+                });
+                skippedArticles.push(article.id);
+                return; // Skip this article
             }
             
-            return {
+            libraryArticles.push({
                 id: article.id,
                 title: article.title,
                 webUrl: article.webUrl,
@@ -53,11 +69,16 @@ class LibraryBuilder {
                 summary: summary.summary,
                 summaryTokens: summary.summaryTokens,
                 generatedAt: new Date().toISOString()
-            };
+            });
         });
         
-        // Calculate date range
-        const dates = articles
+        // Log summary of what was included/excluded
+        if (skippedArticles.length > 0) {
+            logger.info(`📊 Included ${libraryArticles.length} articles, skipped ${skippedArticles.length} articles without summaries`);
+        }
+        
+        // Calculate date range from included articles only
+        const dates = libraryArticles
             .map(a => new Date(a.publishedDate))
             .filter(d => !isNaN(d.getTime()))
             .sort((a, b) => a - b);
@@ -65,10 +86,15 @@ class LibraryBuilder {
         const fromDate = dates.length > 0 ? dates[0].toISOString().split('T')[0] : null;
         const toDate = dates.length > 0 ? dates[dates.length - 1].toISOString().split('T')[0] : null;
         
+        // Ensure we have at least one article to include
+        if (libraryArticles.length === 0) {
+            throw new Error('No articles with summaries available to build library');
+        }
+        
         // Build complete library object
         const library = {
             metadata: {
-                section: batchMetadata.section || articles[0]?.section || 'unknown',
+                section: batchMetadata.section || libraryArticles[0]?.section || articles[0]?.section || 'unknown',
                 generated_at: new Date().toISOString(),
                 date_range: {
                     from: fromDate,
@@ -100,11 +126,12 @@ class LibraryBuilder {
     }
 
     /**
-     * Validate that every article has a summary
+     * Check completeness - returns info about missing summaries but doesn't throw
      * @param {Array} articles - Article objects
      * @param {Array} summaries - Summary objects
+     * @returns {Object} - {missingCount, examples}
      */
-    validateCompleteness(articles, summaries) {
+    checkCompleteness(articles, summaries) {
         const articleIds = new Set(articles.map(a => a.id));
         const summaryIds = new Set(summaries.map(s => s.articleId));
         
@@ -116,21 +143,20 @@ class LibraryBuilder {
             }
         });
         
-        if (missingSummaries.length > 0) {
-            logger.error('Incomplete library - missing summaries', { 
-                count: missingSummaries.length,
-                examples: missingSummaries.slice(0, 5)
-            });
-            throw new Error(`Missing ${missingSummaries.length} summaries. Library is incomplete.`);
-        }
-        
         // Check for duplicate article IDs
         const duplicateArticles = articles.length - articleIds.size;
         if (duplicateArticles > 0) {
-            throw new Error(`Found ${duplicateArticles} duplicate article IDs`);
+            logger.warn(`Found ${duplicateArticles} duplicate article IDs - they will be handled by the build process`);
         }
         
-        logger.debug('Completeness validation passed');
+        if (missingSummaries.length === 0) {
+            logger.debug('Completeness check passed - all articles have summaries');
+        }
+        
+        return {
+            missingCount: missingSummaries.length,
+            examples: missingSummaries.slice(0, 5)
+        };
     }
 
     /**

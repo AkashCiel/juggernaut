@@ -103,15 +103,20 @@ async function complete() {
             // remainingFailed = retryResults.failed;
         }
         
-        // Final validation
+        // Final validation - warn about failed articles but continue
         if (remainingFailed.length > 0) {
-            logger.error(`Failed to process ${remainingFailed.length} articles after ${maxRetries} retries`);
-            logger.error('Failed articles:', remainingFailed.map(f => f.articleId));
-            throw new Error(`Library incomplete: ${remainingFailed.length} articles failed after retries`);
+            logger.warn(`⚠️ ${remainingFailed.length} articles failed to process after ${maxRetries} retries - they will be skipped`);
+            logger.warn('Failed articles:', remainingFailed.map(f => f.articleId));
         }
         
-        logger.section('✅ ALL ARTICLES PROCESSED SUCCESSFULLY');
-        logger.info(`Total successful: ${allSuccessful.length}/${state.articleCount}`);
+        if (allSuccessful.length === 0) {
+            throw new Error('No articles were successfully processed - cannot build library');
+        }
+        
+        logger.section(`✅ ${allSuccessful.length} ARTICLES PROCESSED SUCCESSFULLY (out of ${state.articleCount} total)`);
+        if (remainingFailed.length > 0) {
+            logger.info(`⚠️ ${remainingFailed.length} articles will be skipped (no summaries available)`);
+        }
         
         // Step 5: Build library
         logger.subsection('Step 4: Building library');
