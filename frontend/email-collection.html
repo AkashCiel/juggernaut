@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI News Discovery - Email Collection</title>
+    <title>Juggernaut - Get Started</title>
     <link rel="stylesheet" href="css/design-system.css">
     <style>
         body {
@@ -11,6 +11,73 @@
             align-items: center;
             justify-content: center;
             padding: var(--spacing-large);
+            background: #f1f5f9;
+            position: relative;
+        }
+
+        /* Floating Navigation */
+        .floating-nav {
+            position: fixed;
+            top: var(--spacing-large);
+            right: var(--spacing-large);
+            background: var(--color-white);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-medium);
+            padding: var(--spacing-medium) var(--spacing-large);
+            display: flex;
+            gap: var(--spacing-large);
+            align-items: center;
+            z-index: 1000;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .floating-nav a {
+            text-decoration: none;
+            color: var(--color-text);
+            font-weight: var(--font-weight-medium);
+            font-size: var(--font-size-large);
+            transition: color var(--transition-medium);
+        }
+
+        .floating-nav a:hover {
+            color: var(--color-primary);
+        }
+
+        .floating-nav .brand {
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+        }
+
+        .floating-nav .nav-separator {
+            width: 1px;
+            height: 20px;
+            background: var(--color-border);
+        }
+
+        .floating-nav button {
+            background: none;
+            border: none;
+            color: var(--color-text);
+            font-weight: var(--font-weight-medium);
+            font-size: var(--font-size-large);
+            cursor: pointer;
+            transition: color var(--transition-medium);
+            font-family: inherit;
+            padding: 0;
+        }
+
+        .floating-nav button:hover {
+            color: var(--color-primary);
+        }
+
+        @media (max-width: 600px) {
+            .floating-nav {
+                top: var(--spacing-medium);
+                right: var(--spacing-medium);
+                padding: var(--spacing-small) var(--spacing-medium);
+                gap: var(--spacing-medium);
+                font-size: var(--font-size-medium);
+            }
         }
 
         .container {
@@ -18,7 +85,7 @@
             border-radius: var(--border-radius-medium);
             box-shadow: var(--shadow-medium);
             padding: var(--spacing-xxl);
-            max-width: 500px;
+            max-width: 520px;
             width: 100%;
         }
 
@@ -30,13 +97,15 @@
         .header h1 {
             color: var(--color-text);
             font-size: var(--font-size-xxlarge);
+            font-weight: var(--font-weight-semibold);
             margin-bottom: var(--spacing-small);
+            letter-spacing: -0.5px;
         }
 
         .header p {
             color: var(--color-text-light);
             font-size: var(--font-size-large);
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         .form-group {
@@ -53,27 +122,30 @@
         .form-group input {
             width: 100%;
             padding: var(--spacing-medium) var(--spacing-large);
-            border: 2px solid var(--color-border);
-            border-radius: var(--border-radius-small);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-medium);
             font-size: var(--font-size-large);
             transition: border-color var(--transition-medium);
+            background: var(--color-white);
+            color: var(--color-text);
         }
 
         .form-group input:focus {
             outline: none;
             border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.08);
         }
 
         .form-group input.error {
-            border-color: #e74c3c;
+            border-color: #991b1b;
         }
 
         .note {
-            background: var(--color-background);
-            border-left: 4px solid var(--color-primary);
-            padding: var(--spacing-medium);
+            background: #f1f5f9;
+            border-left: 3px solid var(--color-primary);
+            padding: var(--spacing-large);
             margin-bottom: var(--spacing-xl);
-            border-radius: 0 var(--border-radius-small) var(--border-radius-small) 0;
+            border-radius: 0 var(--border-radius-medium) var(--border-radius-medium) 0;
         }
 
         .note p {
@@ -84,19 +156,20 @@
 
         .submit-btn {
             width: 100%;
-            background: var(--gradient-primary);
+            background: var(--color-primary);
             color: var(--color-white);
             border: none;
             padding: var(--spacing-medium) var(--spacing-large);
-            border-radius: var(--border-radius-small);
+            border-radius: var(--border-radius-medium);
             font-size: var(--font-size-large);
             font-weight: var(--font-weight-medium);
             cursor: pointer;
-            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+            transition: all var(--transition-medium);
         }
 
         .submit-btn:hover {
-            transform: translateY(-2px);
+            background: var(--color-secondary);
+            transform: translateY(-1px);
             box-shadow: var(--shadow-medium);
         }
 
@@ -108,9 +181,9 @@
         }
 
         .error-message {
-            color: #e74c3c;
-            font-size: 14px;
-            margin-top: 8px;
+            color: #991b1b;
+            font-size: var(--font-size-medium);
+            margin-top: var(--spacing-small);
             display: none;
         }
 
@@ -121,8 +194,8 @@
         }
 
         .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border: 3px solid var(--color-border);
+            border-top: 3px solid var(--color-primary);
             border-radius: 50%;
             width: 30px;
             height: 30px;
@@ -144,12 +217,125 @@
                 font-size: 24px;
             }
         }
+
+        /* About Modal Styles */
+        .about-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity var(--transition-medium);
+            padding: var(--spacing-large);
+        }
+
+        .about-modal-overlay.about-modal-open {
+            opacity: 1;
+        }
+
+        .about-modal-container {
+            background: var(--color-white);
+            border-radius: var(--border-radius-medium);
+            box-shadow: var(--shadow-medium);
+            padding: var(--spacing-xxl);
+            max-width: 720px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(-20px);
+            transition: transform var(--transition-medium);
+        }
+
+        .about-modal-overlay.about-modal-open .about-modal-container {
+            transform: translateY(0);
+        }
+
+        .about-modal-close {
+            position: absolute;
+            top: var(--spacing-large);
+            right: var(--spacing-large);
+            background: none;
+            border: none;
+            font-size: 32px;
+            line-height: 1;
+            color: var(--color-text-light);
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color var(--transition-medium);
+            padding: 0;
+        }
+
+        .about-modal-close:hover {
+            color: var(--color-primary);
+        }
+
+        .about-modal-header {
+            margin-bottom: var(--spacing-xxl);
+            padding-right: var(--spacing-xxl);
+        }
+
+        .about-modal-header h1 {
+            font-size: var(--font-size-xxlarge);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+            margin-bottom: var(--spacing-small);
+            letter-spacing: -0.5px;
+        }
+
+        .about-modal-content {
+            line-height: 1.8;
+            color: var(--color-text);
+            font-size: var(--font-size-large);
+        }
+
+        .about-modal-content p {
+            margin-bottom: var(--spacing-large);
+        }
+
+        @media (max-width: 768px) {
+            .about-modal-overlay {
+                align-items: flex-start;
+                padding: var(--spacing-large) var(--spacing-medium);
+            }
+
+            .about-modal-container {
+                padding: var(--spacing-xl);
+                margin-top: var(--spacing-large);
+                max-height: calc(100vh - var(--spacing-large) * 2);
+            }
+
+            .about-modal-header h1 {
+                font-size: var(--font-size-xlarge);
+            }
+
+            .about-modal-content {
+                font-size: var(--font-size-medium);
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Floating Navigation -->
+    <nav class="floating-nav">
+        <a href="email-collection.html" class="brand">Juggernaut</a>
+        <div class="nav-separator"></div>
+        <button id="aboutModalTrigger">About</button>
+    </nav>
+
     <div class="container">
         <div class="header">
-            <h1>AI News Discovery</h1>
+            <h1>Juggernaut</h1>
             <p>Let's start by collecting your email address</p>
         </div>
 
@@ -182,5 +368,6 @@
     </div>
 
     <script src="js/emailCollection.js"></script>
+    <script type="module" src="js/aboutModal.js"></script>
 </body>
 </html>

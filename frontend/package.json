@@ -1,7 +1,7 @@
 {
   "name": "juggernaut-frontend",
   "version": "1.0.0",
-  "description": "Frontend for Juggernaut AI News Chat",
+  "description": "Frontend for Juggernaut",
   "scripts": {
     "dev": "serve . -p 3000"
   },

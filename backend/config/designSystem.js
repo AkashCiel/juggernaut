@@ -1,30 +1,30 @@
 /**
  * Design System Configuration
  * Auto-generated from design-system/design-system.json
- * Version: 1.0.0
- * Generated: 2025-10-25T13:37:43.388Z
+ * Version: 2.0.0
+ * Generated: 2025-11-03T00:37:25.302Z
  */
 
 const designSystem = {
-  "version": "1.0.0",
+  "version": "2.0.0",
   "colors": {
-    "primary": "#667eea",
-    "secondary": "#764ba2",
-    "text": "#333",
-    "textLight": "#666",
-    "background": "#f8f9fa",
+    "primary": "#4a5568",
+    "secondary": "#718096",
+    "text": "#2d3748",
+    "textLight": "#a0aec0",
+    "background": "#fafbfc",
     "white": "#ffffff",
-    "border": "#e9ecef",
-    "hover": "#e9ecef"
+    "border": "#e8ebef",
+    "hover": "#f1f5f9"
   },
   "fonts": {
-    "primary": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    "primary": "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, 'Helvetica Neue', Arial, sans-serif",
     "size": {
-      "small": "12px",
-      "medium": "14px",
-      "large": "16px",
-      "xlarge": "18px",
-      "xxlarge": "28px"
+      "small": "13px",
+      "medium": "15px",
+      "large": "17px",
+      "xlarge": "20px",
+      "xxlarge": "32px"
     },
     "weight": {
       "normal": "400",
@@ -35,29 +35,29 @@ const designSystem = {
   },
   "spacing": {
     "xs": "8px",
-    "small": "10px",
-    "medium": "15px",
-    "large": "20px",
-    "xl": "25px",
-    "xxl": "30px"
+    "small": "12px",
+    "medium": "16px",
+    "large": "24px",
+    "xl": "32px",
+    "xxl": "40px"
   },
   "borderRadius": {
-    "small": "8px",
-    "medium": "12px"
+    "small": "6px",
+    "medium": "8px"
   },
   "shadows": {
-    "light": "0 1px 6px rgba(0,0,0,0.08)",
-    "medium": "0 2px 10px rgba(0,0,0,0.1)"
+    "light": "0 1px 3px rgba(0, 0, 0, 0.03)",
+    "medium": "0 4px 12px rgba(0, 0, 0, 0.05)"
   },
   "gradients": {
-    "primary": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+    "primary": "linear-gradient(180deg, #4a5568 0%, #718096 100%)"
   },
   "breakpoints": {
     "mobile": "600px"
   },
   "transitions": {
-    "fast": "0.2s ease",
-    "medium": "0.3s ease"
+    "fast": "0.15s ease",
+    "medium": "0.25s ease"
   }
 };
 
