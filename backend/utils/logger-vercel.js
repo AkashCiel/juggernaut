@@ -31,7 +31,7 @@ const logger = winston.createLogger({
         winston.format.json()
     ),
     defaultMeta: { 
-        service: 'compass-backend',
+        service: 'juggernaut-backend',
         environment: process.env.NODE_ENV || 'development',
         platform: 'vercel'
     },

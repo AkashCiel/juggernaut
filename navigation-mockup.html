@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Style Comparison</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f1f5f9;
+        }
+        .demo-section {
+            margin-bottom: 60px;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        h2 {
+            color: #2d3748;
+            margin-bottom: 30px;
+        }
+        
+        /* OPTION 1: Top Header Navigation */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 1px solid #e8ebef;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        }
+        .top-nav a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .top-nav a:hover {
+            color: #2d3748;
+        }
+        .top-nav .brand {
+            font-weight: 600;
+            font-size: 18px;
+            color: #2d3748;
+        }
+        .top-nav .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+        .content-with-top-nav {
+            margin-top: 60px;
+            padding: 20px;
+        }
+        
+        /* OPTION 2: Floating/Overlay Navigation */
+        .floating-nav {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: white;
+            border: 1px solid #e8ebef;
+            border-radius: 8px;
+            padding: 12px 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+        .floating-nav a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        .floating-nav a:hover {
+            color: #2d3748;
+        }
+        .floating-nav .brand {
+            font-weight: 600;
+            color: #2d3748;
+        }
+        .content-with-floating-nav {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; color: #2d3748; margin-bottom: 40px;">Navigation Style Comparison</h1>
+    
+    <!-- Option 1: Top Header -->
+    <div class="demo-section">
+        <h2>Option 1: Top Header Navigation</h2>
+        <div class="top-nav">
+            <a href="#" class="brand">Juggernaut</a>
+            <div class="nav-links">
+                <a href="#">About</a>
+            </div>
+        </div>
+        <div class="content-with-top-nav">
+            <p>This navigation stays fixed at the top. Always visible, clean, professional.</p>
+            <p>Works well for your current centered layout with the chat container.</p>
+        </div>
+    </div>
+    
+    <!-- Option 2: Floating -->
+    <div class="demo-section">
+        <h2>Option 2: Floating/Overlay Navigation</h2>
+        <div class="floating-nav">
+            <a href="#" class="brand">Juggernaut</a>
+            <a href="#">About</a>
+        </div>
+        <div class="content-with-floating-nav">
+            <p>This navigation floats in the top-right corner.</p>
+            <p>More minimalist, doesn't take up dedicated space, but might be less obvious.</p>
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 40px; color: #718096;">
+        <p>Which style do you prefer? I recommend Option 1 (Top Header) for better visibility and usability.</p>
+    </div>
+</body>
+</html>

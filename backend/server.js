@@ -67,7 +67,7 @@ process.on('SIGINT', () => {
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`🚀 Compass Backend running on port ${PORT}`);
+    console.log(`🚀 Juggernaut Backend running on port ${PORT}`);
     console.log(`📊 Health check: http://localhost:${PORT}/health`);
     console.log(`🔧 API endpoint: http://localhost:${PORT}/api/generate-report`);
     console.log(`🔍 Status check: http://localhost:${PORT}/status`);
