@@ -1,7 +1,7 @@
 {
-  "name": "ai-news-backend",
+  "name": "compass-backend",
   "version": "1.0.0",
-  "description": "Backend API for AI News Agent",
+  "description": "Backend API for Compass",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

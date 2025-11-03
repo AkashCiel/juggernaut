@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI News Chat - Discover News You Care About</title>
+    <title>Compass - Navigate News You Care About</title>
     <link rel="stylesheet" href="css/design-system.css">
     <style>
         body {
@@ -11,6 +11,57 @@
             align-items: center;
             justify-content: center;
             padding: var(--spacing-large);
+            background: #f1f5f9;
+            position: relative;
+        }
+
+        /* Floating Navigation */
+        .floating-nav {
+            position: fixed;
+            top: var(--spacing-large);
+            right: var(--spacing-large);
+            background: var(--color-white);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-medium);
+            padding: var(--spacing-medium) var(--spacing-large);
+            display: flex;
+            gap: var(--spacing-large);
+            align-items: center;
+            z-index: 1000;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .floating-nav a {
+            text-decoration: none;
+            color: var(--color-text);
+            font-weight: var(--font-weight-medium);
+            font-size: var(--font-size-large);
+            transition: color var(--transition-medium);
+        }
+
+        .floating-nav a:hover {
+            color: var(--color-primary);
+        }
+
+        .floating-nav .brand {
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+        }
+
+        .floating-nav .nav-separator {
+            width: 1px;
+            height: 20px;
+            background: var(--color-border);
+        }
+
+        @media (max-width: 768px) {
+            .floating-nav {
+                top: var(--spacing-medium);
+                right: var(--spacing-medium);
+                padding: var(--spacing-small) var(--spacing-medium);
+                gap: var(--spacing-medium);
+                font-size: var(--font-size-medium);
+            }
         }
 
         .chat-container {
@@ -26,20 +77,23 @@
         }
 
         .chat-header {
-            background: var(--gradient-primary);
+            background: var(--color-primary);
             color: var(--color-white);
-            padding: var(--spacing-large);
+            padding: var(--spacing-xl);
             text-align: center;
         }
 
         .chat-header h1 {
-            font-size: var(--font-size-xlarge);
+            font-size: var(--font-size-xxlarge);
+            font-weight: var(--font-weight-semibold);
             margin-bottom: var(--spacing-small);
+            letter-spacing: -0.5px;
         }
 
         .chat-header p {
-            opacity: 0.9;
-            font-size: var(--font-size-medium);
+            opacity: 0.85;
+            font-size: var(--font-size-large);
+            font-weight: var(--font-weight-normal);
         }
 
         .chat-messages {
@@ -49,6 +103,7 @@
             display: flex;
             flex-direction: column;
             gap: var(--spacing-medium);
+            background: var(--color-background);
         }
 
         .message {
@@ -63,26 +118,30 @@
             background: var(--color-primary);
             color: var(--color-white);
             align-self: flex-end;
-            border-bottom-right-radius: var(--spacing-small);
+            border-bottom-right-radius: var(--border-radius-small);
         }
 
         .message.bot {
-            background: var(--color-background);
+            background: var(--color-white);
             color: var(--color-text);
             align-self: flex-start;
-            border-bottom-left-radius: var(--spacing-small);
+            border-bottom-left-radius: var(--border-radius-small);
+            border: 1px solid var(--color-border);
+            box-shadow: var(--shadow-light);
         }
 
         .message.typing {
-            background: var(--color-background);
+            background: var(--color-white);
             color: var(--color-text-light);
             font-style: italic;
+            border: 1px solid var(--color-border);
+            box-shadow: var(--shadow-light);
         }
 
         .chat-input-container {
             padding: var(--spacing-large);
             border-top: 1px solid var(--color-border);
-            background: var(--color-background);
+            background: var(--color-white);
         }
 
         .chat-input-wrapper {
@@ -94,15 +153,18 @@
         .chat-input {
             flex: 1;
             padding: var(--spacing-medium) var(--spacing-large);
-            border: 2px solid var(--color-border);
+            border: 1px solid var(--color-border);
             border-radius: var(--border-radius-medium);
             font-size: var(--font-size-large);
             outline: none;
             transition: border-color var(--transition-medium);
+            background: var(--color-white);
+            color: var(--color-text);
         }
 
         .chat-input:focus {
             border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.08);
         }
 
         .send-button {
@@ -110,18 +172,20 @@
             color: var(--color-white);
             border: none;
             border-radius: 50%;
-            width: 45px;
-            height: 45px;
+            width: 48px;
+            height: 48px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: var(--font-size-xlarge);
-            transition: background var(--transition-medium);
+            font-size: var(--font-size-large);
+            transition: all var(--transition-medium);
+            font-weight: var(--font-weight-medium);
         }
 
         .send-button:hover {
             background: var(--color-secondary);
+            transform: scale(1.05);
         }
 
         .send-button:disabled {
@@ -139,21 +203,21 @@
         }
 
         .status.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
         }
 
         .status.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
         }
 
         .status.info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
+            background: #f0f9ff;
+            color: #0c4a6e;
+            border: 1px solid #bae6fd;
         }
 
         @keyframes fadeIn {
@@ -175,7 +239,7 @@
         .typing-dots span {
             width: 6px;
             height: 6px;
-            background: #666;
+            background: var(--color-text-light);
             border-radius: 50%;
             animation: typing 1.4s infinite;
         }
@@ -207,10 +271,17 @@
     </style>
 </head>
 <body>
+    <!-- Floating Navigation -->
+    <nav class="floating-nav">
+        <a href="email-collection.html" class="brand">Compass</a>
+        <div class="nav-separator"></div>
+        <a href="about.html">About</a>
+    </nav>
+
     <div class="chat-container">
         <div class="chat-header">
-            <h1>🤖 AI News Chat</h1>
-            <p>Discover news you care about through conversation</p>
+            <h1>Compass</h1>
+            <p>Navigate news you care about through conversation</p>
         </div>
         
         <div class="chat-messages" id="chatMessages">
@@ -243,7 +314,7 @@
             if (!email) {
                 console.log('❌ No email parameter found, redirecting to email collection');
                 // Redirect to email collection page
-                window.location.href = 'email-collection';
+                window.location.href = 'email-collection.html';
             } else {
                 console.log('✅ Email parameter found:', email);
             }

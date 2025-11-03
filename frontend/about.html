@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Compass</title>
+    <link rel="stylesheet" href="css/design-system.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-large);
+            background: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        /* Floating Navigation */
+        .floating-nav {
+            position: fixed;
+            top: var(--spacing-large);
+            right: var(--spacing-large);
+            background: var(--color-white);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-medium);
+            padding: var(--spacing-medium) var(--spacing-large);
+            display: flex;
+            gap: var(--spacing-large);
+            align-items: center;
+            z-index: 1000;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .floating-nav a {
+            text-decoration: none;
+            color: var(--color-text);
+            font-weight: var(--font-weight-medium);
+            font-size: var(--font-size-large);
+            transition: color var(--transition-medium);
+        }
+
+        .floating-nav a:hover {
+            color: var(--color-primary);
+        }
+
+        .floating-nav .brand {
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+        }
+
+        .floating-nav .nav-separator {
+            width: 1px;
+            height: 20px;
+            background: var(--color-border);
+        }
+
+        .about-container {
+            background: var(--color-white);
+            border-radius: var(--border-radius-medium);
+            box-shadow: var(--shadow-medium);
+            padding: var(--spacing-xxl);
+            max-width: 720px;
+            width: 100%;
+        }
+
+        .about-header {
+            margin-bottom: var(--spacing-xxl);
+        }
+
+        .about-header h1 {
+            font-size: var(--font-size-xxlarge);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+            margin-bottom: var(--spacing-small);
+            letter-spacing: -0.5px;
+        }
+
+        .about-content {
+            line-height: 1.8;
+            color: var(--color-text);
+            font-size: var(--font-size-large);
+            margin-bottom: var(--spacing-xxl);
+        }
+
+        .about-content p {
+            margin-bottom: var(--spacing-large);
+        }
+
+        .cta-section {
+            text-align: center;
+            padding-top: var(--spacing-xxl);
+            border-top: 1px solid var(--color-border);
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--color-primary);
+            color: var(--color-white);
+            text-decoration: none;
+            padding: var(--spacing-medium) var(--spacing-xl);
+            border-radius: var(--border-radius-medium);
+            font-size: var(--font-size-large);
+            font-weight: var(--font-weight-medium);
+            transition: all var(--transition-medium);
+        }
+
+        .cta-button:hover {
+            background: var(--color-secondary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        @media (max-width: 768px) {
+            .floating-nav {
+                top: var(--spacing-medium);
+                right: var(--spacing-medium);
+                padding: var(--spacing-small) var(--spacing-medium);
+                gap: var(--spacing-medium);
+                font-size: var(--font-size-medium);
+            }
+
+            .about-container {
+                padding: var(--spacing-xl);
+                margin-top: 60px;
+            }
+
+            .about-header h1 {
+                font-size: var(--font-size-xlarge);
+            }
+
+            .about-content {
+                font-size: var(--font-size-medium);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Navigation -->
+    <nav class="floating-nav">
+        <a href="email-collection.html" class="brand">Compass</a>
+        <div class="nav-separator"></div>
+        <a href="about.html">About</a>
+    </nav>
+
+    <div class="about-container">
+        <div class="about-header">
+            <h1>About Compass</h1>
+        </div>
+        
+        <div class="about-content" id="aboutContent">
+            <!-- Content will be loaded from aboutContent.js -->
+        </div>
+
+        <div class="cta-section">
+            <a href="email-collection.html" class="cta-button">Get Started</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { aboutContent } from './js/aboutContent.js';
+        
+        const contentDiv = document.getElementById('aboutContent');
+        const paragraphs = aboutContent.philosophy.split('. ');
+        
+        paragraphs.forEach((para, index) => {
+            if (para.trim()) {
+                const p = document.createElement('p');
+                p.textContent = para.trim() + (index < paragraphs.length - 1 && !para.endsWith('.') ? '.' : '');
+                contentDiv.appendChild(p);
+            }
+        });
+    </script>
+</body>
+</html>
+
