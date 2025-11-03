@@ -54,6 +54,22 @@
             background: var(--color-border);
         }
 
+        .floating-nav button {
+            background: none;
+            border: none;
+            color: var(--color-text);
+            font-weight: var(--font-weight-medium);
+            font-size: var(--font-size-large);
+            cursor: pointer;
+            transition: color var(--transition-medium);
+            font-family: inherit;
+            padding: 0;
+        }
+
+        .floating-nav button:hover {
+            color: var(--color-primary);
+        }
+
         @media (max-width: 600px) {
             .floating-nav {
                 top: var(--spacing-medium);
@@ -201,6 +217,112 @@
                 font-size: 24px;
             }
         }
+
+        /* About Modal Styles */
+        .about-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity var(--transition-medium);
+            padding: var(--spacing-large);
+        }
+
+        .about-modal-overlay.about-modal-open {
+            opacity: 1;
+        }
+
+        .about-modal-container {
+            background: var(--color-white);
+            border-radius: var(--border-radius-medium);
+            box-shadow: var(--shadow-medium);
+            padding: var(--spacing-xxl);
+            max-width: 720px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(-20px);
+            transition: transform var(--transition-medium);
+        }
+
+        .about-modal-overlay.about-modal-open .about-modal-container {
+            transform: translateY(0);
+        }
+
+        .about-modal-close {
+            position: absolute;
+            top: var(--spacing-large);
+            right: var(--spacing-large);
+            background: none;
+            border: none;
+            font-size: 32px;
+            line-height: 1;
+            color: var(--color-text-light);
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color var(--transition-medium);
+            padding: 0;
+        }
+
+        .about-modal-close:hover {
+            color: var(--color-primary);
+        }
+
+        .about-modal-header {
+            margin-bottom: var(--spacing-xxl);
+            padding-right: var(--spacing-xxl);
+        }
+
+        .about-modal-header h1 {
+            font-size: var(--font-size-xxlarge);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+            margin-bottom: var(--spacing-small);
+            letter-spacing: -0.5px;
+        }
+
+        .about-modal-content {
+            line-height: 1.8;
+            color: var(--color-text);
+            font-size: var(--font-size-large);
+        }
+
+        .about-modal-content p {
+            margin-bottom: var(--spacing-large);
+        }
+
+        @media (max-width: 768px) {
+            .about-modal-overlay {
+                align-items: flex-start;
+                padding: var(--spacing-large) var(--spacing-medium);
+            }
+
+            .about-modal-container {
+                padding: var(--spacing-xl);
+                margin-top: var(--spacing-large);
+                max-height: calc(100vh - var(--spacing-large) * 2);
+            }
+
+            .about-modal-header h1 {
+                font-size: var(--font-size-xlarge);
+            }
+
+            .about-modal-content {
+                font-size: var(--font-size-medium);
+            }
+        }
     </style>
 </head>
 <body>
@@ -208,7 +330,7 @@
     <nav class="floating-nav">
         <a href="email-collection.html" class="brand">Juggernaut</a>
         <div class="nav-separator"></div>
-        <a href="about.html">About</a>
+        <button id="aboutModalTrigger">About</button>
     </nav>
 
     <div class="container">
@@ -246,5 +368,6 @@
     </div>
 
     <script src="js/emailCollection.js"></script>
+    <script type="module" src="js/aboutModal.js"></script>
 </body>
 </html>
