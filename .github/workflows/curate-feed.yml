@@ -1,0 +1,75 @@
+name: Curate Feed
+
+on:
+  workflow_dispatch:
+    inputs:
+      email:
+        description: User email to send the curated feed
+        required: true
+        type: string
+      userInterests:
+        description: User interests description
+        required: true
+        type: string
+      debug:
+        description: Enable verbose debug logs
+        required: false
+        default: 'false'
+        type: string
+  repository_dispatch:
+    types: [curate-feed]
+
+jobs:
+  curate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci --no-audit --no-fund
+
+      - name: Resolve inputs
+        id: inputs
+        run: |
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            echo "email=${{ github.event.client_payload.email }}" >> $GITHUB_OUTPUT
+            echo "userInterests=${{ github.event.client_payload.userInterests }}" >> $GITHUB_OUTPUT
+            echo "debug=${{ github.event.client_payload.debug || 'false' }}" >> $GITHUB_OUTPUT
+          else
+            echo "email=${{ inputs.email }}" >> $GITHUB_OUTPUT
+            echo "userInterests=${{ inputs.userInterests }}" >> $GITHUB_OUTPUT
+            echo "debug=${{ inputs.debug }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run curation workflow
+        working-directory: backend
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          EMAIL_API_KEY: ${{ secrets.EMAIL_API_KEY }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          GITHUB_TOKEN_REPORTS: ${{ secrets.GITHUB_TOKEN_REPORTS }}
+          NODE_ENV: production
+        run: |
+          node scripts/run-curation-workflow.js \
+            --email "${{ steps.inputs.outputs.email }}" \
+            --userInterests "${{ steps.inputs.outputs.userInterests }}" \
+            --debug "${{ steps.inputs.outputs.debug }}"
+
+      - name: Upload run summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: curate-feed-summary
+          path: backend/curation-summary.json
+
+
