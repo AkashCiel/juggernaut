@@ -31,6 +31,13 @@ class OrchestratorService {
             
             const chatHistory = this.sessions.get(sessionId);
             
+            // Fire off section summaries fetch immediately (in parallel with conversation)
+            const summariesPromise = this.preLoadService.fetchSectionSummaries()
+                .catch(err => {
+                    logger.warn(`⚠️ Failed to fetch section summaries (will fallback to 'world'): ${err.message}`);
+                    return null;
+                });
+            
             // 1. Generate AI response using ConversationService
             const conversationResult = await this.conversationService.generateResponse(message, chatHistory);
             
@@ -51,13 +58,33 @@ class OrchestratorService {
                 if (email && userInterestsDescription) {
                     logger.info('🗺️ Mapping user interests to sections...');
                     
-                    // Get section summaries to derive section list
-                    const sectionSummaries = this.preLoadService.getSectionSummaries();
-                    const sections = sectionSummaries ? Object.keys(sectionSummaries.sections) : null;
+                    // Ensure section summaries are loaded (or fallback to minimal list 'world')
+                    const summaries = await summariesPromise;
+                    let sections;
+                    if (!summaries || !summaries.sections) {
+                        logger.warn(`⚠️ Section summaries unavailable, falling back to minimal sections: world`);
+                        sections = ['world'];
+                    } else {
+                        sections = Object.keys(summaries.sections);
+                    }
                     
                     // Map interests to sections
                     selectedSections = await this.newsDiscoveryService.mapUserInterestsToSections(userInterestsDescription, sections);
                     logger.info(`✅ Selected sections: ${selectedSections}`);
+                    
+                    // Ensure article libraries for selected sections are loaded before preparing data
+                    const selectedList = (selectedSections || '')
+                        .split('|')
+                        .map(s => s.trim())
+                        .filter(Boolean);
+                    if (selectedList.length > 0) {
+                        await Promise.all(selectedList.map(section => this.preLoadService.fetchArticleLibrary(section)
+                            .catch(err => {
+                                logger.warn(`⚠️ Failed to load article library for '${section}': ${err.message}`);
+                                return null;
+                            })
+                        ));
+                    }
                     
                     // Prepare article data for curation (filters to selected sections, applies 1000 limit)
                     logger.info('🔧 Preparing article data for curation...');
@@ -135,17 +162,6 @@ class OrchestratorService {
             
             // Initialize empty session
             this.sessions.set(sessionId, []);
-            
-            // Pre-fetch section summaries and article libraries asynchronously (don't wait for it)
-            this.preLoadService.fetchSectionSummaries()
-                .catch(error => {
-                    logger.warn(`⚠️ Failed to pre-fetch section summaries: ${error.message}`);
-                });
-            
-            this.preLoadService.fetchAllArticleLibraries()
-                .catch(error => {
-                    logger.warn(`⚠️ Failed to pre-fetch article libraries: ${error.message}`);
-                });
             
             logApiCall('chat', 'startSession', { sessionId: sessionId });
             

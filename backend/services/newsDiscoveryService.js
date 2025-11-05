@@ -19,18 +19,26 @@ class NewsDiscoveryService {
     async mapUserInterestsToSections(user_interests, sections = null) {
         const { SECTION_MAPPING_PROMPT } = require('../config/constants');
 
-        // Get section summaries from preLoadService
-        const sectionSummaries = this.preLoadService.getSectionSummaries();
+        let sectionSummaries = null;
 
-        // If summaries not loaded yet, wait for them
-        if (!sectionSummaries) {
-            logger.info('⏳ Waiting for section summaries to load...');
-            await this.preLoadService.fetchSectionSummaries();
-        }
+        // Only fetch section summaries if sections are not provided (sections will be derived from summaries)
+        if (!sections) {
+            // Get section summaries from preLoadService
+            sectionSummaries = this.preLoadService.getSectionSummaries();
 
-        // Derive sections from summaries if not provided
-        if (!sections && sectionSummaries && sectionSummaries.sections) {
-            sections = Object.keys(sectionSummaries.sections);
+            // If summaries not loaded yet, wait for them
+            if (!sectionSummaries) {
+                logger.info('⏳ Waiting for section summaries to load...');
+                sectionSummaries = await this.preLoadService.fetchSectionSummaries();
+            }
+
+            // Derive sections from summaries if not provided
+            if (sectionSummaries && sectionSummaries.sections) {
+                sections = Object.keys(sectionSummaries.sections);
+            }
+        } else {
+            // Sections are provided, but try to get summaries for context (don't wait/fetch if not available)
+            sectionSummaries = this.preLoadService.getSectionSummaries();
         }
 
         // Build user message with section summaries if available
