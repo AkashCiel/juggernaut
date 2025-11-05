@@ -59,7 +59,7 @@ module.exports = asyncHandler(async (req, res) => {
         // Dispatch GitHub Actions workflow via repository_dispatch
         const owner = process.env.GITHUB_OWNER || process.env.VERCEL_GIT_ORG || process.env.VERCEL_GIT_REPO_OWNER;
         const repo = process.env.GITHUB_REPO || process.env.VERCEL_GIT_REPO_SLUG || 'juggernaut';
-        const token = process.env.GITHUB_TOKEN; // Token with repo dispatch permissions
+        const token = process.env.GITHUB_TOKEN; // Token with repo scope for both juggernaut and juggernaut-reports
         if (!owner || !repo || !token) {
             throw new Error('Missing GitHub dispatch configuration (GITHUB_OWNER, GITHUB_REPO, GITHUB_TOKEN)');
         }
