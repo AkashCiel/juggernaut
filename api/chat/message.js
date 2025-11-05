@@ -47,10 +47,10 @@ module.exports = asyncHandler(async (req, res) => {
         });
     }
 
-    const { message, sessionId, email } = req.body;
+    const { message, sessionId, email, chatHistory } = req.body;
     
     try {
-        const result = await orchestratorService.handleMessage(message, sessionId, email);
+        const result = await orchestratorService.handleMessage(message, sessionId, email, chatHistory);
         
         res.json({
             success: true,

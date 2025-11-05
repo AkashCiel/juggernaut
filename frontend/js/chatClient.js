@@ -3,6 +3,7 @@ class ChatClient {
     constructor() {
         this.apiUrl = this.getApiUrl();
         this.sessionId = null;
+        this.chatHistory = []; // Maintain chat history on client side
         this.isTyping = false;
         this.conversationComplete = false;
         this.userEmail = this.getUserEmail();
@@ -66,6 +67,12 @@ class ChatClient {
             
             if (result.success) {
                 this.sessionId = result.data.sessionId;
+                // Initialize chat history with welcome message
+                this.chatHistory = [{
+                    role: 'assistant',
+                    content: result.data.welcomeMessage,
+                    timestamp: result.data.timestamp
+                }];
                 this.addMessage(result.data.welcomeMessage, 'bot');
                 this.hideStatus();
             } else {
@@ -104,7 +111,8 @@ class ChatClient {
                 body: JSON.stringify({ 
                     message: message,
                     sessionId: this.sessionId,
-                    email: this.userEmail
+                    email: this.userEmail,
+                    chatHistory: this.chatHistory
                 })
             });
             
@@ -115,6 +123,11 @@ class ChatClient {
             
             if (result.success) {
                 this.addMessage(result.data.response, 'bot');
+                
+                // Update chat history from response
+                if (result.data.chatHistory) {
+                    this.chatHistory = result.data.chatHistory;
+                }
                 
                 // Check if conversation is complete
                 if (result.data.conversationComplete) {

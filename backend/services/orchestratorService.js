@@ -11,7 +11,7 @@ class OrchestratorService {
         this.conversationService = new ConversationService();
         this.newsDiscoveryService = new NewsDiscoveryService();
         this.preLoadService = new PreLoadService();
-        this.sessions = new Map(); // Store chat history per session
+        // Note: chatHistory is now maintained client-side and passed with each request
     }
 
     /**
@@ -19,17 +19,16 @@ class OrchestratorService {
      * @param {string} message - User's message
      * @param {string} sessionId - Chat session ID
      * @param {string} email - User's email address
+     * @param {Array} chatHistory - Chat history array from client (optional, falls back to empty array)
      * @returns {Object} Response object
      */
-    async handleMessage(message, sessionId, email = null) {
+    async handleMessage(message, sessionId, email = null, chatHistory = null) {
         try {
             
-            // Get or create session
-            if (!this.sessions.has(sessionId)) {
-                this.sessions.set(sessionId, []);
+            // Use provided chatHistory or initialize empty array
+            if (!chatHistory || !Array.isArray(chatHistory)) {
+                chatHistory = [];
             }
-            
-            const chatHistory = this.sessions.get(sessionId);
             
             // 1. Generate AI response using ConversationService
             const conversationResult = await this.conversationService.generateResponse(message, chatHistory);
@@ -50,6 +49,7 @@ class OrchestratorService {
                     sessionId: sessionId,
                     conversationComplete: isComplete,
                     userInterestsDescription: userInterestsDescription,
+                    chatHistory: chatHistory, // Return current chat history
                     timestamp: new Date().toISOString()
                 };
             } else {
@@ -81,6 +81,7 @@ class OrchestratorService {
                 sessionId: sessionId,
                 conversationComplete: isComplete,
                 userInterestsDescription: userInterestsDescription,
+                chatHistory: chatHistory, // Return updated chat history
                 timestamp: new Date().toISOString()
             };
         } catch (error) {
@@ -91,6 +92,7 @@ class OrchestratorService {
                 sessionId: sessionId,
                 conversationComplete: false,
                 userInterestsDescription: null,
+                chatHistory: chatHistory || [], // Return current chat history even on error
                 timestamp: new Date().toISOString()
             };
         }
@@ -104,9 +106,6 @@ class OrchestratorService {
         try {
             
             const sessionId = this.generateSessionId();
-            
-            // Initialize empty session
-            this.sessions.set(sessionId, []);
             
             logApiCall('chat', 'startSession', { sessionId: sessionId });
             
