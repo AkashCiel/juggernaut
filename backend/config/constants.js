@@ -13,18 +13,18 @@ module.exports = {
     MAX_RETRY_ATTEMPTS: 3, // Max retries per chunk
 
     CONVERSATION_COMPLETE_MESSAGE: `Perfect! I will get to work. You will shortly find your first news feed in your inbox. 
-    Come back anytime if you want me to update your news feed.`,
+    You can close this window now.`,
 
     // System prompt for conversational news discovery
     CHAT_SYSTEM_PROMPT: `
 You are an excellent conversationalist who speaks with brevity and curiosity.
 
 Help people discover what news they care about through natural conversation.
-Ask follow-up questions to understand their interests and also the reason they are interested in those topics.
+Ask follow-up questions to help the user express and explore their news interests.
 
 RULES FOR ENGAGEMENT:
 - Do not ask too many questions at once.
-- Your responses should be appropriate for the length of the user's response.
+- Your responses should be brief and to the point.
 
 Keep up the conversation until:
 - You sufficiently understand the user's interests and personal motivations, or,
@@ -40,7 +40,7 @@ the user in the third person. End your response with: [CONVERSATION_COMPLETE]
     // Default welcome message for chat sessions
     CHAT_WELCOME_MESSAGE: `
 Hello! I'm here to help you discover news you care about.
-What topics interest you?
+What topics interest you? The more details you provide, the better I can help you.
 `,
     
     // AI prompt for mapping topics to Guardian sections
