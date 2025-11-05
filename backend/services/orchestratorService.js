@@ -31,13 +31,6 @@ class OrchestratorService {
             
             const chatHistory = this.sessions.get(sessionId);
             
-            // Fire off section summaries fetch immediately (in parallel with conversation)
-            const summariesPromise = this.preLoadService.fetchSectionSummaries()
-                .catch(err => {
-                    logger.warn(`⚠️ Failed to fetch section summaries (will fallback to 'world'): ${err.message}`);
-                    return null;
-                });
-            
             // 1. Generate AI response using ConversationService
             const conversationResult = await this.conversationService.generateResponse(message, chatHistory);
             
@@ -51,60 +44,12 @@ class OrchestratorService {
                 // 3a. Clean the response for display
                 userInterestsDescription = conversationResult.response.replace(/\[CONVERSATION_COMPLETE\]/g, '').trim();
                 
-                // 3b. Map user interests to sections and prepare data for curation
-                let selectedSections = null;
-                let preparedArticleData = null;
-                
-                if (email && userInterestsDescription) {
-                    logger.info('🗺️ Mapping user interests to sections...');
-                    
-                    // Ensure section summaries are loaded (or fallback to minimal list 'world')
-                    const summaries = await summariesPromise;
-                    let sections;
-                    if (!summaries || !summaries.sections) {
-                        logger.warn(`⚠️ Section summaries unavailable, falling back to minimal sections: world`);
-                        sections = ['world'];
-                    } else {
-                        sections = Object.keys(summaries.sections);
-                    }
-                    
-                    // Map interests to sections
-                    selectedSections = await this.newsDiscoveryService.mapUserInterestsToSections(userInterestsDescription, sections);
-                    logger.info(`✅ Selected sections: ${selectedSections}`);
-                    
-                    // Ensure article libraries for selected sections are loaded before preparing data
-                    const selectedList = (selectedSections || '')
-                        .split('|')
-                        .map(s => s.trim())
-                        .filter(Boolean);
-                    if (selectedList.length > 0) {
-                        await Promise.all(selectedList.map(section => this.preLoadService.fetchArticleLibrary(section)
-                            .catch(err => {
-                                logger.warn(`⚠️ Failed to load article library for '${section}': ${err.message}`);
-                                return null;
-                            })
-                        ));
-                    }
-                    
-                    // Prepare article data for curation (filters to selected sections, applies 1000 limit)
-                    logger.info('🔧 Preparing article data for curation...');
-                    preparedArticleData = this.preLoadService.prepare_data_for_curation(selectedSections);
-                    logger.info(`✅ Prepared ${preparedArticleData.articleCount} articles for curation`);
-                    
-                    // Log section breakdown
-                    preparedArticleData.sectionsData.forEach(sectionData => {
-                        logger.info(`📊 Section '${sectionData.section}': ${sectionData.selectedCount} articles selected (from ${sectionData.articleCount} available)`);
-                    });
-                }
-
                 return {
                     success: true,
                     response: CONVERSATION_COMPLETE_MESSAGE,
                     sessionId: sessionId,
                     conversationComplete: isComplete,
                     userInterestsDescription: userInterestsDescription,
-                    selectedSections: selectedSections,
-                    preparedArticleData: preparedArticleData,
                     timestamp: new Date().toISOString()
                 };
             } else {

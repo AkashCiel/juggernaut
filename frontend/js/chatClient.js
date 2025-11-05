@@ -200,10 +200,10 @@ class ChatClient {
 
     // Handle conversation completion
     async handleConversationComplete(responseData) {
-        const { userInterestsDescription, selectedSections, preparedArticleData } = responseData;
+        const { userInterestsDescription } = responseData;
         
-        if (!userInterestsDescription || !selectedSections || !preparedArticleData) {
-            console.error('Missing data for curation:', { userInterestsDescription, selectedSections, preparedArticleData });
+        if (!userInterestsDescription) {
+            console.error('Missing userInterestsDescription for curation');
             this.showStatus('⚠️ Missing data for curation. Please try again.', 'error');
             return;
         }
@@ -219,11 +219,7 @@ class ChatClient {
         this.setInputState(false); // Disable input during curation
 
         try {
-            console.log('🚀 Calling curate-feed API...', {
-                email: this.userEmail,
-                selectedSections,
-                articleCount: preparedArticleData.articleCount
-            });
+            console.log('🚀 Calling curate-feed API...', { email: this.userEmail });
 
             const response = await fetch(`${this.apiUrl}/api/chat/curate-feed`, {
                 method: 'POST',
@@ -232,22 +228,15 @@ class ChatClient {
                 },
                 body: JSON.stringify({
                     email: this.userEmail,
-                    userInterests: userInterestsDescription,
-                    selectedSections: selectedSections,
-                    preparedArticleData: preparedArticleData
+                    userInterests: userInterestsDescription
                 })
             });
 
             const result = await response.json();
 
             if (result.success) {
-                this.showStatus(`✅ News feed curated and sent to ${this.userEmail}!`, 'success');
-                this.addMessage(`Your personalized news feed has been curated and sent to your email inbox. Check your inbox for the latest articles!`, 'bot');
-                
-                console.log('✅ Curation completed:', {
-                    articlesCurated: result.data.articlesCurated,
-                    emailSent: result.data.emailSent
-                });
+                this.showStatus(`✅ Your curation job has started. You'll receive an email when it's ready.`, 'success');
+                this.addMessage(`Got it. I’ve kicked off your personalized news feed. You’ll receive it by email shortly.`, 'bot');
             } else {
                 console.error('Curation failed:', result);
                 this.showStatus('⚠️ Failed to curate news feed. Please try again.', 'error');

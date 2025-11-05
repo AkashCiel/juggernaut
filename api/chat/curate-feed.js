@@ -1,10 +1,7 @@
-const ArticleCuratorService = require('../../backend/services/articleCuratorService');
-const EmailService = require('../../backend/services/emailService');
-const GitHubService = require('../../backend/services/githubService');
+// This endpoint dispatches a GitHub Actions workflow to run the full curation flow
 const { body, validationResult } = require('express-validator');
 const { asyncHandler } = require('../../backend/utils/errorHandler');
 const { logger } = require('../../backend/utils/logger-vercel');
-const { generateUserId } = require('../../backend/utils/userUtils');
 
 // Validation rules for curate-feed request
 const validateCurateFeed = [
@@ -16,15 +13,7 @@ const validateCurateFeed = [
         .isString()
         .trim()
         .isLength({ min: 10, max: 5000 })
-        .withMessage('User interests must be between 10-5000 characters'),
-    body('selectedSections')
-        .isString()
-        .trim()
-        .isLength({ min: 1 })
-        .withMessage('Selected sections are required'),
-    body('preparedArticleData')
-        .isObject()
-        .withMessage('Prepared article data is required')
+        .withMessage('User interests must be between 10-5000 characters')
 ];
 
 module.exports = asyncHandler(async (req, res) => {
@@ -60,91 +49,67 @@ module.exports = asyncHandler(async (req, res) => {
         });
     }
 
-    const { email, userInterests, selectedSections, preparedArticleData } = req.body;
+    const { email, userInterests } = req.body;
 
-    logger.info(`🚀 Starting curation for user: ${email}`);
-    logger.info(`📋 Selected sections: ${selectedSections}`);
-    logger.info(`📰 Articles to process: ${preparedArticleData.articleCount}`);
+    logger.info(`🚀 Dispatching GitHub workflow to curate feed for: ${email}`);
 
     try {
-        // Initialize services
-        const articleCuratorService = new ArticleCuratorService();
-        const emailService = new EmailService();
-        const githubService = new GitHubService();
+        const runId = `curate_${Date.now()}_${Math.random().toString(36).substr(2, 8)}`;
 
-        // Step 1: Curate articles (score and filter)
-        logger.info('🎯 Step 1: Curating articles by relevance...');
-        const curatedArticles = await articleCuratorService.curateFeed(userInterests, preparedArticleData);
-        
-        logger.info(`✅ Curated ${curatedArticles.length} articles for user: ${email}`);
-
-        // Step 2: Compose and send email
-        logger.info('📧 Step 2: Composing and sending email...');
-        const emailResult = await emailService.composeAndSendEmail(
-            email,
-            curatedArticles,
-            userInterests,
-            selectedSections
-        );
-
-        if (!emailResult.success) {
-            logger.warn(`⚠️ Email sending failed: ${emailResult.error}`);
-        } else {
-            logger.info(`✅ Email sent successfully to: ${email}`);
+        // Dispatch GitHub Actions workflow via repository_dispatch
+        const owner = process.env.GITHUB_OWNER || process.env.VERCEL_GIT_ORG || process.env.VERCEL_GIT_REPO_OWNER;
+        const repo = process.env.GITHUB_REPO || process.env.VERCEL_GIT_REPO_SLUG || 'juggernaut';
+        const token = process.env.GITHUB_TOKEN; // Token with repo dispatch permissions
+        if (!owner || !repo || !token) {
+            throw new Error('Missing GitHub dispatch configuration (GITHUB_OWNER, GITHUB_REPO, GITHUB_TOKEN)');
         }
 
-        // Step 3: Save user data to GitHub
-        logger.info('💾 Step 3: Saving user data to GitHub...');
-        const userId = generateUserId(email);
-        
-        const userData = {
-            userId: userId,
-            email: email,
-            userInterests: userInterests,
-            selectedSections: selectedSections,
-            curatedArticles: curatedArticles.map(article => ({
-                id: article.id,
-                title: article.title,
-                webUrl: article.webUrl,
-                trailText: article.trailText,
-                relevanceScore: article.relevanceScore,
-                section: article.section || (article.id ? article.id.split('/')[0] : 'unknown'),
-                publishedDate: article.publishedDate
-            })),
-            articleCount: curatedArticles.length,
-            createdAt: new Date().toISOString(),
-            lastUpdated: new Date().toISOString()
-        };
+        const payload = JSON.stringify({
+            event_type: 'curate-feed',
+            client_payload: { email, userInterests, runId, debug: false }
+        });
 
-        const githubToken = process.env.GITHUB_TOKEN;
-        if (!githubToken) {
-            logger.warn('⚠️ GITHUB_TOKEN not set, skipping user data save');
-        } else {
-            try {
-                await githubService.uploadOrUpdateUserInJson(userData, githubToken, 'Add new user from chat completion');
-                logger.info(`✅ User data saved to GitHub for: ${email}`);
-            } catch (error) {
-                logger.error(`❌ Failed to save user data to GitHub: ${error.message}`);
-            }
-        }
+        await new Promise((resolve, reject) => {
+            const https = require('https');
+            const options = {
+                hostname: 'api.github.com',
+                path: `/repos/${owner}/${repo}/dispatches`,
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'User-Agent': 'juggernaut-backend',
+                    'Accept': 'application/vnd.github+json',
+                    'Content-Type': 'application/json',
+                    'Content-Length': Buffer.byteLength(payload)
+                }
+            };
+            const reqGit = https.request(options, (resp) => {
+                let data = '';
+                resp.on('data', chunk => { data += chunk; });
+                resp.on('end', () => {
+                    if (resp.statusCode && resp.statusCode >= 200 && resp.statusCode < 300) {
+                        resolve();
+                    } else {
+                        reject(new Error(`GitHub dispatch failed with status ${resp.statusCode}: ${data}`));
+                    }
+                });
+            });
+            reqGit.on('error', reject);
+            reqGit.write(payload);
+            reqGit.end();
+        });
 
-        // Return success response
         res.json({
             success: true,
-            message: 'News feed curated and delivered',
-            data: {
-                email: email,
-                articlesCurated: curatedArticles.length,
-                emailSent: emailResult.success,
-                timestamp: new Date().toISOString()
-            }
+            message: 'Curation job dispatched to GitHub Actions',
+            data: { email, runId, timestamp: new Date().toISOString() }
         });
 
     } catch (error) {
-        logger.error(`❌ Curation failed for user ${email}: ${error.message}`);
+        logger.error(`❌ Failed to dispatch curation workflow for ${email}: ${error.message}`);
         res.status(500).json({
             success: false,
-            error: 'Failed to curate news feed',
+            error: 'Failed to dispatch curation workflow',
             message: error.message
         });
     }
