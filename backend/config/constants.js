@@ -6,7 +6,7 @@ module.exports = {
     OPENAI_TEMPERATURE: 1.0,
 
     // Article curation limits
-    MAX_ARTICLES_FOR_CURATION: 1000,
+    MAX_ARTICLES_FOR_CURATION: 300,
     ARTICLE_CHUNK_SIZE: 75, // Articles per OpenAI API call
     RELEVANCE_THRESHOLD: 70, // Minimum relevance score (0-100)
     RETRY_DELAY_MS: 15000, // 15 seconds delay before retry
