@@ -55,8 +55,8 @@ jobs:
         working-directory: backend
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          EMAIL_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
-          EMAIL_FROM: ${{ secrets.MAILGUN_DOMAIN }}
+          MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
+          MAILGUN_DOMAIN: ${{ secrets.MAILGUN_DOMAIN }}
           GITHUB_TOKEN_REPORTS: ${{ secrets.GIT_TOKEN }}
           NODE_ENV: production
         run: |

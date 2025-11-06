@@ -154,12 +154,22 @@ class ArticleCuratorService {
             };
         });
 
-        // Filter by threshold and sort by relevance
-        const curatedArticles = articlesWithScores
-            .filter(article => article.relevanceScore >= RELEVANCE_THRESHOLD)
-            .sort((a, b) => b.relevanceScore - a.relevanceScore);
-
-        logger.info(`✅ Curated ${curatedArticles.length} articles above relevance threshold (${RELEVANCE_THRESHOLD})`);
+        // Sort all articles by relevance score (descending)
+        const sortedArticles = articlesWithScores.sort((a, b) => b.relevanceScore - a.relevanceScore);
+        
+        // Count articles with score > 90
+        const highQualityArticles = sortedArticles.filter(article => article.relevanceScore > 90);
+        
+        let curatedArticles;
+        if (highQualityArticles.length > 10) {
+            // If more than 10 articles with score > 90, only send those
+            curatedArticles = highQualityArticles;
+            logger.info(`✅ Found ${highQualityArticles.length} high-quality articles (score > 90), using all of them`);
+        } else {
+            // Otherwise, take top 10 articles by relevance score
+            curatedArticles = sortedArticles.slice(0, 10);
+            logger.info(`✅ Taking top 10 articles by relevance score (${highQualityArticles.length})`);
+        }
         
         // Log score distribution
         const scoreRanges = {
