@@ -45,7 +45,7 @@ class EmailService {
 
         const emailContent = this.createEmailTemplate(reportData, topics, reportDate);
         const subject = `Your Daily News - ${reportDate.toISOString().split('T')[0]}`;
-        
+        logger.info('sending email from: your-personal-news@${this.domain}');
         try {
             const messageData = {
                 from: `Juggernaut <your-personal-news@${this.domain}>`,
