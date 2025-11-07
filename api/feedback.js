@@ -13,8 +13,18 @@ const validateFeedback = [
         .withMessage('Valid email is required'),
     body('paymentIntentInMonths')
         .optional()
-        .isInt({ min: 1, max: 6 })
-        .withMessage('Payment intent must be 1 or 6 months if provided'),
+        .custom((value) => {
+            // Allow null, undefined, or empty string
+            if (value === null || value === undefined || value === '') {
+                return true;
+            }
+            // If provided, must be an integer between 1 and 6
+            const num = parseInt(value, 10);
+            if (isNaN(num) || num < 1 || num > 6) {
+                throw new Error('Payment intent must be 1 or 6 months if provided');
+            }
+            return true;
+        }),
     body('userFeedback')
         .optional()
         .isString()
