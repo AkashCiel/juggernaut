@@ -113,6 +113,43 @@ class VercelStorageService {
             throw error;
         }
     }
+
+    /**
+     * Save user feedback
+     * @param {Object} feedbackData - Feedback data object
+     * @param {string} feedbackData.email - User email
+     * @param {number} feedbackData.paymentIntentInMonths - Payment intent in months (1 or 6)
+     * @param {string|null} feedbackData.userFeedback - Optional user feedback text
+     * @returns {Promise<Object>} Result object with success status
+     */
+    async saveFeedback(feedbackData) {
+        try {
+            logger.info(`💾 Saving feedback to Vercel Postgres: ${feedbackData.email}`);
+            
+            const now = new Date().toISOString();
+            
+            // Insert feedback record
+            await this.sql`
+                INSERT INTO user_feedback (
+                    email,
+                    payment_intent_in_months,
+                    user_feedback,
+                    created_at
+                ) VALUES (
+                    ${feedbackData.email},
+                    ${feedbackData.paymentIntentInMonths},
+                    ${feedbackData.userFeedback || null},
+                    ${now}
+                )
+            `;
+            
+            logger.info(`✅ Feedback saved to Vercel Postgres for: ${feedbackData.email}`);
+            return { success: true };
+        } catch (error) {
+            logger.error(`❌ Failed to save feedback to Vercel Postgres: ${error.message}`);
+            throw error;
+        }
+    }
 }
 
 module.exports = VercelStorageService;

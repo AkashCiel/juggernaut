@@ -13,14 +13,14 @@
             flex-direction: column;
             align-items: center;
             padding: var(--spacing-xl) var(--spacing-large);
-            color: var(--color-text-primary);
+            color: var(--color-text);
         }
 
         .page-container {
             width: min(720px, 100%);
             background: #fff;
-            border-radius: var(--radius-large);
-            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
+            border-radius: var(--border-radius-medium);
+            box-shadow: var(--shadow-medium);
             padding: var(--spacing-xxl);
             display: flex;
             flex-direction: column;
@@ -36,54 +36,153 @@
         .header h1 {
             margin: 0;
             font-size: clamp(28px, 4vw, 36px);
-            color: var(--color-text-primary);
+            color: var(--color-text);
         }
 
-        .header p {
+        .content-section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-medium);
+        }
+
+        .content-section p {
             margin: 0;
-            color: var(--color-text-secondary);
-            font-size: 16px;
+            line-height: 1.6;
+            color: var(--color-text);
         }
 
-        .info-card {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(99, 102, 241, 0.08));
-            border-left: 4px solid rgba(59, 130, 246, 0.6);
-            border-radius: var(--radius-medium);
-            padding: var(--spacing-large);
+        .content-section ul {
+            margin: 0;
+            padding-left: var(--spacing-large);
             display: flex;
             flex-direction: column;
             gap: var(--spacing-small);
         }
 
-        .info-card h2 {
+        .content-section li {
+            line-height: 1.6;
+            color: var(--color-text);
+        }
+
+        .content-section h2 {
+            margin: 0 0 var(--spacing-small) 0;
+            font-size: var(--font-size-xlarge);
+            color: var(--color-text);
+        }
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-large);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-small);
+        }
+
+        .form-group label {
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text);
+            font-size: var(--font-size-medium);
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-small);
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-small);
+            padding: var(--spacing-medium);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-medium);
+            cursor: pointer;
+            transition: all var(--transition-medium);
+        }
+
+        .radio-option:hover {
+            background: var(--color-hover);
+            border-color: var(--color-primary);
+        }
+
+        .radio-option input[type="radio"] {
+            cursor: pointer;
+        }
+
+        .radio-option label {
+            cursor: pointer;
+            flex: 1;
             margin: 0;
-            font-size: 18px;
-            color: var(--color-text-primary);
+            font-weight: var(--font-weight-normal);
         }
 
-        .info-card p {
-            margin: 0;
-            color: var(--color-text-secondary);
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: var(--spacing-medium);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-medium);
+            font-size: var(--font-size-medium);
+            font-family: inherit;
+            resize: vertical;
+            outline: none;
+            transition: border-color var(--transition-medium);
         }
 
-        .email-display {
-            font-weight: 600;
-            color: var(--color-text-accent);
-            word-break: break-all;
+        textarea:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.08);
         }
 
-        .placeholder {
-            border: 1px dashed rgba(148, 163, 184, 0.6);
-            border-radius: var(--radius-medium);
+        .submit-button {
+            background: var(--color-primary);
+            color: var(--color-white);
+            border: none;
+            border-radius: var(--border-radius-medium);
+            padding: var(--spacing-medium) var(--spacing-large);
+            font-size: var(--font-size-large);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all var(--transition-medium);
+            font-family: inherit;
+        }
+
+        .submit-button:hover:not(:disabled) {
+            background: var(--color-secondary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .submit-button:disabled {
+            background: var(--color-border);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .success-message {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+            border-radius: var(--border-radius-medium);
             padding: var(--spacing-large);
             text-align: center;
-            color: var(--color-text-secondary);
+            font-weight: var(--font-weight-medium);
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
         }
 
         footer {
             margin-top: var(--spacing-large);
-            color: var(--color-text-tertiary);
-            font-size: 13px;
+            color: var(--color-text-light);
+            font-size: var(--font-size-small);
         }
 
         @media (max-width: 640px) {
@@ -100,26 +199,46 @@
 <body>
     <div class="page-container">
         <header class="header">
-            <h1>Vision, Pricing & Feedback</h1>
-            <p>Thanks for exploring Juggernaut. We’ll soon share our vision, pricing plans, and a feedback form here.</p>
+            <h1 id="introTitle">Thank you for trying out Juggernaut.</h1>
+            <p id="introContext"></p>
         </header>
 
-        <section class="info-card">
-            <h2>Your personalized link</h2>
-            <p>We sent you here because you received a curated feed at:</p>
-            <p class="email-display" id="userEmailDisplay">Fetching email...</p>
+        <section class="content-section" id="experimentSection">
+            <p id="experimentP1"></p>
+            <p id="experimentP2"></p>
         </section>
 
-        <section class="placeholder">
-            <p>This is a placeholder. Details about pricing and a feedback form will appear here soon.</p>
-            <p>We’ll use your verified email above to auto-fill the feedback form when it’s ready.</p>
+        <section class="content-section" id="benefitsSection">
+            <h2 id="benefitsHeading"></h2>
+            <ul id="benefitsList"></ul>
         </section>
+
+        <section class="content-section" id="ctaSection">
+            <p id="ctaText"></p>
+        </section>
+
+        <section class="form-section" id="formSection">
+            <div class="form-group">
+                <label id="plansHeading">Plans:</label>
+                <div class="radio-group" id="plansRadioGroup"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="userFeedback">Additional feedback (optional):</label>
+                <textarea id="userFeedback" name="userFeedback" placeholder="Tell us what's missing or what you'd like to see..."></textarea>
+            </div>
+
+            <button type="submit" class="submit-button" id="submitButton">Submit</button>
+        </section>
+
+        <div class="success-message" id="successMessage"></div>
     </div>
 
     <footer>
         &copy; <span id="currentYear"></span> Juggernaut. All rights reserved.
     </footer>
 
+    <script src="js/pricingFeedbackContent.js"></script>
     <script src="js/pricingFeedback.js"></script>
 </body>
 </html>
