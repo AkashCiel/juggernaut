@@ -11,7 +11,7 @@
             align-items: center;
             justify-content: center;
             padding: var(--spacing-large);
-            background: #f1f5f9;
+            background: var(--color-hover);
             position: relative;
         }
 
@@ -158,6 +158,20 @@
             padding: var(--spacing-large);
             border-top: 1px solid var(--color-border);
             background: var(--color-white);
+            position: relative;
+        }
+
+        /* Mobile keyboard handling */
+        @supports (height: 100dvh) {
+            .chat-input-container {
+                padding-bottom: env(safe-area-inset-bottom, var(--spacing-large));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .chat-input-container {
+                padding-bottom: max(var(--spacing-large), env(keyboard-inset-height, 0px));
+            }
         }
 
         .chat-input-wrapper {
@@ -173,14 +187,26 @@
             border-radius: var(--border-radius-medium);
             font-size: var(--font-size-large);
             outline: none;
-            transition: border-color var(--transition-medium);
+            transition: border-color var(--transition-medium), height var(--transition-fast);
             background: var(--color-white);
             color: var(--color-text);
+            font-family: inherit;
+            resize: none;
+            min-height: 48px;
+            max-height: 150px;
+            overflow-y: auto;
+            line-height: 1.5;
         }
 
         .chat-input:focus {
             border-color: var(--color-primary);
             box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.08);
+        }
+
+        .chat-input:disabled {
+            background: var(--color-hover);
+            cursor: not-allowed;
+            opacity: 0.6;
         }
 
         .send-button {
@@ -210,30 +236,30 @@
         }
 
         .status {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 8px;
+            margin-top: var(--spacing-small);
+            padding: var(--spacing-small);
+            border-radius: var(--border-radius-medium);
             text-align: center;
-            font-size: 14px;
+            font-size: var(--font-size-small);
             display: none;
         }
 
         .status.success {
-            background: #f0fdf4;
-            color: #166534;
-            border: 1px solid #bbf7d0;
+            background: var(--color-success-bg, #f0fdf4);
+            color: var(--color-success-text, #166534);
+            border: 1px solid var(--color-success-border, #bbf7d0);
         }
 
         .status.error {
-            background: #fef2f2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
+            background: var(--color-error-bg, #fef2f2);
+            color: var(--color-error-text, #991b1b);
+            border: 1px solid var(--color-error-border, #fecaca);
         }
 
         .status.info {
-            background: #f0f9ff;
-            color: #0c4a6e;
-            border: 1px solid #bae6fd;
+            background: var(--color-info-bg, #f0f9ff);
+            color: var(--color-info-text, #0c4a6e);
+            border: 1px solid var(--color-info-border, #bae6fd);
         }
 
         @keyframes fadeIn {
@@ -412,7 +438,7 @@
         
         <div class="chat-input-container">
             <div class="chat-input-wrapper">
-                <input type="text" id="chatInput" class="chat-input" placeholder="Type your message here..." autocomplete="off">
+                <textarea id="chatInput" class="chat-input" placeholder="Type your message here..." autocomplete="off" rows="1"></textarea>
                 <button id="sendButton" class="send-button">➤</button>
             </div>
             <div id="status" class="status"></div>

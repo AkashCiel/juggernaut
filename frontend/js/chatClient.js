@@ -6,9 +6,12 @@ class ChatClient {
         this.chatHistory = []; // Maintain chat history on client side
         this.isTyping = false;
         this.conversationComplete = false;
+        this.isCurationTriggered = false; // Track if curation has been triggered
         this.userEmail = this.getUserEmail();
         
         this.initializeElements();
+        this.setupAutoExpandInput();
+        this.setupMobileKeyboardHandling();
         this.bindEvents();
         this.startChat();
     }
@@ -35,20 +38,132 @@ class ChatClient {
         this.chatInput = document.getElementById('chatInput');
         this.sendButton = document.getElementById('sendButton');
         this.status = document.getElementById('status');
+        this.chatInputContainer = document.querySelector('.chat-input-container');
+    }
+
+    // Setup auto-expand input functionality
+    setupAutoExpandInput() {
+        if (!this.chatInput) return;
+        
+        // Auto-resize textarea based on content
+        const autoResize = () => {
+            if (this.chatInput.disabled) return;
+            
+            // Reset height to auto to get the correct scrollHeight
+            this.chatInput.style.height = 'auto';
+            
+            // Set height based on scrollHeight, with min and max constraints
+            const scrollHeight = this.chatInput.scrollHeight;
+            const minHeight = 48; // min-height from CSS
+            const maxHeight = 150; // max-height from CSS
+            const newHeight = Math.min(Math.max(scrollHeight, minHeight), maxHeight);
+            
+            this.chatInput.style.height = `${newHeight}px`;
+        };
+        
+        // Listen to input events
+        this.chatInput.addEventListener('input', autoResize);
+        
+        // Also resize on paste
+        this.chatInput.addEventListener('paste', () => {
+            setTimeout(autoResize, 0);
+        });
+        
+        // Initial resize
+        autoResize();
+    }
+
+    // Setup mobile keyboard handling
+    setupMobileKeyboardHandling() {
+        if (!this.chatInputContainer) return;
+        
+        // Use Visual Viewport API if available (modern browsers)
+        if (window.visualViewport) {
+            const handleViewportChange = () => {
+                const viewport = window.visualViewport;
+                const keyboardHeight = window.innerHeight - viewport.height;
+                
+                if (keyboardHeight > 0) {
+                    // Keyboard is visible
+                    // Adjust container position to keep input above keyboard
+                    const containerRect = this.chatInputContainer.getBoundingClientRect();
+                    const viewportBottom = viewport.height;
+                    
+                    // Calculate if input is below viewport
+                    if (containerRect.bottom > viewportBottom) {
+                        const offset = containerRect.bottom - viewportBottom;
+                        this.chatInputContainer.style.transform = `translateY(-${offset}px)`;
+                    }
+                } else {
+                    // Keyboard is hidden
+                    this.chatInputContainer.style.transform = '';
+                }
+            };
+            
+            window.visualViewport.addEventListener('resize', handleViewportChange);
+            window.visualViewport.addEventListener('scroll', handleViewportChange);
+        } else {
+            // Fallback for browsers without Visual Viewport API
+            let lastHeight = window.innerHeight;
+            
+            const handleResize = () => {
+                const currentHeight = window.innerHeight;
+                const heightDiff = lastHeight - currentHeight;
+                
+                // If height decreased significantly, keyboard likely appeared
+                if (heightDiff > 150) {
+                    // Scroll input into view
+                    this.chatInput.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                }
+                
+                lastHeight = currentHeight;
+            };
+            
+            window.addEventListener('resize', handleResize);
+        }
+        
+        // Handle input focus on mobile
+        this.chatInput.addEventListener('focus', () => {
+            // Small delay to allow keyboard to appear
+            setTimeout(() => {
+                if (window.visualViewport) {
+                    const viewport = window.visualViewport;
+                    const containerRect = this.chatInputContainer.getBoundingClientRect();
+                    const viewportBottom = viewport.height;
+                    
+                    if (containerRect.bottom > viewportBottom) {
+                        const offset = containerRect.bottom - viewportBottom;
+                        this.chatInputContainer.style.transform = `translateY(-${offset}px)`;
+                    }
+                } else {
+                    // Fallback: scroll into view
+                    this.chatInput.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                }
+            }, 300);
+        });
+        
+        // Reset transform when input loses focus
+        this.chatInput.addEventListener('blur', () => {
+            if (this.chatInputContainer) {
+                this.chatInputContainer.style.transform = '';
+            }
+        });
     }
 
     // Bind event listeners
     bindEvents() {
         this.sendButton.addEventListener('click', () => this.sendMessage());
-        this.chatInput.addEventListener('keypress', (e) => {
+        this.chatInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 this.sendMessage();
             }
         });
         
-        // Auto-focus input
-        this.chatInput.focus();
+        // Auto-focus input (only if not disabled)
+        if (!this.chatInput.disabled) {
+            this.chatInput.focus();
+        }
     }
 
     // Start chat session
@@ -98,6 +213,9 @@ class ChatClient {
         // Add user message to chat
         this.addMessage(message, 'user');
         this.chatInput.value = '';
+        
+        // Reset textarea height after clearing
+        this.chatInput.style.height = 'auto';
         
         // Show typing indicator
         this.showTypingIndicator();
@@ -191,6 +309,11 @@ class ChatClient {
 
     // Set input state (enabled/disabled)
     setInputState(enabled) {
+        // If curation has been triggered, always keep disabled
+        if (this.isCurationTriggered) {
+            enabled = false;
+        }
+        
         this.chatInput.disabled = !enabled;
         this.sendButton.disabled = !enabled;
         
@@ -229,7 +352,8 @@ class ChatClient {
 
         // Show status that curation is starting
         this.showStatus('🎯 Curating your personalized news feed...', 'info');
-        this.setInputState(false); // Disable input during curation
+        this.isCurationTriggered = true; // Mark curation as triggered
+        this.setInputState(false); // Disable input during curation (permanently)
 
         try {
             console.log('🚀 Calling curate-feed API...', { email: this.userEmail });
@@ -260,9 +384,9 @@ class ChatClient {
             this.showStatus('⚠️ Network error during curation. Please try again.', 'error');
             this.addMessage('Sorry, there was a network error. Please try again.', 'bot');
         } finally {
-            // Keep input disabled since conversation is complete
-            this.chatInput.disabled = true;
-            this.sendButton.disabled = true;
+            // Keep input disabled permanently since curation is triggered
+            this.isCurationTriggered = true;
+            this.setInputState(false);
         }
     }
 

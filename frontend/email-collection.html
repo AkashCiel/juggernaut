@@ -11,7 +11,7 @@
             align-items: center;
             justify-content: center;
             padding: var(--spacing-large);
-            background: #f1f5f9;
+            background: var(--color-hover);
             position: relative;
         }
 
@@ -137,11 +137,11 @@
         }
 
         .form-group input.error {
-            border-color: #991b1b;
+            border-color: var(--color-error, #991b1b);
         }
 
         .note {
-            background: #f1f5f9;
+            background: var(--color-hover);
             border-left: 3px solid var(--color-primary);
             padding: var(--spacing-large);
             margin-bottom: var(--spacing-xl);
@@ -181,7 +181,7 @@
         }
 
         .error-message {
-            color: #991b1b;
+            color: var(--color-error, #991b1b);
             font-size: var(--font-size-medium);
             margin-top: var(--spacing-small);
             display: none;
@@ -323,13 +323,181 @@
                 font-size: var(--font-size-medium);
             }
         }
+
+        /* About Intro Modal Styles */
+        .about-intro-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity var(--transition-medium);
+            padding: var(--spacing-large);
+        }
+
+        .about-intro-modal-overlay.about-intro-modal-open {
+            opacity: 1;
+        }
+
+        .about-intro-modal-container {
+            background: var(--color-white);
+            border-radius: var(--border-radius-medium);
+            box-shadow: var(--shadow-medium);
+            padding: var(--spacing-xxl);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(-20px);
+            transition: transform var(--transition-medium);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .about-intro-modal-overlay.about-intro-modal-open .about-intro-modal-container {
+            transform: translateY(0);
+        }
+
+        .about-intro-modal-close {
+            position: absolute;
+            top: var(--spacing-large);
+            right: var(--spacing-large);
+            background: none;
+            border: none;
+            font-size: var(--font-size-xxlarge);
+            line-height: 1;
+            color: var(--color-text-light);
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color var(--transition-medium);
+            padding: 0;
+        }
+
+        .about-intro-modal-close:hover {
+            color: var(--color-primary);
+        }
+
+        .about-intro-modal-header {
+            margin-bottom: var(--spacing-xxl);
+            padding-right: var(--spacing-xxl);
+        }
+
+        .about-intro-modal-header h1 {
+            font-size: var(--font-size-xxlarge);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+            margin-bottom: var(--spacing-small);
+            letter-spacing: -0.5px;
+        }
+
+        .about-intro-modal-content {
+            flex: 1;
+            line-height: 1.8;
+            color: var(--color-text);
+            font-size: var(--font-size-large);
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .about-intro-modal-content p {
+            margin: 0;
+            text-align: center;
+        }
+
+        .about-intro-modal-buttons {
+            margin-top: var(--spacing-xxl);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-medium);
+            align-items: center;
+        }
+
+        .about-intro-modal-nav-button {
+            background: none;
+            border: none;
+            color: var(--color-text-light);
+            font-size: var(--font-size-medium);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-small);
+            transition: color var(--transition-medium);
+            font-family: inherit;
+            padding: var(--spacing-small);
+        }
+
+        .about-intro-modal-nav-button:hover {
+            color: var(--color-primary);
+        }
+
+        .about-intro-modal-nav-button .arrow-up {
+            font-size: var(--font-size-xlarge);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .about-intro-modal-start-button {
+            background: var(--color-primary);
+            color: var(--color-white);
+            border: none;
+            padding: var(--spacing-medium) var(--spacing-xl);
+            border-radius: var(--border-radius-medium);
+            font-size: var(--font-size-large);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all var(--transition-medium);
+            font-family: inherit;
+        }
+
+        .about-intro-modal-start-button:hover {
+            background: var(--color-secondary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        @media (max-width: 768px) {
+            .about-intro-modal-overlay {
+                align-items: flex-start;
+                padding: var(--spacing-large) var(--spacing-medium);
+            }
+
+            .about-intro-modal-container {
+                padding: var(--spacing-xl);
+                margin-top: var(--spacing-large);
+                max-height: calc(100vh - var(--spacing-large) * 2);
+            }
+
+            .about-intro-modal-header h1 {
+                font-size: var(--font-size-xlarge);
+            }
+
+            .about-intro-modal-content {
+                font-size: var(--font-size-medium);
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Floating Navigation -->
     <nav class="floating-nav">
-        <a href="email-collection.html" class="brand">Juggernaut</a>
-        <div class="nav-separator"></div>
         <button id="aboutModalTrigger">About</button>
     </nav>
 
@@ -368,6 +536,7 @@
     </div>
 
     <script src="js/emailCollection.js"></script>
+    <script type="module" src="js/aboutIntroModal.js"></script>
     <script type="module" src="js/aboutModal.js"></script>
 </body>
 </html>
