@@ -58,6 +58,7 @@ jobs:
           MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
           MAILGUN_DOMAIN: ${{ secrets.MAILGUN_DOMAIN }}
           GITHUB_TOKEN_REPORTS: ${{ secrets.GIT_TOKEN }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NODE_ENV: production
         run: |
           node scripts/run-curation-workflow.js \

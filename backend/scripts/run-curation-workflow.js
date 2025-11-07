@@ -5,7 +5,7 @@ const PreLoadService = require('../services/preLoadService');
 const NewsDiscoveryService = require('../services/newsDiscoveryService');
 const ArticleCuratorService = require('../services/articleCuratorService');
 const EmailService = require('../services/emailService');
-const GitHubService = require('../services/githubService');
+const VercelStorageService = require('../services/vercelStorageService');
 const { generateUserId } = require('../utils/userUtils');
 
 function parseArgs(argv) {
@@ -36,7 +36,7 @@ function parseArgs(argv) {
         const newsDiscoveryService = new NewsDiscoveryService();
         const articleCuratorService = new ArticleCuratorService();
         const emailService = new EmailService();
-        const githubService = new GitHubService();
+        const vercelStorageService = new VercelStorageService();
 
         logger.info('📥 Fetching section summaries...');
         const summaries = await preLoadService.fetchSectionSummaries();
@@ -77,7 +77,7 @@ function parseArgs(argv) {
             logger.info(`✅ Email sent successfully to: ${email}`);
         }
 
-        logger.info('💾 Saving user data to juggernaut-reports...');
+        logger.info('💾 Saving user data to Vercel Postgres...');
         const userId = generateUserId(email);
         const userData = {
             userId: userId,
@@ -98,12 +98,12 @@ function parseArgs(argv) {
             lastUpdated: new Date().toISOString()
         };
 
-        const githubToken = process.env.GITHUB_TOKEN_REPORTS;
-        if (!githubToken) {
-            logger.warn('⚠️ GITHUB_TOKEN_REPORTS not set, skipping save to juggernaut-reports');
-        } else {
-            await githubService.uploadOrUpdateUserInJson(userData, githubToken, 'Curated via GitHub Actions');
-            logger.info(`✅ User data saved to GitHub for: ${email}`);
+        try {
+            await vercelStorageService.createOrUpdateUser(userData);
+            logger.info(`✅ User data saved to Vercel Postgres for: ${email}`);
+        } catch (error) {
+            logger.error(`❌ Failed to save user data to Vercel Postgres: ${error.message}`);
+            // Don't fail the entire workflow if storage fails
         }
 
         // Emit summary for artifact

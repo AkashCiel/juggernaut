@@ -31,7 +31,8 @@
     "moment-timezone": "^0.5.43",
     "uuid": "^11.1.0",
     "winston": "^3.11.0",
-    "xml2js": "^0.6.2"
+    "xml2js": "^0.6.2",
+    "@neondatabase/serverless": "^0.9.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
