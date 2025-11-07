@@ -12,8 +12,9 @@ const validateFeedback = [
         .normalizeEmail()
         .withMessage('Valid email is required'),
     body('paymentIntentInMonths')
+        .optional()
         .isInt({ min: 1, max: 6 })
-        .withMessage('Payment intent must be 1 or 6 months'),
+        .withMessage('Payment intent must be 1 or 6 months if provided'),
     body('userFeedback')
         .optional()
         .isString()

@@ -26,11 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const selectedPlan = document.querySelector('input[name="paymentIntent"]:checked');
-            if (!selectedPlan) {
-                alert('Please select a payment plan.');
-                return;
-            }
-
             const userFeedback = document.getElementById('userFeedback').value.trim();
 
             // Disable button during submission
@@ -45,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
                     body: JSON.stringify({
                         email: email,
-                        paymentIntentInMonths: parseInt(selectedPlan.value),
+                        paymentIntentInMonths: selectedPlan ? parseInt(selectedPlan.value) : null,
                         userFeedback: userFeedback || null
                     })
                 });
@@ -116,7 +111,7 @@ function populateContent() {
     // Plans section
     const plansHeading = document.getElementById('plansHeading');
     const plansRadioGroup = document.getElementById('plansRadioGroup');
-    if (plansHeading) plansHeading.textContent = content.plans.heading;
+    if (plansHeading) plansHeading.textContent = content.plans.heading + ' (optional)';
     if (plansRadioGroup) {
         content.plans.options.forEach(option => {
             const radioOption = document.createElement('div');
@@ -127,7 +122,7 @@ function populateContent() {
             radio.name = 'paymentIntent';
             radio.id = `plan-${option.value}`;
             radio.value = option.value;
-            radio.required = true;
+            radio.required = false;
             
             const label = document.createElement('label');
             label.htmlFor = `plan-${option.value}`;

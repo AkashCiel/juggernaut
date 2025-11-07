@@ -118,7 +118,7 @@ class VercelStorageService {
      * Save user feedback
      * @param {Object} feedbackData - Feedback data object
      * @param {string} feedbackData.email - User email
-     * @param {number} feedbackData.paymentIntentInMonths - Payment intent in months (1 or 6)
+     * @param {number|null} feedbackData.paymentIntentInMonths - Payment intent in months (1 or 6), optional
      * @param {string|null} feedbackData.userFeedback - Optional user feedback text
      * @returns {Promise<Object>} Result object with success status
      */
@@ -137,7 +137,7 @@ class VercelStorageService {
                     created_at
                 ) VALUES (
                     ${feedbackData.email},
-                    ${feedbackData.paymentIntentInMonths},
+                    ${feedbackData.paymentIntentInMonths || null},
                     ${feedbackData.userFeedback || null},
                     ${now}
                 )
