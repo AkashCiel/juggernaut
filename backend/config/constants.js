@@ -81,6 +81,10 @@ Example: {"technology/2025/oct/27/article-id": 85, "business/2025/oct/26/article
 
 Do not include any explanations or additional text outside the JSON object.
 `,
+
+    // Pricing & Feedback CTA
+    PRICING_FEEDBACK_BUTTON_TEXT: 'vision, pricing, and feedback',
+    PRICING_FEEDBACK_PATH: '/pricing-feedback.html'
 };
 
 

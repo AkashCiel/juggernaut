@@ -1,6 +1,7 @@
 const Mailgun = require('mailgun.js');
 const formData = require('form-data');
 const { logger, logApiCall } = require('../utils/logger-vercel');
+const { PRICING_FEEDBACK_BUTTON_TEXT, PRICING_FEEDBACK_PATH } = require('../config/constants');
 const { handleMailgunError } = require('../utils/errorHandler');
 const { sanitizeText, sanitizeHtml } = require('../utils/sanitizer');
 
@@ -10,6 +11,7 @@ class EmailService {
         this.mailgunClient = null;
         this.isInitialized = false;
         this.domain = null;
+        this.pendingEmailAddress = null;
         
         // Auto-initialize from environment variables for backwards compatibility
         const apiKey = process.env.MAILGUN_API_KEY;
@@ -167,6 +169,8 @@ class EmailService {
             `;
         }).join('');
 
+        const feedbackCta = this.buildPricingFeedbackCta(curatedArticles.length);
+
         const htmlContent = `
 <!DOCTYPE html>
 <html>
@@ -186,6 +190,7 @@ class EmailService {
         </p>
         
         ${articleCards}
+            ${feedbackCta}
         
         <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
         
@@ -199,6 +204,36 @@ class EmailService {
         `;
 
         return htmlContent;
+    }
+
+    buildPricingFeedbackCta(articleCount) {
+        if (articleCount < 10) {
+            return '';
+        }
+
+        const baseUrl = process.env.FRONTEND_BASE_URL;
+        if (!baseUrl) {
+            logger.warn('⚠️ FRONTEND_BASE_URL not set. Skipping pricing/feedback CTA link.');
+            return '';
+        }
+
+        const targetUrl = `${baseUrl.replace(/\/$/, '')}${PRICING_FEEDBACK_PATH}`;
+
+        if (!this.pendingEmailAddress) {
+            // Email address will be set before composing
+            logger.warn('⚠️ Email address not set for CTA generation.');
+            return '';
+        }
+
+        const link = `${targetUrl}?email=${encodeURIComponent(this.pendingEmailAddress)}`;
+
+        return `
+            <div style="margin: 32px 0; text-align: center;">
+                <a href="${link}" style="display: inline-block; padding: 12px 24px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 6px; font-weight: 600;">
+                    ${PRICING_FEEDBACK_BUTTON_TEXT}
+                </a>
+            </div>
+        `;
     }
 
     /**
@@ -228,6 +263,7 @@ class EmailService {
         try {
             logger.info(`📧 Composing email for ${curatedArticles.length} articles to ${email}...`);
             
+            this.pendingEmailAddress = email;
             const htmlContent = this.composeEmail(curatedArticles, selectedSections);
             const subject = 'Your Personalized News Feed';
             
@@ -245,6 +281,8 @@ class EmailService {
                 success: false,
                 error: error.message
             };
+        } finally {
+            this.pendingEmailAddress = null;
         }
     }
 

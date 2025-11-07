@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juggernaut – Pricing & Feedback</title>
+    <link rel="stylesheet" href="css/design-system.css">
+    <style>
+        body {
+            background: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: var(--spacing-xl) var(--spacing-large);
+            color: var(--color-text-primary);
+        }
+
+        .page-container {
+            width: min(720px, 100%);
+            background: #fff;
+            border-radius: var(--radius-large);
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
+            padding: var(--spacing-xxl);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xl);
+        }
+
+        .header {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-small);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: clamp(28px, 4vw, 36px);
+            color: var(--color-text-primary);
+        }
+
+        .header p {
+            margin: 0;
+            color: var(--color-text-secondary);
+            font-size: 16px;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(99, 102, 241, 0.08));
+            border-left: 4px solid rgba(59, 130, 246, 0.6);
+            border-radius: var(--radius-medium);
+            padding: var(--spacing-large);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-small);
+        }
+
+        .info-card h2 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--color-text-primary);
+        }
+
+        .info-card p {
+            margin: 0;
+            color: var(--color-text-secondary);
+        }
+
+        .email-display {
+            font-weight: 600;
+            color: var(--color-text-accent);
+            word-break: break-all;
+        }
+
+        .placeholder {
+            border: 1px dashed rgba(148, 163, 184, 0.6);
+            border-radius: var(--radius-medium);
+            padding: var(--spacing-large);
+            text-align: center;
+            color: var(--color-text-secondary);
+        }
+
+        footer {
+            margin-top: var(--spacing-large);
+            color: var(--color-text-tertiary);
+            font-size: 13px;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: var(--spacing-large);
+            }
+
+            .page-container {
+                padding: var(--spacing-xl);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <header class="header">
+            <h1>Vision, Pricing & Feedback</h1>
+            <p>Thanks for exploring Juggernaut. We’ll soon share our vision, pricing plans, and a feedback form here.</p>
+        </header>
+
+        <section class="info-card">
+            <h2>Your personalized link</h2>
+            <p>We sent you here because you received a curated feed at:</p>
+            <p class="email-display" id="userEmailDisplay">Fetching email...</p>
+        </section>
+
+        <section class="placeholder">
+            <p>This is a placeholder. Details about pricing and a feedback form will appear here soon.</p>
+            <p>We’ll use your verified email above to auto-fill the feedback form when it’s ready.</p>
+        </section>
+    </div>
+
+    <footer>
+        &copy; <span id="currentYear"></span> Juggernaut. All rights reserved.
+    </footer>
+
+    <script src="js/pricingFeedback.js"></script>
+</body>
+</html>
+
