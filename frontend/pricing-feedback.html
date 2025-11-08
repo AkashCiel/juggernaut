@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="css/design-system.css">
     <style>
         body {
-            background: #f1f5f9;
+            background: var(--color-hover);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -18,7 +18,7 @@
 
         .page-container {
             width: min(720px, 100%);
-            background: #fff;
+            background: var(--color-white);
             border-radius: var(--border-radius-medium);
             box-shadow: var(--shadow-medium);
             padding: var(--spacing-xxl);
@@ -132,6 +132,8 @@
             resize: vertical;
             outline: none;
             transition: border-color var(--transition-medium);
+            background: var(--color-background);
+            color: var(--color-text);
         }
 
         textarea:focus {

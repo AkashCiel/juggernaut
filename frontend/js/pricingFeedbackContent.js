@@ -12,16 +12,15 @@ const PRICING_FEEDBACK_CONTENT = {
         ]
     },
     experiment: {
-        paragraph1: "You are deciding to support the further use and development of this product. Which also means that you have a fair and democratic say in this process - what features to build, which order to build them in, and so on. Since this is an experiment for both me and you, let us start with a simple, one-time payment. I will not save your card details. Which means if you don't do anything, you will not be charged further.",
+        paragraph1: "If you want to use this product further, choose one of the options below for a one-time payment.",
         paragraph2: "If there is sufficient interest, I will roll out subscription plans in the future. If not, you can walk away, no obligations."
     },
     benefits: {
         heading: "Benefits:",
         items: [
-            "Access to regular personalised news feed - daily or once every x days. You decide.",
+            "Receive your personalised news feed once every 3 days.",
             "Access to chat to modify or refine your news feed.",
-            "Access to an exclusive community - give feedback, propose, and vote for new features.",
-            "Full refund of your payment in the case of future subscriptions."
+            "Full refund within 14 days."
         ]
     },
     callToAction: "Select one of the options below and I will email you a payment link. If you are almost ready to pay but something feels missing, tell me what that is in the box below.",
