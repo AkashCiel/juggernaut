@@ -1,18 +1,32 @@
 // Mobile Keyboard Manager - Simple padding solution
 class MobileKeyboardManager {
-    constructor(chatInput, chatInputContainer, chatMessages) {
+    constructor(chatInput, chatInputContainer, chatMessages, chatContainer) {
         this.chatInput = chatInput;
         this.chatInputContainer = chatInputContainer;
         this.chatMessages = chatMessages;
+        this.chatContainer = chatContainer;
         this.resizeObserver = null;
         this.visualViewport = null;
     }
 
-    // Update messages padding-bottom to match input container height
-    updatePadding() {
+    // Update layout: container height and messages padding-bottom
+    updateLayout() {
         if (!this.chatMessages || !this.chatInputContainer) return;
         
+        // Get actual viewport height (accounts for keyboard)
+        const viewportHeight = window.visualViewport 
+            ? window.visualViewport.height 
+            : window.innerHeight;
+        
+        // Calculate input container height
         const inputHeight = this.chatInputContainer.offsetHeight;
+        
+        // Set chat-container height to viewport height minus input height
+        if (this.chatContainer) {
+            this.chatContainer.style.height = `${viewportHeight - inputHeight}px`;
+        }
+        
+        // Set messages padding-bottom to match input height
         this.chatMessages.style.paddingBottom = `${inputHeight}px`;
     }
 
@@ -27,15 +41,15 @@ class MobileKeyboardManager {
 
     // Initialize keyboard manager
     initialize() {
-        if (!this.chatInput || !this.chatInputContainer || !this.chatMessages) return;
+        if (!this.chatInput || !this.chatInputContainer || !this.chatMessages || !this.chatContainer) return;
 
-        // Initial padding calculation
-        this.updatePadding();
+        // Initial layout calculation
+        this.updateLayout();
 
         // Listener 1: ResizeObserver for input container height changes (auto-expand)
         if (window.ResizeObserver) {
             this.resizeObserver = new ResizeObserver(() => {
-                this.updatePadding();
+                this.updateLayout();
             });
             this.resizeObserver.observe(this.chatInputContainer);
         }
@@ -45,7 +59,7 @@ class MobileKeyboardManager {
             this.visualViewport = window.visualViewport;
             // Bind the method so it can be removed later
             this.handleViewportResize = () => {
-                this.updatePadding();
+                this.updateLayout();
             };
             this.visualViewport.addEventListener('resize', this.handleViewportResize);
         }
@@ -53,18 +67,18 @@ class MobileKeyboardManager {
         // Handle input focus - prevent body scroll
         this.chatInput.addEventListener('focus', () => {
             this.preventBodyScroll(true);
-            // Small delay to allow keyboard to appear, then update padding
+            // Small delay to allow keyboard to appear, then update layout
             setTimeout(() => {
-                this.updatePadding();
+                this.updateLayout();
             }, 150);
         });
 
         // Handle input blur - restore body scroll
         this.chatInput.addEventListener('blur', () => {
             this.preventBodyScroll(false);
-            // Small delay to allow keyboard to hide, then update padding
+            // Small delay to allow keyboard to hide, then update layout
             setTimeout(() => {
-                this.updatePadding();
+                this.updateLayout();
             }, 150);
         });
     }
@@ -95,6 +109,7 @@ class ChatClient {
         this.initializeElements();
         this.setupAutoExpandInput();
         this.setupMobileKeyboardHandling();
+        this.setupCollapsibleHeader();
         this.bindEvents();
         this.startChat();
     }
@@ -146,7 +161,7 @@ class ChatClient {
             // Notify keyboard manager if it exists (for mobile)
             // ResizeObserver will also catch this, but this ensures immediate update
             if (this.keyboardManager) {
-                this.keyboardManager.updatePadding();
+                this.keyboardManager.updateLayout();
             }
         };
         
@@ -169,13 +184,40 @@ class ChatClient {
         // Only initialize on mobile devices
         if (window.innerWidth > 768) return;
         
-        // Initialize MobileKeyboardManager (no header needed)
+        // Get chat container element
+        const chatContainer = document.querySelector('.chat-container');
+        
+        // Initialize MobileKeyboardManager
         this.keyboardManager = new MobileKeyboardManager(
             this.chatInput,
             this.chatInputContainer,
-            this.chatMessages
+            this.chatMessages,
+            chatContainer
         );
         this.keyboardManager.initialize();
+    }
+
+    // Setup collapsible header on mobile
+    setupCollapsibleHeader() {
+        // Only initialize on mobile devices
+        if (window.innerWidth > 768) return;
+        
+        const chatHeader = document.querySelector('.chat-header');
+        if (!chatHeader || !this.chatMessages) return;
+        
+        // Import CollapsibleHeader dynamically (since it's a module)
+        import('./collapsibleHeader.js').then(module => {
+            const CollapsibleHeader = module.CollapsibleHeader || module.default;
+            // Initialize CollapsibleHeader
+            this.collapsibleHeader = new CollapsibleHeader(
+                chatHeader,
+                this.chatMessages,
+                this.keyboardManager
+            );
+            this.collapsibleHeader.initialize();
+        }).catch(err => {
+            console.error('Failed to load CollapsibleHeader:', err);
+        });
     }
 
     // Bind event listeners

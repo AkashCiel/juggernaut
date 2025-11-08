@@ -167,12 +167,42 @@
         @media (max-width: 768px) {
             .chat-container {
                 position: relative;
-                height: 100vh;
+                /* height will be set dynamically by JS */
             }
             
             .chat-header {
                 position: relative;
                 z-index: 10;
+                transition: all var(--transition-medium);
+                cursor: pointer;
+            }
+            
+            /* Collapsed header state - minimal height */
+            .chat-header.header-collapsible {
+                min-height: 60px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .chat-header.header-collapsible h1,
+            .chat-header.header-collapsible p {
+                display: none;
+            }
+            
+            /* Expanded header state - full content */
+            .chat-header.header-expanded {
+                z-index: 200;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                box-shadow: var(--shadow-medium);
+            }
+            
+            .chat-header.header-expanded h1,
+            .chat-header.header-expanded p {
+                display: block;
             }
             
             /* Keep flexbox - no position: absolute */
@@ -181,6 +211,12 @@
                 overflow-y: auto;
                 padding: var(--spacing-large);
                 background: var(--color-background);
+                transition: padding-top var(--transition-medium);
+            }
+            
+            /* Messages when header is expanded (overlay) */
+            .chat-messages.messages-header-overlay {
+                padding-top: calc(var(--spacing-large) + 100px); /* Adjust based on header height */
             }
             
             .chat-input-container {
@@ -495,6 +531,7 @@
         })();
     </script>
     <script src="js/chatClient.js"></script>
+    <script type="module" src="js/collapsibleHeader.js"></script>
     <script type="module" src="js/aboutModal.js"></script>
 </body>
 </html> 
