@@ -177,6 +177,35 @@
                 cursor: pointer;
             }
             
+            /* Triangle indicator - purple/violet downward-pointing triangle */
+            .header-triangle-indicator {
+                display: none;
+                width: 0;
+                height: 0;
+                border-left: 12px solid transparent;
+                border-right: 12px solid transparent;
+                border-top: 12px solid var(--color-primary);
+            }
+            
+            /* About button in header */
+            .header-about-button {
+                display: none;
+                background: none;
+                border: 1px solid var(--color-white);
+                color: var(--color-white);
+                padding: var(--spacing-small) var(--spacing-medium);
+                border-radius: var(--border-radius-medium);
+                font-size: var(--font-size-large);
+                font-weight: var(--font-weight-medium);
+                cursor: pointer;
+                transition: all var(--transition-medium);
+                font-family: inherit;
+            }
+            
+            .header-about-button:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+            
             /* Collapsed header state - minimal height */
             .chat-header.header-collapsible {
                 min-height: 60px;
@@ -185,8 +214,13 @@
                 justify-content: center;
             }
             
+            .chat-header.header-collapsible .header-triangle-indicator {
+                display: block;
+            }
+            
             .chat-header.header-collapsible h1,
-            .chat-header.header-collapsible p {
+            .chat-header.header-collapsible p,
+            .chat-header.header-collapsible .header-about-button {
                 display: none;
             }
             
@@ -198,11 +232,26 @@
                 left: 0;
                 right: 0;
                 box-shadow: var(--shadow-medium);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: var(--spacing-medium);
+                gap: var(--spacing-small);
+            }
+            
+            .chat-header.header-expanded .header-triangle-indicator {
+                display: none;
             }
             
             .chat-header.header-expanded h1,
             .chat-header.header-expanded p {
                 display: block;
+            }
+            
+            .chat-header.header-expanded .header-about-button {
+                display: block;
+                margin-top: var(--spacing-small);
             }
             
             /* Keep flexbox - no position: absolute */
@@ -490,8 +539,10 @@
 
     <div class="chat-container">
         <div class="chat-header">
+            <div class="header-triangle-indicator"></div>
             <h1>Juggernaut</h1>
             <p>define your news feed</p>
+            <button class="header-about-button" id="headerAboutButton">About</button>
         </div>
         
         <div class="chat-messages" id="chatMessages">

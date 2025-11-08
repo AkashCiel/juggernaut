@@ -82,12 +82,26 @@ export class CollapsibleHeader {
         // Add collapsed state class initially
         this.chatHeader.classList.add('header-collapsible');
 
-        // Tap on header to toggle
+        // Wire up About button in header
+        const headerAboutButton = this.chatHeader.querySelector('#headerAboutButton');
+        if (headerAboutButton) {
+            headerAboutButton.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent header toggle
+                // Trigger About modal if available
+                if (window.aboutModal) {
+                    window.aboutModal.open();
+                }
+            });
+        }
+
+        // Tap on header to toggle (but not on About button)
         this.chatHeader.addEventListener('click', (e) => {
-            // Only toggle if clicking on header itself, not on child elements that might have their own handlers
-            if (e.target === this.chatHeader || e.target.closest('.header-toggle-area')) {
-                this.toggle();
+            // Don't toggle if clicking on About button (it has its own handler)
+            if (e.target.closest('#headerAboutButton')) {
+                return;
             }
+            // Toggle for any other click on header (h1, p, triangle, empty space)
+            this.toggle();
         });
 
         // Swipe up to collapse
