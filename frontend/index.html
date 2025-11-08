@@ -163,7 +163,7 @@
             position: relative;
         }
 
-        /* Mobile keyboard handling - separate containers with relative positioning */
+        /* Mobile keyboard handling - simple padding solution */
         @media (max-width: 768px) {
             .chat-container {
                 position: relative;
@@ -175,11 +175,9 @@
                 z-index: 10;
             }
             
+            /* Keep flexbox - no position: absolute */
             .chat-messages {
-                position: absolute;
-                left: 0;
-                right: 0;
-                /* top and bottom will be set dynamically via JS */
+                /* padding-bottom will be set dynamically by JS */
                 overflow-y: auto;
                 padding: var(--spacing-large);
                 background: var(--color-background);
