@@ -27,7 +27,7 @@ class MobileKeyboardManager {
         }
         
         // Set messages padding-bottom to match input height
-        this.chatMessages.style.paddingBottom = `${inputHeight}px`;
+        // this.chatMessages.style.paddingBottom = `${inputHeight}px`;
     }
 
     // Prevent body scroll when input is focused
