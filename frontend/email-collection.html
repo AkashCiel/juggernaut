@@ -493,6 +493,133 @@
                 font-size: var(--font-size-medium);
             }
         }
+
+        /* Email Block Modal Styles */
+        .email-block-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            opacity: 0;
+            transition: opacity var(--transition-medium);
+            padding: var(--spacing-large);
+        }
+
+        .email-block-modal-overlay.email-block-modal-open {
+            opacity: 1;
+        }
+
+        .email-block-modal-container {
+            background: var(--color-white);
+            border-radius: var(--border-radius-medium);
+            box-shadow: var(--shadow-medium);
+            padding: var(--spacing-xxl);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(-20px);
+            transition: transform var(--transition-medium);
+        }
+
+        .email-block-modal-overlay.email-block-modal-open .email-block-modal-container {
+            transform: translateY(0);
+        }
+
+        .email-block-modal-close {
+            position: absolute;
+            top: var(--spacing-large);
+            right: var(--spacing-large);
+            background: none;
+            border: none;
+            font-size: 32px;
+            line-height: 1;
+            color: var(--color-text-light);
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color var(--transition-medium);
+            padding: 0;
+        }
+
+        .email-block-modal-close:hover {
+            color: var(--color-primary);
+        }
+
+        .email-block-modal-header {
+            margin-bottom: var(--spacing-xl);
+            padding-right: var(--spacing-xxl);
+        }
+
+        .email-block-modal-header h1 {
+            font-size: var(--font-size-xxlarge);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+            margin-bottom: var(--spacing-small);
+            letter-spacing: -0.5px;
+        }
+
+        .email-block-modal-content {
+            line-height: 1.8;
+            color: var(--color-text);
+            font-size: var(--font-size-large);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .email-block-modal-content p {
+            margin: 0;
+        }
+
+        .email-block-modal-button {
+            background: var(--color-primary);
+            color: var(--color-white);
+            border: none;
+            border-radius: var(--border-radius-medium);
+            padding: var(--spacing-medium) var(--spacing-xl);
+            font-size: var(--font-size-large);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all var(--transition-medium);
+            font-family: inherit;
+            width: 100%;
+        }
+
+        .email-block-modal-button:hover {
+            background: var(--color-secondary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        @media (max-width: 768px) {
+            .email-block-modal-overlay {
+                align-items: flex-start;
+                padding: var(--spacing-large) var(--spacing-medium);
+            }
+
+            .email-block-modal-container {
+                padding: var(--spacing-xl);
+                margin-top: var(--spacing-large);
+                max-height: calc(100vh - var(--spacing-large) * 2);
+            }
+
+            .email-block-modal-header h1 {
+                font-size: var(--font-size-xlarge);
+            }
+
+            .email-block-modal-content {
+                font-size: var(--font-size-medium);
+            }
+        }
     </style>
 </head>
 <body>
@@ -536,6 +663,7 @@
     </div>
 
     <script src="js/emailCollection.js"></script>
+    <script src="js/emailBlockModal.js"></script>
     <script type="module" src="js/aboutIntroModal.js"></script>
     <script type="module" src="js/aboutModal.js"></script>
 </body>

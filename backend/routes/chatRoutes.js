@@ -7,6 +7,7 @@ const OrchestratorService = require('../services/orchestratorService');
 const ArticleCuratorService = require('../services/articleCuratorService');
 const EmailService = require('../services/emailService');
 const GitHubService = require('../services/githubService');
+const VercelStorageService = require('../services/vercelStorageService');
 
 // Import middleware
 const { apiLimiter } = require('../middleware/security');
@@ -16,6 +17,7 @@ const { generateUserId } = require('../utils/userUtils');
 
 // Initialize services
 const orchestratorService = new OrchestratorService();
+const vercelStorageService = new VercelStorageService();
 
 // Validation rules for chat messages
 const validateChatMessage = [
@@ -73,12 +75,21 @@ router.post('/message',
     validateChatMessage,
     handleValidationErrors,
     asyncHandler(async (req, res) => {
-        const { message, sessionId, email } = req.body;
+        const { message, sessionId, email, chatHistory } = req.body;
         
         
         try {
-            const result = await orchestratorService.handleMessage(message, sessionId, email);
+            const result = await orchestratorService.handleMessage(message, sessionId, email, chatHistory);
             
+            // Save chat history to database if email is provided
+            if (email && result.chatHistory && Array.isArray(result.chatHistory)) {
+                try {
+                    await vercelStorageService.saveChatHistory(email, result.chatHistory);
+                } catch (historyError) {
+                    // Log error but don't fail the request if history save fails
+                    logger.error(`⚠️ Failed to save chat history for ${email}: ${historyError.message}`);
+                }
+            }
             
             res.json({
                 success: true,

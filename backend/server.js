@@ -11,6 +11,7 @@ const { errorHandler } = require('./utils/errorHandler');
 const healthRoutes = require('./routes/healthRoutes');
 // const reportRoutes = require('./routes/reportRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+const emailRoutes = require('./routes/emailRoutes');
 
 // Initialize Express app
 const app = express();
@@ -43,6 +44,7 @@ app.use(generalLimiter);
 app.use('/', healthRoutes);
 // app.use('/api', reportRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api', emailRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

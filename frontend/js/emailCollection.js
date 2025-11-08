@@ -42,7 +42,21 @@ class EmailCollection {
         this.clearError();
 
         try {
-            // Skip backend validation - assume email is valid
+            // Check email access before redirecting
+            const canAccess = await this.checkEmailAccess(email);
+            
+            if (!canAccess) {
+                // Show blocking modal for unpaid repeat users
+                this.setLoading(false);
+                if (window.emailBlockModal) {
+                    window.emailBlockModal.show(email);
+                } else {
+                    // Fallback if modal not loaded
+                    this.showError('Access restricted. Please check your email for your personalised news feed.');
+                }
+                return;
+            }
+            
             // Store email in session storage
             sessionStorage.setItem('userEmail', email);
             
@@ -50,7 +64,9 @@ class EmailCollection {
             window.location.href = `/?email=${encodeURIComponent(email)}`;
         } catch (error) {
             console.error('Error:', error);
-            this.showError('Unable to proceed. Please try again.');
+            // On error, allow access (fail open)
+            sessionStorage.setItem('userEmail', email);
+            window.location.href = `/?email=${encodeURIComponent(email)}`;
         } finally {
             this.setLoading(false);
         }
@@ -62,7 +78,37 @@ class EmailCollection {
         return emailRegex.test(email);
     }
 
-    // Validate email with backend
+    // Check email access - determines if user can access chat
+    async checkEmailAccess(email) {
+        try {
+            const response = await fetch(`${this.apiUrl}/api/validate-email-access`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                return result.data.canAccess;
+            }
+            
+            // If response format is unexpected, allow access (fail open)
+            return true;
+        } catch (error) {
+            console.error('Email access check error:', error);
+            // Fallback to allow access if backend is unavailable (fail open)
+            return true;
+        }
+    }
+
+    // Validate email with backend (deprecated - kept for compatibility)
     async validateEmailWithBackend(email) {
         try {
             const response = await fetch(`${this.apiUrl}/api/validate-email`, {

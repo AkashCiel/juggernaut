@@ -28,6 +28,8 @@ class VercelStorageService {
                     selected_sections,
                     curated_articles,
                     article_count,
+                    paid,
+                    chat_history,
                     created_at,
                     last_updated
                 ) VALUES (
@@ -37,6 +39,8 @@ class VercelStorageService {
                     ${userData.selectedSections},
                     ${JSON.stringify(userData.curatedArticles)}::jsonb,
                     ${userData.articleCount},
+                    ${userData.paid || false},
+                    ${userData.chatHistory ? JSON.stringify(userData.chatHistory) : null}::jsonb,
                     ${userData.createdAt},
                     ${userData.lastUpdated}
                 )
@@ -47,6 +51,8 @@ class VercelStorageService {
                     selected_sections = EXCLUDED.selected_sections,
                     curated_articles = EXCLUDED.curated_articles,
                     article_count = EXCLUDED.article_count,
+                    paid = COALESCE(EXCLUDED.paid, users.paid),
+                    chat_history = COALESCE(EXCLUDED.chat_history, users.chat_history),
                     last_updated = EXCLUDED.last_updated
             `;
             
@@ -147,6 +153,103 @@ class VercelStorageService {
             return { success: true };
         } catch (error) {
             logger.error(`❌ Failed to save feedback to Vercel Postgres: ${error.message}`);
+            throw error;
+        }
+    }
+
+    /**
+     * Check email access - determines if user can access chat
+     * @param {string} email - User email
+     * @returns {Promise<Object>} Access check result with exists, paid, canAccess
+     */
+    async checkEmailAccess(email) {
+        try {
+            logger.info(`🔍 Checking email access for: ${email}`);
+            
+            const user = await this.getUserByEmail(email);
+            
+            // If user doesn't exist, allow access (new user)
+            if (!user) {
+                return {
+                    exists: false,
+                    paid: false,
+                    canAccess: true
+                };
+            }
+            
+            // If user exists and has paid, allow access
+            if (user.paid === true) {
+                return {
+                    exists: true,
+                    paid: true,
+                    canAccess: true
+                };
+            }
+            
+            // If user exists but hasn't paid, block access
+            return {
+                exists: true,
+                paid: false,
+                canAccess: false
+            };
+        } catch (error) {
+            logger.error(`❌ Failed to check email access: ${error.message}`);
+            throw error;
+        }
+    }
+
+    /**
+     * Save chat history for a user
+     * @param {string} email - User email
+     * @param {Array} chatHistory - Chat history array
+     * @returns {Promise<Object>} Result object with success status
+     */
+    async saveChatHistory(email, chatHistory) {
+        try {
+            if (!email || !chatHistory || !Array.isArray(chatHistory)) {
+                logger.warn(`⚠️ Invalid chat history data for: ${email}`);
+                return { success: false, error: 'Invalid chat history data' };
+            }
+            
+            logger.info(`💾 Saving chat history to Vercel Postgres: ${email} (${chatHistory.length} messages)`);
+            
+            // Update chat_history for user
+            await this.sql`
+                UPDATE users 
+                SET chat_history = ${JSON.stringify(chatHistory)}::jsonb,
+                    last_updated = ${new Date().toISOString()}
+                WHERE email = ${email}
+            `;
+            
+            logger.info(`✅ Chat history saved to Vercel Postgres for: ${email}`);
+            return { success: true };
+        } catch (error) {
+            logger.error(`❌ Failed to save chat history: ${error.message}`);
+            throw error;
+        }
+    }
+
+    /**
+     * Get chat history for a user
+     * @param {string} email - User email
+     * @returns {Promise<Array|null>} Chat history array or null if not found
+     */
+    async getChatHistory(email) {
+        try {
+            const user = await this.getUserByEmail(email);
+            
+            if (!user || !user.chat_history) {
+                return null;
+            }
+            
+            // Parse chat_history if it's a string
+            if (typeof user.chat_history === 'string') {
+                return JSON.parse(user.chat_history);
+            }
+            
+            return user.chat_history;
+        } catch (error) {
+            logger.error(`❌ Failed to get chat history: ${error.message}`);
             throw error;
         }
     }
