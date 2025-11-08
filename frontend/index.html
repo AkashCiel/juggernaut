@@ -90,6 +90,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
         }
 
         .chat-header {
@@ -97,6 +98,7 @@
             color: var(--color-white);
             padding: var(--spacing-xl);
             text-align: center;
+            flex-shrink: 0;
         }
 
         .chat-header h1 {
@@ -161,21 +163,38 @@
             position: relative;
         }
 
-        /* Mobile keyboard handling - input always fixed on mobile */
+        /* Mobile keyboard handling - separate containers with relative positioning */
         @media (max-width: 768px) {
+            .chat-container {
+                position: relative;
+                height: 100vh;
+            }
+            
+            .chat-header {
+                position: relative;
+                z-index: 10;
+            }
+            
+            .chat-messages {
+                position: absolute;
+                left: 0;
+                right: 0;
+                /* top and bottom will be set dynamically via JS */
+                overflow-y: auto;
+                padding: var(--spacing-large);
+                background: var(--color-background);
+            }
+            
             .chat-input-container {
                 position: fixed;
                 left: 0;
                 right: 0;
+                bottom: 0;
                 z-index: 100;
                 width: 100%;
                 padding-bottom: env(safe-area-inset-bottom, var(--spacing-large));
-                /* top and bottom positions will be set dynamically via JS */
-            }
-            
-            .chat-messages {
-                /* padding-bottom will be set dynamically via JS to prevent overlap */
-                transition: padding-bottom var(--transition-fast);
+                background: var(--color-white);
+                border-top: 1px solid var(--color-border);
             }
             
             body.chat-input-focused {

@@ -1,38 +1,15 @@
 // Mobile Keyboard Manager - Handles mobile keyboard positioning and layout
 class MobileKeyboardManager {
-    constructor(chatInput, chatInputContainer, chatMessages) {
+    constructor(chatInput, chatInputContainer, chatMessages, chatHeader) {
         this.chatInput = chatInput;
         this.chatInputContainer = chatInputContainer;
         this.chatMessages = chatMessages;
-        this.isKeyboardVisible = false;
+        this.chatHeader = chatHeader;
         this.isInputFocused = false;
         this.inputContainerHeight = 0;
+        this.headerHeight = 0;
         this.updateThrottle = null;
         this.resizeObserver = null;
-    }
-
-    // Detect keyboard visibility
-    detectKeyboard() {
-        if (window.visualViewport) {
-            const viewport = window.visualViewport;
-            const keyboardHeight = window.innerHeight - viewport.height;
-            return {
-                isVisible: keyboardHeight > 50, // Threshold to account for small variations
-                keyboardHeight: keyboardHeight,
-                viewportHeight: viewport.height
-            };
-        } else {
-            // Fallback: detect via window resize
-            // This is less reliable but works on older browsers
-            const currentHeight = window.innerHeight;
-            const expectedHeight = window.screen.height;
-            const keyboardHeight = expectedHeight - currentHeight;
-            return {
-                isVisible: keyboardHeight > 150,
-                keyboardHeight: keyboardHeight,
-                viewportHeight: currentHeight
-            };
-        }
     }
 
     // Calculate input container height
@@ -41,33 +18,25 @@ class MobileKeyboardManager {
         return this.chatInputContainer.offsetHeight;
     }
 
-    // Position input container at keyboard top or bottom
-    positionInputContainer() {
-        if (!this.chatInputContainer) return;
-
-        const keyboardInfo = this.detectKeyboard();
-        this.isKeyboardVisible = keyboardInfo.isVisible;
-        this.inputContainerHeight = this.calculateInputContainerHeight();
-
-        if (this.isKeyboardVisible) {
-            // Keyboard visible: position above keyboard
-            // Calculate top position to place input container just above keyboard
-            const topPosition = keyboardInfo.viewportHeight - this.inputContainerHeight;
-            this.chatInputContainer.style.top = `${topPosition}px`;
-            this.chatInputContainer.style.bottom = 'auto';
-        } else {
-            // Keyboard hidden: stick to bottom of viewport
-            this.chatInputContainer.style.top = 'auto';
-            this.chatInputContainer.style.bottom = '0';
-        }
+    // Calculate header height
+    calculateHeaderHeight() {
+        if (!this.chatHeader) return 0;
+        return this.chatHeader.offsetHeight;
     }
 
-    // Update messages container padding to prevent overlap
-    updateMessagesPadding() {
+    // Update messages container position (top = header height, bottom = input height)
+    updateMessagesPosition() {
         if (!this.chatMessages) return;
 
+        // Calculate header and input heights
+        this.headerHeight = this.calculateHeaderHeight();
         this.inputContainerHeight = this.calculateInputContainerHeight();
-        this.chatMessages.style.paddingBottom = `${this.inputContainerHeight}px`;
+        
+        // Set messages top = header height (messages starts below header)
+        this.chatMessages.style.top = `${this.headerHeight}px`;
+        
+        // Set messages bottom = input height (messages ends above input)
+        this.chatMessages.style.bottom = `${this.inputContainerHeight}px`;
     }
 
     // Prevent body scroll when input is focused
@@ -77,10 +46,7 @@ class MobileKeyboardManager {
         if (shouldPrevent) {
             document.body.classList.add('chat-input-focused');
         } else {
-            // Only remove if keyboard is also hidden
-            if (!this.isKeyboardVisible) {
-                document.body.classList.remove('chat-input-focused');
-            }
+            document.body.classList.remove('chat-input-focused');
         }
     }
 
@@ -92,29 +58,15 @@ class MobileKeyboardManager {
         }
         
         this.updateThrottle = setTimeout(() => {
-            this.updateLayout();
+            this.updateMessagesPosition();
         }, 50);
     }
 
-    // Main update function (throttled)
+    // Main update function
     updateLayout() {
         // Small delay to ensure DOM has updated and measurements are accurate
         requestAnimationFrame(() => {
-            // Recalculate input container height (may have changed due to auto-expand)
-            this.inputContainerHeight = this.calculateInputContainerHeight();
-            
-            // Position input container based on keyboard state
-            this.positionInputContainer();
-            
-            // Update messages padding to prevent overlap
-            this.updateMessagesPadding();
-            
-            // Update body scroll prevention based on focus state
-            if (this.isInputFocused) {
-                this.preventBodyScroll(true);
-            } else if (!this.isKeyboardVisible) {
-                this.preventBodyScroll(false);
-            }
+            this.updateMessagesPosition();
         });
     }
 
@@ -122,45 +74,10 @@ class MobileKeyboardManager {
     initialize() {
         if (!this.chatInput || !this.chatInputContainer || !this.chatMessages) return;
 
-        // Set initial position (bottom of viewport when keyboard is hidden)
-        this.chatInputContainer.style.top = 'auto';
-        this.chatInputContainer.style.bottom = '0';
-
-        // Initial layout calculation
+        // Initial layout calculation - set messages bottom above input
         this.updateLayout();
 
-        // Set up Visual Viewport API listeners
-        if (window.visualViewport) {
-            const handleViewportChange = () => {
-                // Delay to ensure keyboard animation completes and measurements are accurate
-                setTimeout(() => {
-                    this.updateLayout();
-                }, 100);
-            };
-
-            window.visualViewport.addEventListener('resize', handleViewportChange);
-            window.visualViewport.addEventListener('scroll', handleViewportChange);
-        } else {
-            // Fallback for browsers without Visual Viewport API
-            let lastHeight = window.innerHeight;
-            
-            const handleResize = () => {
-                const currentHeight = window.innerHeight;
-                const heightDiff = Math.abs(lastHeight - currentHeight);
-                
-                if (heightDiff > 50) {
-                    setTimeout(() => {
-                        this.updateLayout();
-                    }, 150);
-                }
-                
-                lastHeight = currentHeight;
-            };
-            
-            window.addEventListener('resize', handleResize);
-        }
-
-        // Set up ResizeObserver for input container height changes
+        // Set up ResizeObserver for input container height changes (auto-expand)
         if (window.ResizeObserver) {
             this.resizeObserver = new ResizeObserver(() => {
                 this.handleInputResize();
@@ -168,19 +85,19 @@ class MobileKeyboardManager {
             this.resizeObserver.observe(this.chatInputContainer);
         }
 
-        // Handle input focus
+        // Handle input focus - prevent body scroll
         this.chatInput.addEventListener('focus', () => {
             this.preventBodyScroll(true);
-            // Delay to allow keyboard to appear and stabilize
+            // Small delay to allow keyboard to appear, then update messages bottom
             setTimeout(() => {
                 this.updateLayout();
             }, 150);
         });
 
-        // Handle input blur
+        // Handle input blur - restore body scroll
         this.chatInput.addEventListener('blur', () => {
             this.preventBodyScroll(false);
-            // Delay to allow keyboard to hide and stabilize
+            // Small delay to allow keyboard to hide, then update messages bottom
             setTimeout(() => {
                 this.updateLayout();
             }, 150);
@@ -293,11 +210,15 @@ class ChatClient {
         // Only initialize on mobile devices
         if (window.innerWidth > 768) return;
         
+        // Get chat header element
+        const chatHeader = document.querySelector('.chat-header');
+        
         // Initialize MobileKeyboardManager
         this.keyboardManager = new MobileKeyboardManager(
             this.chatInput,
             this.chatInputContainer,
-            this.chatMessages
+            this.chatMessages,
+            chatHeader
         );
         this.keyboardManager.initialize();
     }
