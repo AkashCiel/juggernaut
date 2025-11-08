@@ -161,16 +161,28 @@
             position: relative;
         }
 
-        /* Mobile keyboard handling */
-        @supports (height: 100dvh) {
-            .chat-input-container {
-                padding-bottom: env(safe-area-inset-bottom, var(--spacing-large));
-            }
-        }
-
+        /* Mobile keyboard handling - input always fixed on mobile */
         @media (max-width: 768px) {
             .chat-input-container {
-                padding-bottom: max(var(--spacing-large), env(keyboard-inset-height, 0px));
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 100;
+                width: 100%;
+                padding-bottom: env(safe-area-inset-bottom, var(--spacing-large));
+                /* top position will be set dynamically via JS when keyboard is visible */
+            }
+            
+            .chat-messages {
+                /* padding-bottom will be set dynamically via JS to prevent overlap */
+                transition: padding-bottom var(--transition-fast);
+            }
+            
+            body.chat-input-focused {
+                overflow: hidden;
+                position: fixed;
+                width: 100%;
             }
         }
 

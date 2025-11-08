@@ -1,3 +1,200 @@
+// Mobile Keyboard Manager - Handles mobile keyboard positioning and layout
+class MobileKeyboardManager {
+    constructor(chatInput, chatInputContainer, chatMessages) {
+        this.chatInput = chatInput;
+        this.chatInputContainer = chatInputContainer;
+        this.chatMessages = chatMessages;
+        this.isKeyboardVisible = false;
+        this.isInputFocused = false;
+        this.inputContainerHeight = 0;
+        this.updateThrottle = null;
+        this.resizeObserver = null;
+    }
+
+    // Detect keyboard visibility
+    detectKeyboard() {
+        if (window.visualViewport) {
+            const viewport = window.visualViewport;
+            const keyboardHeight = window.innerHeight - viewport.height;
+            return {
+                isVisible: keyboardHeight > 50, // Threshold to account for small variations
+                keyboardHeight: keyboardHeight,
+                viewportHeight: viewport.height
+            };
+        } else {
+            // Fallback: detect via window resize
+            // This is less reliable but works on older browsers
+            const currentHeight = window.innerHeight;
+            const expectedHeight = window.screen.height;
+            const keyboardHeight = expectedHeight - currentHeight;
+            return {
+                isVisible: keyboardHeight > 150,
+                keyboardHeight: keyboardHeight,
+                viewportHeight: currentHeight
+            };
+        }
+    }
+
+    // Calculate input container height
+    calculateInputContainerHeight() {
+        if (!this.chatInputContainer) return 0;
+        return this.chatInputContainer.offsetHeight;
+    }
+
+    // Position input container at keyboard top or bottom
+    positionInputContainer() {
+        if (!this.chatInputContainer) return;
+
+        const keyboardInfo = this.detectKeyboard();
+        this.isKeyboardVisible = keyboardInfo.isVisible;
+        this.inputContainerHeight = this.calculateInputContainerHeight();
+
+        if (this.isKeyboardVisible) {
+            // Keyboard visible: position above keyboard
+            const topPosition = keyboardInfo.viewportHeight - this.inputContainerHeight;
+            this.chatInputContainer.style.top = `${topPosition}px`;
+            this.chatInputContainer.style.bottom = 'auto';
+        } else {
+            // Keyboard hidden: stick to bottom
+            this.chatInputContainer.style.top = 'auto';
+            this.chatInputContainer.style.bottom = '0';
+        }
+    }
+
+    // Update messages container padding to prevent overlap
+    updateMessagesPadding() {
+        if (!this.chatMessages) return;
+
+        this.inputContainerHeight = this.calculateInputContainerHeight();
+        this.chatMessages.style.paddingBottom = `${this.inputContainerHeight}px`;
+    }
+
+    // Prevent body scroll when input is focused
+    preventBodyScroll(shouldPrevent) {
+        this.isInputFocused = shouldPrevent;
+        
+        if (shouldPrevent) {
+            document.body.classList.add('chat-input-focused');
+        } else {
+            // Only remove if keyboard is also hidden
+            if (!this.isKeyboardVisible) {
+                document.body.classList.remove('chat-input-focused');
+            }
+        }
+    }
+
+    // Handle input container resize (from auto-expand)
+    handleInputResize() {
+        // Debounce rapid resize events
+        if (this.updateThrottle) {
+            clearTimeout(this.updateThrottle);
+        }
+        
+        this.updateThrottle = setTimeout(() => {
+            this.updateLayout();
+        }, 50);
+    }
+
+    // Main update function (throttled)
+    updateLayout() {
+        // Small delay to ensure DOM has updated
+        requestAnimationFrame(() => {
+            this.positionInputContainer();
+            this.updateMessagesPadding();
+            
+            // Update body scroll prevention based on focus state
+            if (this.isInputFocused) {
+                this.preventBodyScroll(true);
+            } else if (!this.isKeyboardVisible) {
+                this.preventBodyScroll(false);
+            }
+        });
+    }
+
+    // Initialize keyboard manager
+    initialize() {
+        if (!this.chatInput || !this.chatInputContainer || !this.chatMessages) return;
+
+        // Initial layout calculation
+        this.updateLayout();
+
+        // Set up Visual Viewport API listeners
+        if (window.visualViewport) {
+            const handleViewportChange = () => {
+                // Small delay to ensure keyboard animation completes
+                setTimeout(() => {
+                    this.updateLayout();
+                }, 50);
+            };
+
+            window.visualViewport.addEventListener('resize', handleViewportChange);
+            window.visualViewport.addEventListener('scroll', handleViewportChange);
+        } else {
+            // Fallback for browsers without Visual Viewport API
+            let lastHeight = window.innerHeight;
+            
+            const handleResize = () => {
+                const currentHeight = window.innerHeight;
+                const heightDiff = Math.abs(lastHeight - currentHeight);
+                
+                if (heightDiff > 50) {
+                    setTimeout(() => {
+                        this.updateLayout();
+                    }, 100);
+                }
+                
+                lastHeight = currentHeight;
+            };
+            
+            window.addEventListener('resize', handleResize);
+        }
+
+        // Set up ResizeObserver for input container height changes
+        if (window.ResizeObserver) {
+            this.resizeObserver = new ResizeObserver(() => {
+                this.handleInputResize();
+            });
+            this.resizeObserver.observe(this.chatInputContainer);
+        }
+
+        // Handle input focus
+        this.chatInput.addEventListener('focus', () => {
+            this.preventBodyScroll(true);
+            // Delay to allow keyboard to appear
+            setTimeout(() => {
+                this.updateLayout();
+            }, 100);
+        });
+
+        // Handle input blur
+        this.chatInput.addEventListener('blur', () => {
+            this.preventBodyScroll(false);
+            // Delay to allow keyboard to hide
+            setTimeout(() => {
+                this.updateLayout();
+            }, 100);
+        });
+
+        // Handle window resize (orientation change, etc.)
+        window.addEventListener('resize', () => {
+            setTimeout(() => {
+                this.updateLayout();
+            }, 100);
+        });
+    }
+
+    // Cleanup (if needed)
+    destroy() {
+        if (this.resizeObserver) {
+            this.resizeObserver.disconnect();
+        }
+        if (this.updateThrottle) {
+            clearTimeout(this.updateThrottle);
+        }
+        document.body.classList.remove('chat-input-focused');
+    }
+}
+
 // Chat Client - Handles chat functionality
 class ChatClient {
     constructor() {
@@ -59,6 +256,11 @@ class ChatClient {
             const newHeight = Math.min(Math.max(scrollHeight, minHeight), maxHeight);
             
             this.chatInput.style.height = `${newHeight}px`;
+            
+            // Notify keyboard manager if it exists (for mobile)
+            if (this.keyboardManager) {
+                this.keyboardManager.handleInputResize();
+            }
         };
         
         // Listen to input events
@@ -75,79 +277,18 @@ class ChatClient {
 
     // Setup mobile keyboard handling
     setupMobileKeyboardHandling() {
-        if (!this.chatInputContainer) return;
+        if (!this.chatInputContainer || !this.chatMessages) return;
         
-        // Use Visual Viewport API if available (modern browsers)
-        if (window.visualViewport) {
-            const handleViewportChange = () => {
-                const viewport = window.visualViewport;
-                const keyboardHeight = window.innerHeight - viewport.height;
-                
-                if (keyboardHeight > 0) {
-                    // Keyboard is visible
-                    // Adjust container position to keep input above keyboard
-                    const containerRect = this.chatInputContainer.getBoundingClientRect();
-                    const viewportBottom = viewport.height;
-                    
-                    // Calculate if input is below viewport
-                    if (containerRect.bottom > viewportBottom) {
-                        const offset = containerRect.bottom - viewportBottom;
-                        this.chatInputContainer.style.transform = `translateY(-${offset}px)`;
-                    }
-                } else {
-                    // Keyboard is hidden
-                    this.chatInputContainer.style.transform = '';
-                }
-            };
-            
-            window.visualViewport.addEventListener('resize', handleViewportChange);
-            window.visualViewport.addEventListener('scroll', handleViewportChange);
-        } else {
-            // Fallback for browsers without Visual Viewport API
-            let lastHeight = window.innerHeight;
-            
-            const handleResize = () => {
-                const currentHeight = window.innerHeight;
-                const heightDiff = lastHeight - currentHeight;
-                
-                // If height decreased significantly, keyboard likely appeared
-                if (heightDiff > 150) {
-                    // Scroll input into view
-                    this.chatInput.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                }
-                
-                lastHeight = currentHeight;
-            };
-            
-            window.addEventListener('resize', handleResize);
-        }
+        // Only initialize on mobile devices
+        if (window.innerWidth > 768) return;
         
-        // Handle input focus on mobile
-        this.chatInput.addEventListener('focus', () => {
-            // Small delay to allow keyboard to appear
-            setTimeout(() => {
-                if (window.visualViewport) {
-                    const viewport = window.visualViewport;
-                    const containerRect = this.chatInputContainer.getBoundingClientRect();
-                    const viewportBottom = viewport.height;
-                    
-                    if (containerRect.bottom > viewportBottom) {
-                        const offset = containerRect.bottom - viewportBottom;
-                        this.chatInputContainer.style.transform = `translateY(-${offset}px)`;
-                    }
-                } else {
-                    // Fallback: scroll into view
-                    this.chatInput.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                }
-            }, 300);
-        });
-        
-        // Reset transform when input loses focus
-        this.chatInput.addEventListener('blur', () => {
-            if (this.chatInputContainer) {
-                this.chatInputContainer.style.transform = '';
-            }
-        });
+        // Initialize MobileKeyboardManager
+        this.keyboardManager = new MobileKeyboardManager(
+            this.chatInput,
+            this.chatInputContainer,
+            this.chatMessages
+        );
+        this.keyboardManager.initialize();
     }
 
     // Bind event listeners
