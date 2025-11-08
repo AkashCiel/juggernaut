@@ -443,7 +443,7 @@ class ChatClient {
 
             if (result.success) {
                 this.showStatus(`✅ Your curation job has started. You'll receive an email when it's ready.`, 'success');
-                this.addMessage(`Got it. I’ve kicked off your personalized news feed. You’ll receive it by email shortly.`, 'bot');
+                this.addMessage(`Got it. I’ve kicked off your personalized news feed. You’ll receive it by email in 5 - 10 minutes. Check your spam folder if you don't see it.`, 'bot');
             } else {
                 console.error('Curation failed:', result);
                 this.showStatus('⚠️ Failed to curate news feed. Please try again.', 'error');
