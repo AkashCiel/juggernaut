@@ -8,7 +8,7 @@ export const aboutContent = {
     introSections: [
         "In the modern world, news is extremely cheap and abundant",
         "So what we have is an exhausting overload of information",
-        "What we need is highly focused information",
+        "But what we need is highly focused information",
         "I built this product to solve this problem",
         "You can talk to the app and decide what you want to see in your news feed",
         "I would recommend to not rush this conversation. Take your time",

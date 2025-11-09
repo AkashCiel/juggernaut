@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
     const email = params.get('email');
     const yearDisplay = document.getElementById('currentYear');
@@ -11,6 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Populate content from pricingFeedbackContent.js
     if (typeof PRICING_FEEDBACK_CONTENT !== 'undefined') {
         populateContent();
+    }
+
+    // Initialize subscribe section
+    if (email) {
+        await initializeSubscribeSection(email);
     }
 
     // Set up form submission
@@ -131,6 +136,108 @@ function populateContent() {
             radioOption.appendChild(radio);
             radioOption.appendChild(label);
             plansRadioGroup.appendChild(radioOption);
+        });
+    }
+
+    // Subscribe section
+    const subscribeHeading = document.getElementById('subscribeHeading');
+    const subscribeDescription = document.getElementById('subscribeDescription');
+    if (subscribeHeading) subscribeHeading.textContent = content.subscribe.heading;
+    if (subscribeDescription) subscribeDescription.textContent = content.subscribe.description;
+}
+
+// Initialize subscribe section
+async function initializeSubscribeSection(email) {
+    const subscribeButton = document.getElementById('subscribeButton');
+    const subscribedMessage = document.getElementById('subscribedMessage');
+    const interestsDisplay = document.getElementById('primaryEmailInterests');
+
+    // Check subscription status
+    let isSubscribed = false;
+    try {
+        const statusResponse = await fetch(`/api/subscription-status?email=${encodeURIComponent(email)}`);
+        const statusData = await statusResponse.json();
+        if (statusResponse.ok && statusData.success) {
+            isSubscribed = statusData.data.isSubscribed;
+        }
+    } catch (error) {
+        console.error('Error checking subscription status:', error);
+    }
+
+    // Show appropriate UI based on subscription status
+    if (isSubscribed) {
+        if (subscribeButton) subscribeButton.classList.add('hidden');
+        if (subscribedMessage) subscribedMessage.classList.add('show');
+    } else {
+        if (subscribeButton) subscribeButton.classList.remove('hidden');
+        if (subscribedMessage) subscribedMessage.classList.remove('show');
+    }
+
+    // Fetch and display primary email interests
+    if (interestsDisplay) {
+        interestsDisplay.innerHTML = '<p class="loading">Loading...</p>';
+        
+        try {
+            const response = await fetch('/api/primary-email-interests');
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                const userInterests = data.data.userInterests || '';
+                if (userInterests) {
+                    interestsDisplay.innerHTML = `<p><strong>${userInterests}</strong></p>`;
+                } else {
+                    interestsDisplay.innerHTML = '<p class="loading">No interests found.</p>';
+                }
+            } else {
+                interestsDisplay.innerHTML = '<p class="loading">Failed to load interests.</p>';
+            }
+        } catch (error) {
+            console.error('Error fetching primary email interests:', error);
+            interestsDisplay.innerHTML = '<p class="loading">Failed to load interests.</p>';
+        }
+    }
+
+    // Set up subscribe button click handler
+    if (subscribeButton && !isSubscribed) {
+        subscribeButton.addEventListener('click', async () => {
+            if (!email) {
+                alert('Email is required. Please use the link from your email.');
+                return;
+            }
+
+            // Disable button during subscription
+            subscribeButton.disabled = true;
+            subscribeButton.textContent = PRICING_FEEDBACK_CONTENT.subscribe.subscribingText;
+
+            try {
+                const response = await fetch('/api/subscribe-free-newsfeed', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Hide button and show subscribed message
+                    subscribeButton.classList.add('hidden');
+                    if (subscribedMessage) {
+                        subscribedMessage.textContent = PRICING_FEEDBACK_CONTENT.subscribe.subscribedText;
+                        subscribedMessage.classList.add('show');
+                    }
+                } else {
+                    throw new Error(data.error || 'Failed to subscribe');
+                }
+            } catch (error) {
+                console.error('Error subscribing:', error);
+                alert('Failed to subscribe. Please try again.');
+                subscribeButton.disabled = false;
+                subscribeButton.textContent = PRICING_FEEDBACK_CONTENT.subscribe.buttonText;
+            }
         });
     }
 }

@@ -126,6 +126,7 @@ class VercelStorageService {
      * @param {string} feedbackData.email - User email
      * @param {number|null} feedbackData.paymentIntentInMonths - Payment intent in months (1 or 6), optional
      * @param {string|null} feedbackData.userFeedback - Optional user feedback text
+     * @param {boolean|null} feedbackData.subscribedToFreeNewsFeed - Subscription to free news feed, optional
      * @returns {Promise<Object>} Result object with success status
      */
     async saveFeedback(feedbackData) {
@@ -134,19 +135,26 @@ class VercelStorageService {
             
             const now = new Date().toISOString();
             
-            // Insert feedback record
+            // Insert or update feedback record (upsert)
             await this.sql`
                 INSERT INTO user_feedback (
                     email,
                     payment_intent_in_months,
                     user_feedback,
+                    subscribed_to_free_news_feed,
                     created_at
                 ) VALUES (
                     ${feedbackData.email},
                     ${feedbackData.paymentIntentInMonths || null},
                     ${feedbackData.userFeedback || null},
+                    ${feedbackData.subscribedToFreeNewsFeed !== undefined ? feedbackData.subscribedToFreeNewsFeed : null},
                     ${now}
                 )
+                ON CONFLICT (email) 
+                DO UPDATE SET
+                    payment_intent_in_months = COALESCE(EXCLUDED.payment_intent_in_months, user_feedback.payment_intent_in_months),
+                    user_feedback = COALESCE(EXCLUDED.user_feedback, user_feedback.user_feedback),
+                    subscribed_to_free_news_feed = COALESCE(EXCLUDED.subscribed_to_free_news_feed, user_feedback.subscribed_to_free_news_feed)
             `;
             
             logger.info(`✅ Feedback saved to Vercel Postgres for: ${feedbackData.email}`);
@@ -154,6 +162,30 @@ class VercelStorageService {
         } catch (error) {
             logger.error(`❌ Failed to save feedback to Vercel Postgres: ${error.message}`);
             throw error;
+        }
+    }
+
+    /**
+     * Get subscription status for a user
+     * @param {string} email - User email
+     * @returns {Promise<boolean>} True if subscribed, false otherwise
+     */
+    async getSubscriptionStatus(email) {
+        try {
+            const result = await this.sql`
+                SELECT subscribed_to_free_news_feed 
+                FROM user_feedback 
+                WHERE email = ${email}
+            `;
+            
+            if (result.length === 0) {
+                return false;
+            }
+            
+            return result[0].subscribed_to_free_news_feed === true;
+        } catch (error) {
+            logger.error(`❌ Failed to get subscription status: ${error.message}`);
+            return false;
         }
     }
 

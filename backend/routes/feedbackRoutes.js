@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { body, validationResult } = require('express-validator');
+const { body, validationResult, query } = require('express-validator');
 
 // Import services
 const VercelStorageService = require('../services/vercelStorageService');
@@ -9,6 +9,7 @@ const VercelStorageService = require('../services/vercelStorageService');
 const { apiLimiter } = require('../middleware/security');
 const { asyncHandler } = require('../utils/errorHandler');
 const { logger } = require('../utils/logger-vercel');
+const { PRIMARY_EMAIL } = require('../config/constants');
 
 // Initialize services
 const vercelStorageService = new VercelStorageService();
@@ -82,6 +83,101 @@ router.post('/feedback',
             res.status(500).json({
                 success: false,
                 error: 'Failed to submit feedback',
+                message: error.message
+            });
+        }
+    })
+);
+
+// Get primary email interests endpoint
+router.get('/primary-email-interests',
+    apiLimiter,
+    asyncHandler(async (req, res) => {
+        try {
+            const user = await vercelStorageService.getUserByEmail(PRIMARY_EMAIL);
+            
+            if (!user) {
+                return res.json({
+                    success: true,
+                    data: { userInterests: '' }
+                });
+            }
+            
+            res.json({
+                success: true,
+                data: { userInterests: user.user_interests || '' }
+            });
+        } catch (error) {
+            logger.error(`❌ Failed to get primary email interests: ${error.message}`);
+            res.status(500).json({
+                success: false,
+                error: 'Failed to get primary email interests',
+                message: error.message
+            });
+        }
+    })
+);
+
+// Get subscription status endpoint
+router.get('/subscription-status',
+    apiLimiter,
+    [
+        query('email')
+            .isEmail()
+            .normalizeEmail()
+            .withMessage('Valid email is required')
+    ],
+    handleValidationErrors,
+    asyncHandler(async (req, res) => {
+        const { email } = req.query;
+        
+        try {
+            const isSubscribed = await vercelStorageService.getSubscriptionStatus(email);
+            
+            res.json({
+                success: true,
+                data: { isSubscribed }
+            });
+        } catch (error) {
+            logger.error(`❌ Failed to get subscription status: ${error.message}`);
+            res.status(500).json({
+                success: false,
+                error: 'Failed to get subscription status',
+                message: error.message
+            });
+        }
+    })
+);
+
+// Subscribe to free news feed endpoint
+router.post('/subscribe-free-newsfeed',
+    apiLimiter,
+    [
+        body('email')
+            .isEmail()
+            .normalizeEmail()
+            .withMessage('Valid email is required')
+    ],
+    handleValidationErrors,
+    asyncHandler(async (req, res) => {
+        const { email } = req.body;
+        
+        try {
+            const result = await vercelStorageService.saveFeedback({
+                email,
+                subscribedToFreeNewsFeed: true
+            });
+            
+            res.json({
+                success: true,
+                message: 'Subscribed successfully',
+                data: result
+            });
+        } catch (error) {
+            logger.error(`❌ Failed to subscribe: ${error.message}`);
+            res.status(500).json({
+                success: false,
+                error: 'Failed to subscribe',
                 message: error.message
             });
         }

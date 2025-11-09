@@ -85,7 +85,10 @@ Do not include any explanations or additional text outside the JSON object.
 
     // Pricing & Feedback CTA
     PRICING_FEEDBACK_BUTTON_TEXT: 'vision, pricing, and feedback',
-    PRICING_FEEDBACK_PATH: '/pricing-feedback.html'
+    PRICING_FEEDBACK_PATH: '/pricing-feedback.html',
+    
+    // Primary email for free news feed subscription
+    PRIMARY_EMAIL: 'agi.alignment.problem@gmail.com'
 };
 
 

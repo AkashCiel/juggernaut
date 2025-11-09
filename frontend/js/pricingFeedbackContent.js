@@ -33,6 +33,14 @@ const PRICING_FEEDBACK_CONTENT = {
     },
     success: {
         message: "your response has been recorded, you can close this window"
+    },
+    subscribe: {
+        heading: "Subscribe to my free news feed",
+        description: "I use this system to keep track of the following on a regular basis. I sometimes update this to tweak my news feed. You can choose to receive the same news feed, for free",
+        buttonText: "Subscribe",
+        subscribedText: "Subscribed!",
+        loadingText: "Loading...",
+        subscribingText: "Subscribing..."
     }
 };
 

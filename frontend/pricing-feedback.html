@@ -181,6 +181,71 @@
             display: block;
         }
 
+        .interests-display {
+            margin: var(--spacing-medium) 0;
+            padding: var(--spacing-medium);
+            background: var(--color-hover);
+            border-radius: var(--border-radius-medium);
+        }
+
+        .interests-display p {
+            margin: 0;
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        .interests-display.loading {
+            color: var(--color-text-light);
+            font-style: italic;
+        }
+
+        .subscribe-button {
+            background: var(--color-primary);
+            color: var(--color-white);
+            border: none;
+            border-radius: var(--border-radius-medium);
+            padding: var(--spacing-medium) var(--spacing-large);
+            font-size: var(--font-size-large);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all var(--transition-medium);
+            font-family: inherit;
+            margin-top: var(--spacing-medium);
+        }
+
+        .subscribe-button:hover:not(:disabled) {
+            background: var(--color-secondary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .subscribe-button:disabled {
+            background: var(--color-border);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .subscribe-button.hidden {
+            display: none;
+        }
+
+        .subscribed-message {
+            display: none;
+            margin-top: var(--spacing-medium);
+            padding: var(--spacing-medium);
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+            border-radius: var(--border-radius-medium);
+            text-align: center;
+            font-weight: var(--font-weight-medium);
+        }
+
+        .subscribed-message.show {
+            display: block;
+        }
+
         footer {
             margin-top: var(--spacing-large);
             color: var(--color-text-light);
@@ -217,6 +282,14 @@
 
         <section class="content-section" id="ctaSection">
             <p id="ctaText"></p>
+        </section>
+
+        <section class="content-section" id="subscribeSection">
+            <h2 id="subscribeHeading"></h2>
+            <p id="subscribeDescription"></p>
+            <div id="primaryEmailInterests" class="interests-display"></div>
+            <button type="button" class="subscribe-button" id="subscribeButton">Subscribe</button>
+            <div class="subscribed-message" id="subscribedMessage">Subscribed!</div>
         </section>
 
         <section class="form-section" id="formSection">
