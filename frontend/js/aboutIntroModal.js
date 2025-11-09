@@ -132,6 +132,13 @@ class AboutIntroModal {
         }
     }
 
+    // Navigate to previous section
+    previousSection() {
+        if (this.currentSectionIndex > 0) {
+            this.showSection(this.currentSectionIndex - 1);
+        }
+    }
+
     // Handle start chatting button click
     handleStartChatting() {
         this.close();
@@ -179,9 +186,14 @@ class AboutIntroModal {
             touchEndY = e.changedTouches[0].screenY;
             const swipeDistance = touchStartY - touchEndY;
             
-            // Swipe up (at least 50px upward)
+            // Swipe up (at least 50px upward) - go to next section
             if (swipeDistance > 50 && this.currentSectionIndex < this.sections.length - 1) {
                 this.nextSection();
+            }
+            
+            // Swipe down (at least 50px downward) - go to previous section
+            if (swipeDistance < -50 && this.currentSectionIndex > 0) {
+                this.previousSection();
             }
         });
     }
