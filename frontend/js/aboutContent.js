@@ -7,12 +7,20 @@ export const aboutContent = {
     // Intro sections for the landing page modal (separated by "—")
     introSections: [
         "In the modern world, news is extremely cheap and abundant",
-        "This creates an information overload without providing high quality information",
+        "So what we have is an exhausting overload of information",
+        "What we need is highly focused information",
         "I built this product to solve this problem",
         "You can talk to the app and decide what you want to see in your news feed",
+        "I would recommend to not rush this conversation. Take your time",
+        "The more details you provide, the more specific and personally relevant your news feed will be",
         "This app will never seek investment or sponsorship, ensuring freedom from bias"
     ],
-    // Full philosophy text for the About button modal
-    philosophy: `In the modern world, news is extremely cheap and abundant. This creates an information overload that exhausts the mind without necessarily providing the high quality information that it needs. I built this product to solve this problem. People can talk to the app and determine by themselves what do they see in their news feed. This app will never seek investment or sponsorship, thus ensuring that only the users have all the say in the design and functionality of this app. Ultimately, this app is an attempt to help the user navigate the current information ecosystem with greater ease.`
+    // Full philosophy text for the About button modal (generated dynamically from introSections)
+    get philosophy() {
+        return this.introSections
+            .map(section => section.trim())
+            .map(section => section.endsWith('.') ? section : section + '.')
+            .join(' ');
+    }
 };
 

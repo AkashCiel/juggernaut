@@ -89,9 +89,9 @@ module.exports = asyncHandler(async (req, res) => {
                 resp.on('end', () => {
                     if (resp.statusCode && resp.statusCode >= 200 && resp.statusCode < 300) {
                         resolve();
-                    } else {
+        } else {
                         reject(new Error(`GitHub dispatch failed with status ${resp.statusCode}: ${data}`));
-                    }
+            }
                 });
             });
             reqGit.on('error', reject);

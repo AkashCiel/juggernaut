@@ -42,7 +42,7 @@ class OrchestratorService {
             if (isComplete) {
                 // 3a. Clean the response for display
                 userInterestsDescription = conversationResult.response.replace(/\[CONVERSATION_COMPLETE\]/g, '').trim();
-                
+
                 return {
                     success: true,
                     response: CONVERSATION_COMPLETE_MESSAGE,

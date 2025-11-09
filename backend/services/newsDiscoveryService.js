@@ -23,18 +23,18 @@ class NewsDiscoveryService {
 
         // Only fetch section summaries if sections are not provided (sections will be derived from summaries)
         if (!sections) {
-            // Get section summaries from preLoadService
+        // Get section summaries from preLoadService
             sectionSummaries = this.preLoadService.getSectionSummaries();
 
-            // If summaries not loaded yet, wait for them
-            if (!sectionSummaries) {
-                logger.info('⏳ Waiting for section summaries to load...');
+        // If summaries not loaded yet, wait for them
+        if (!sectionSummaries) {
+            logger.info('⏳ Waiting for section summaries to load...');
                 sectionSummaries = await this.preLoadService.fetchSectionSummaries();
-            }
+        }
 
-            // Derive sections from summaries if not provided
+        // Derive sections from summaries if not provided
             if (sectionSummaries && sectionSummaries.sections) {
-                sections = Object.keys(sectionSummaries.sections);
+            sections = Object.keys(sectionSummaries.sections);
             }
         } else {
             // Sections are provided, but try to get summaries for context (don't wait/fetch if not available)
