@@ -158,7 +158,8 @@ class ArticleCuratorService {
         const sortedArticles = articlesWithScores.sort((a, b) => b.relevanceScore - a.relevanceScore);
         
         // Count articles with score > 90
-        const highQualityArticles = sortedArticles.filter(article => article.relevanceScore > 90);
+        const highQualityArticles = sortedArticles.filter(article => article.relevanceScore > 80);
+        const mediumQualityArticles = sortedArticles.filter(article => article.relevanceScore > 50);
         
         let curatedArticles;
         if (highQualityArticles.length > 10) {
@@ -167,7 +168,7 @@ class ArticleCuratorService {
             logger.info(`✅ Found ${highQualityArticles.length} high-quality articles (score > 90), using all of them`);
         } else {
             // Otherwise, take top 10 articles by relevance score
-            curatedArticles = sortedArticles.slice(0, 10);
+            curatedArticles = mediumQualityArticles.slice(0, 10);
             logger.info(`✅ Taking top 10 articles by relevance score (${highQualityArticles.length})`);
         }
         
