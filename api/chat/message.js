@@ -3,6 +3,7 @@ const VercelStorageService = require('../../backend/services/vercelStorageServic
 const { body, validationResult } = require('express-validator');
 const { asyncHandler } = require('../../backend/utils/errorHandler');
 const { logger } = require('../../backend/utils/logger-vercel');
+const { generateUserId } = require('../../backend/utils/userUtils');
 
 // Initialize services
 const orchestratorService = new OrchestratorService();
@@ -58,7 +59,15 @@ module.exports = asyncHandler(async (req, res) => {
         // Save chat history to database if email is provided
         if (email && result.chatHistory && Array.isArray(result.chatHistory)) {
             try {
-                await vercelStorageService.saveChatHistory(email, result.chatHistory);
+                const userId = generateUserId(email);
+                const now = new Date().toISOString();
+                await vercelStorageService.createOrUpdateUser({
+                    userId: userId,
+                    email: email,
+                    chatHistory: result.chatHistory,
+                    createdAt: now,
+                    lastUpdated: now
+                });
             } catch (historyError) {
                 // Log error but don't fail the request if history save fails
                 logger.error(`⚠️ Failed to save chat history for ${email}: ${historyError.message}`);

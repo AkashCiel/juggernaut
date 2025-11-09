@@ -231,37 +231,6 @@ class VercelStorageService {
     }
 
     /**
-     * Save chat history for a user
-     * @param {string} email - User email
-     * @param {Array} chatHistory - Chat history array
-     * @returns {Promise<Object>} Result object with success status
-     */
-    async saveChatHistory(email, chatHistory) {
-        try {
-            if (!email || !chatHistory || !Array.isArray(chatHistory)) {
-                logger.warn(`⚠️ Invalid chat history data for: ${email}`);
-                return { success: false, error: 'Invalid chat history data' };
-            }
-            
-            logger.info(`💾 Saving chat history to Vercel Postgres: ${email} (${chatHistory.length} messages)`);
-            
-            // Update chat_history for user
-            await this.sql`
-                UPDATE users 
-                SET chat_history = ${JSON.stringify(chatHistory)}::jsonb,
-                    last_updated = ${new Date().toISOString()}
-                WHERE email = ${email}
-            `;
-            
-            logger.info(`✅ Chat history saved to Vercel Postgres for: ${email}`);
-            return { success: true };
-        } catch (error) {
-            logger.error(`❌ Failed to save chat history: ${error.message}`);
-            throw error;
-        }
-    }
-
-    /**
      * Get chat history for a user
      * @param {string} email - User email
      * @returns {Promise<Array|null>} Chat history array or null if not found

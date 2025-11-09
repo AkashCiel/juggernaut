@@ -47,10 +47,10 @@ class EmailService {
 
         const emailContent = this.createEmailTemplate(reportData, topics, reportDate);
         const subject = `Your Daily News - ${reportDate.toISOString().split('T')[0]}`;
-        logger.info('sending email from: your-personal-news@${this.domain}');
+        logger.info('sending email from: juggernaut@akash-singh.org');
         try {
             const messageData = {
-                from: `Juggernaut <your-personal-news@${this.domain}>`,
+                from: `Juggernaut <juggernaut@akash-singh.org>`,
                 to: recipients,
                 subject: subject,
                 html: emailContent
@@ -111,7 +111,7 @@ class EmailService {
         
         try {
             const messageData = {
-                from: `Juggernaut <your-personal-news@${this.domain}>`,
+                from: `Juggernaut <juggernaut@akash-singh.org>`,
                 to: recipients,
                 subject: emailContent.subject,
                 html: emailContent.html
