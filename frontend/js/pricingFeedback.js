@@ -1,3 +1,63 @@
+// Collapsible Section Class
+class CollapsibleSection {
+    constructor(sectionElement, autoExpand = false) {
+        this.section = sectionElement;
+        this.button = sectionElement.querySelector('.collapsible-button');
+        this.content = sectionElement.querySelector('.collapsible-content');
+        this.isExpanded = false;
+        
+        if (autoExpand) {
+            this.expand();
+        }
+        
+        this.bindEvents();
+    }
+    
+    expand() {
+        if (this.isExpanded) return;
+        
+        this.isExpanded = true;
+        this.section.classList.add('expanded');
+        this.content.classList.add('expanded');
+        this.button.setAttribute('aria-expanded', 'true');
+        
+        // Auto-scroll section to top of viewport
+        this.scrollToTop();
+    }
+    
+    collapse() {
+        if (!this.isExpanded) return;
+        
+        this.isExpanded = false;
+        this.section.classList.remove('expanded');
+        this.content.classList.remove('expanded');
+        this.button.setAttribute('aria-expanded', 'false');
+    }
+    
+    toggle() {
+        if (this.isExpanded) {
+            this.collapse();
+        } else {
+            this.expand();
+        }
+    }
+    
+    scrollToTop() {
+        // Scroll section to top of viewport with smooth behavior
+        const sectionTop = this.section.offsetTop;
+        const scrollOffset = Math.max(0, sectionTop - 16); // Small offset from top (16px)
+        
+        window.scrollTo({
+            top: scrollOffset,
+            behavior: 'smooth'
+        });
+    }
+    
+    bindEvents() {
+        this.button.addEventListener('click', () => this.toggle());
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
     const email = params.get('email');
@@ -13,6 +73,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         populateContent();
     }
 
+    // Initialize collapsible sections
+    initializeCollapsibleSections();
+
     // Initialize subscribe section
     if (email) {
         await initializeSubscribeSection(email);
@@ -20,7 +83,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Set up form submission
     const submitButton = document.getElementById('submitButton');
-    const formSection = document.getElementById('formSection');
     const successMessage = document.getElementById('successMessage');
 
     if (submitButton) {
@@ -53,10 +115,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    // Hide form and show success message
-                    formSection.style.display = 'none';
-                    successMessage.textContent = PRICING_FEEDBACK_CONTENT.success.message;
-                    successMessage.classList.add('show');
+                    // Hide submit button and show success message
+                    if (submitButton) submitButton.style.display = 'none';
+                    if (successMessage) {
+                        successMessage.textContent = PRICING_FEEDBACK_CONTENT.success.message;
+                        successMessage.classList.add('show');
+                    }
                 } else {
                     throw new Error(data.error || 'Failed to submit feedback');
                 }
@@ -73,31 +137,43 @@ document.addEventListener('DOMContentLoaded', async () => {
 function populateContent() {
     const content = PRICING_FEEDBACK_CONTENT;
 
-    // Intro section
+    // Page title
     const introTitle = document.getElementById('introTitle');
-    const introContext = document.getElementById('introContext');
     if (introTitle) introTitle.textContent = content.intro.title;
-    if (introContext) {
-        const contextText = document.createTextNode(content.intro.context);
-        introContext.appendChild(contextText);
-        const bulletList = document.createElement('ul');
-        bulletList.style.marginTop = 'var(--spacing-small)';
-        bulletList.style.paddingLeft = 'var(--spacing-large)';
-        content.intro.bulletPoints.forEach(point => {
-            const li = document.createElement('li');
-            li.textContent = point;
-            bulletList.appendChild(li);
-        });
-        introContext.appendChild(bulletList);
+
+    // Section 1: Philosophy and vision
+    const philosophyText = document.getElementById('philosophyText');
+    const visionText = document.getElementById('visionText');
+    if (philosophyText) philosophyText.textContent = content.intro.philosophy;
+    if (visionText) visionText.textContent = content.intro.vision;
+
+    // Section 2: About me (with link)
+    const aboutMeText = document.getElementById('aboutMeText');
+    if (aboutMeText) {
+        const aboutMeContent = content.about_me;
+        const linkText = "you can";
+        const linkIndex = aboutMeContent.indexOf(linkText);
+        
+        if (linkIndex !== -1) {
+            const beforeLink = aboutMeContent.substring(0, linkIndex);
+            const afterLink = aboutMeContent.substring(linkIndex + linkText.length);
+            
+            aboutMeText.innerHTML = `${beforeLink}<a href="https://www.akash-singh.org/" target="_blank" rel="noopener noreferrer">${linkText}</a>${afterLink}`;
+        } else {
+            aboutMeText.textContent = aboutMeContent;
+        }
     }
 
-    // Experiment section
+    // Section 3: Subscribe to my free news feed
+    const subscribeDescription = document.getElementById('subscribeDescription');
+    if (subscribeDescription) subscribeDescription.textContent = content.subscribe.description;
+
+    // Section 4: Build your own news feed
     const experimentP1 = document.getElementById('experimentP1');
     const experimentP2 = document.getElementById('experimentP2');
     if (experimentP1) experimentP1.textContent = content.experiment.paragraph1;
     if (experimentP2) experimentP2.textContent = content.experiment.paragraph2;
 
-    // Benefits section
     const benefitsHeading = document.getElementById('benefitsHeading');
     const benefitsList = document.getElementById('benefitsList');
     if (benefitsHeading) benefitsHeading.textContent = content.benefits.heading;
@@ -109,11 +185,9 @@ function populateContent() {
         });
     }
 
-    // CTA section
     const ctaText = document.getElementById('ctaText');
     if (ctaText) ctaText.textContent = content.callToAction;
 
-    // Plans section
     const plansHeading = document.getElementById('plansHeading');
     const plansRadioGroup = document.getElementById('plansRadioGroup');
     if (plansHeading) plansHeading.textContent = content.plans.heading + ' (optional)';
@@ -138,12 +212,28 @@ function populateContent() {
             plansRadioGroup.appendChild(radioOption);
         });
     }
+}
 
-    // Subscribe section
-    const subscribeHeading = document.getElementById('subscribeHeading');
-    const subscribeDescription = document.getElementById('subscribeDescription');
-    if (subscribeHeading) subscribeHeading.textContent = content.subscribe.heading;
-    if (subscribeDescription) subscribeDescription.textContent = content.subscribe.description;
+// Initialize collapsible sections
+function initializeCollapsibleSections() {
+    const philosophySection = document.getElementById('section-philosophy');
+    const aboutSection = document.getElementById('section-about');
+    const subscribeSection = document.getElementById('section-subscribe');
+    const buildSection = document.getElementById('section-build');
+
+    // Initialize all sections (philosophy auto-expands)
+    if (philosophySection) {
+        window.philosophyCollapsible = new CollapsibleSection(philosophySection, true);
+    }
+    if (aboutSection) {
+        window.aboutCollapsible = new CollapsibleSection(aboutSection, false);
+    }
+    if (subscribeSection) {
+        window.subscribeCollapsible = new CollapsibleSection(subscribeSection, false);
+    }
+    if (buildSection) {
+        window.buildCollapsible = new CollapsibleSection(buildSection, false);
+    }
 }
 
 // Initialize subscribe section

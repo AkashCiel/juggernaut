@@ -4,25 +4,22 @@
 const PRICING_FEEDBACK_CONTENT = {
     intro: {
         title: "Thank you for trying out Juggernaut.",
-        context: "If you are reading this, you are part of the first ever wave of users testing this product. Keep reading if you:",
-        bulletPoints: [
-            "See value in this product",
-            "Want to keep using it",
-            "Want to influence its future evolution"
-        ]
+        philosophy: "Some aspects of the world may deeply interest you. The world is likely evolving in those aspects. There must be high quality information channels, like journalism, out there, capturing this evolution. This system can find and deliver that information to you.",
+        vision: "I will keep this system as free from bias or external motivations as possible. This means I will not seek sponsorship or investors. My current source of information is The Guardian. They are extremely generous with their content. I might expand this source in the near future, but carefully. The ideal of truth is absolutely non-negotiable here."
     },
     experiment: {
-        paragraph1: "If you want to use this product further, choose one of the options below for a one-time payment.",
+        paragraph1: "If you are reading this, you must have used the app to build your own news feed. If you want to keep receiving it, choose one of the options below for a one-time payment.",
         paragraph2: "If there is sufficient interest, I will roll out subscription plans in the future. If not, you can walk away, no obligations."
     },
     benefits: {
         heading: "Benefits:",
         items: [
-            "Receive your personalised news feed once every 3 days.",
+            "Receive your personalised news feed once every x days (as soon as enough new and relevant articles are released). So something like once every 2-5 days.",
             "Access to chat to modify or refine your news feed.",
-            "Full refund within 14 days."
+            "Full refund within 14 days (more details if you decide to pay)."
         ]
     },
+    about_me:"To you, I am just a random guy on the internet. If you want to know more about me, you can.",
     callToAction: "Select one of the options below and I will email you a payment link. If you are almost ready to pay but something feels missing, tell me what that is in the box below.",
     plans: {
         heading: "Plans:",

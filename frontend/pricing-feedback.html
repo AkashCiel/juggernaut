@@ -39,35 +39,105 @@
             color: var(--color-text);
         }
 
-        .content-section {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-medium);
+        /* Collapsible Section Styles (Mobile-First) */
+        .collapsible-section {
+            width: 100%;
+            margin-bottom: var(--spacing-medium);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-medium);
+            overflow: hidden;
+            background: var(--color-white);
+            scroll-margin-top: var(--spacing-small);
         }
 
-        .content-section p {
-            margin: 0;
+        .collapsible-button {
+            width: 100%;
+            min-height: 44px;
+            padding: var(--spacing-medium) var(--spacing-large);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--color-white);
+            border: none;
+            cursor: pointer;
+            font-size: var(--font-size-large);
+            font-weight: var(--font-weight-medium);
+            text-align: left;
+            transition: background-color var(--transition-medium);
+            font-family: inherit;
+        }
+
+        .collapsible-button:hover {
+            background: var(--color-hover);
+        }
+
+        .section-title {
+            flex: 1;
+        }
+
+        .arrow-icon {
+            font-size: var(--font-size-large);
+            transition: transform var(--transition-medium);
+            flex-shrink: 0;
+            margin-left: var(--spacing-small);
+        }
+
+        .collapsible-section.expanded .arrow-icon {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height var(--transition-medium);
+        }
+
+        .collapsible-content.expanded {
+            max-height: 5000px;
+        }
+
+        .section-body {
+            padding: var(--spacing-large);
+        }
+
+        .section-body p {
+            margin: 0 0 var(--spacing-medium) 0;
             line-height: 1.6;
             color: var(--color-text);
         }
 
-        .content-section ul {
-            margin: 0;
+        .section-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-body ul {
+            margin: var(--spacing-medium) 0;
             padding-left: var(--spacing-large);
             display: flex;
             flex-direction: column;
             gap: var(--spacing-small);
         }
 
-        .content-section li {
+        .section-body li {
             line-height: 1.6;
             color: var(--color-text);
         }
 
-        .content-section h2 {
+        .section-body h2,
+        .section-body h3 {
             margin: 0 0 var(--spacing-small) 0;
             font-size: var(--font-size-xlarge);
             color: var(--color-text);
+        }
+
+        .section-body a {
+            color: var(--color-primary);
+            text-decoration: underline;
+            transition: color var(--transition-medium);
+        }
+
+        .section-body a:hover {
+            color: var(--color-secondary);
         }
 
         .form-section {
@@ -188,6 +258,14 @@
             border-radius: var(--border-radius-medium);
         }
 
+        .section-body .form-group {
+            margin-top: var(--spacing-large);
+        }
+
+        .section-body .form-group:first-of-type {
+            margin-top: 0;
+        }
+
         .interests-display p {
             margin: 0;
             font-weight: var(--font-weight-bold);
@@ -267,46 +345,77 @@
     <div class="page-container">
         <header class="header">
             <h1 id="introTitle">Thank you for trying out Juggernaut.</h1>
-            <p id="introContext"></p>
         </header>
 
-        <section class="content-section" id="experimentSection">
-            <p id="experimentP1"></p>
-            <p id="experimentP2"></p>
-        </section>
-
-        <section class="content-section" id="benefitsSection">
-            <h2 id="benefitsHeading"></h2>
-            <ul id="benefitsList"></ul>
-        </section>
-
-        <section class="content-section" id="ctaSection">
-            <p id="ctaText"></p>
-        </section>
-
-        <section class="content-section" id="subscribeSection">
-            <h2 id="subscribeHeading"></h2>
-            <p id="subscribeDescription"></p>
-            <div id="primaryEmailInterests" class="interests-display"></div>
-            <button type="button" class="subscribe-button" id="subscribeButton">Subscribe</button>
-            <div class="subscribed-message" id="subscribedMessage">Subscribed!</div>
-        </section>
-
-        <section class="form-section" id="formSection">
-            <div class="form-group">
-                <label id="plansHeading">Plans:</label>
-                <div class="radio-group" id="plansRadioGroup"></div>
+        <!-- Section 1: Philosophy and vision (auto-expanded) -->
+        <div class="collapsible-section" data-section="philosophy" id="section-philosophy">
+            <button class="collapsible-button" type="button" aria-expanded="true">
+                <span class="section-title">Philosophy and vision</span>
+                <span class="arrow-icon">▼</span>
+            </button>
+            <div class="collapsible-content expanded">
+                <div class="section-body" id="philosophySectionBody">
+                    <p id="philosophyText"></p>
+                    <p id="visionText"></p>
+                </div>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label for="userFeedback">Additional feedback (optional):</label>
-                <textarea id="userFeedback" name="userFeedback" placeholder="Tell us what's missing or what you'd like to see..."></textarea>
+        <!-- Section 2: About me -->
+        <div class="collapsible-section" data-section="about" id="section-about">
+            <button class="collapsible-button" type="button" aria-expanded="false">
+                <span class="section-title">About me</span>
+                <span class="arrow-icon">▼</span>
+            </button>
+            <div class="collapsible-content">
+                <div class="section-body" id="aboutSectionBody">
+                    <p id="aboutMeText"></p>
+                </div>
             </div>
+        </div>
 
-            <button type="submit" class="submit-button" id="submitButton">Submit</button>
-        </section>
+        <!-- Section 3: Subscribe to my free news feed -->
+        <div class="collapsible-section" data-section="subscribe" id="section-subscribe">
+            <button class="collapsible-button" type="button" aria-expanded="false">
+                <span class="section-title">Subscribe to my free news feed</span>
+                <span class="arrow-icon">▼</span>
+            </button>
+            <div class="collapsible-content">
+                <div class="section-body" id="subscribeSectionBody">
+                    <p id="subscribeDescription"></p>
+                    <div id="primaryEmailInterests" class="interests-display"></div>
+                    <button type="button" class="subscribe-button" id="subscribeButton">Subscribe</button>
+                    <div class="subscribed-message" id="subscribedMessage">Subscribed!</div>
+                </div>
+            </div>
+        </div>
 
-        <div class="success-message" id="successMessage"></div>
+        <!-- Section 4: Build your own news feed -->
+        <div class="collapsible-section" data-section="build" id="section-build">
+            <button class="collapsible-button" type="button" aria-expanded="false">
+                <span class="section-title">Build your own news feed</span>
+                <span class="arrow-icon">▼</span>
+            </button>
+            <div class="collapsible-content">
+                <div class="section-body" id="buildSectionBody">
+                    <p id="experimentP1"></p>
+                    <p id="experimentP2"></p>
+                    <h3 id="benefitsHeading"></h3>
+                    <ul id="benefitsList"></ul>
+                    <p id="ctaText"></p>
+                    <div class="form-group">
+                        <label id="plansHeading">Plans:</label>
+                        <div class="radio-group" id="plansRadioGroup"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="userFeedback">Additional feedback (optional):</label>
+                        <textarea id="userFeedback" name="userFeedback" placeholder="Tell us what's missing or what you'd like to see..."></textarea>
+                    </div>
+                    <button type="submit" class="submit-button" id="submitButton">Submit</button>
+                    <div class="success-message" id="successMessage"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <footer>
