@@ -19,20 +19,24 @@
       "dest": "/js/$1"
     },
     {
+      "src": "/pricing-feedback.html",
+      "dest": "/pricing-feedback.html"
+    },
+    {
       "src": "/health",
-      "dest": "/api/health"
+      "dest": "/api"
     },
     {
       "src": "/status",
-      "dest": "/api/status"
+      "dest": "/api"
     },
     {
       "src": "/test",
-      "dest": "/api/test"
+      "dest": "/api"
     },
     {
       "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "dest": "/api"
     }
   ],
   "functions": {

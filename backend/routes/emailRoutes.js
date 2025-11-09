@@ -82,5 +82,31 @@ router.post('/validate-email-access',
     })
 );
 
+// Validate email endpoint (simple email validation)
+router.post('/validate-email',
+    apiLimiter,
+    validateEmailAccess,
+    handleValidationErrors,
+    asyncHandler(async (req, res) => {
+        const { email } = req.body;
+        
+        try {
+            logger.info(`✅ Email successfully verified: ${email}`);
+            
+            res.json({
+                success: true,
+                message: 'Email is valid',
+                normalizedEmail: email
+            });
+        } catch (error) {
+            logger.error('❌ Email validation error:', error.message);
+            res.status(500).json({
+                success: false,
+                error: 'Email validation failed'
+            });
+        }
+    })
+);
+
 module.exports = router;
 

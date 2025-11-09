@@ -12,6 +12,8 @@ const healthRoutes = require('./routes/healthRoutes');
 // const reportRoutes = require('./routes/reportRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const emailRoutes = require('./routes/emailRoutes');
+const feedbackRoutes = require('./routes/feedbackRoutes');
+const schedulerRoutes = require('./routes/schedulerRoutes');
 
 // Initialize Express app
 const app = express();
@@ -45,6 +47,8 @@ app.use('/', healthRoutes);
 // app.use('/api', reportRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api', emailRoutes);
+app.use('/api', feedbackRoutes);
+app.use('/api', schedulerRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

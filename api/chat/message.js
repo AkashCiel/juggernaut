@@ -1,9 +1,12 @@
 const OrchestratorService = require('../../backend/services/orchestratorService');
+const VercelStorageService = require('../../backend/services/vercelStorageService');
 const { body, validationResult } = require('express-validator');
 const { asyncHandler } = require('../../backend/utils/errorHandler');
+const { logger } = require('../../backend/utils/logger-vercel');
 
 // Initialize services
 const orchestratorService = new OrchestratorService();
+const vercelStorageService = new VercelStorageService();
 
 // Validation rules for chat messages
 const validateChatMessage = [
@@ -51,6 +54,16 @@ module.exports = asyncHandler(async (req, res) => {
     
     try {
         const result = await orchestratorService.handleMessage(message, sessionId, email, chatHistory);
+        
+        // Save chat history to database if email is provided
+        if (email && result.chatHistory && Array.isArray(result.chatHistory)) {
+            try {
+                await vercelStorageService.saveChatHistory(email, result.chatHistory);
+            } catch (historyError) {
+                // Log error but don't fail the request if history save fails
+                logger.error(`⚠️ Failed to save chat history for ${email}: ${historyError.message}`);
+            }
+        }
         
         res.json({
             success: true,
