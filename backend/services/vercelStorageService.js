@@ -30,6 +30,7 @@ class VercelStorageService {
                     article_count,
                     paid,
                     chat_history,
+                    is_first_conversation_complete,
                     created_at,
                     last_updated
                 ) VALUES (
@@ -41,6 +42,7 @@ class VercelStorageService {
                     ${userData.articleCount},
                     ${userData.paid || false},
                     ${userData.chatHistory ? JSON.stringify(userData.chatHistory) : null}::jsonb,
+                    ${userData.isFirstConversationComplete !== undefined ? userData.isFirstConversationComplete : false},
                     ${userData.createdAt},
                     ${userData.lastUpdated}
                 )
@@ -53,6 +55,10 @@ class VercelStorageService {
                     article_count = EXCLUDED.article_count,
                     paid = COALESCE(EXCLUDED.paid, users.paid),
                     chat_history = COALESCE(EXCLUDED.chat_history, users.chat_history),
+                    is_first_conversation_complete = CASE 
+                        WHEN EXCLUDED.is_first_conversation_complete = true THEN true
+                        ELSE users.is_first_conversation_complete
+                    END,
                     last_updated = EXCLUDED.last_updated
             `;
             
@@ -192,7 +198,7 @@ class VercelStorageService {
     /**
      * Check email access - determines if user can access chat
      * @param {string} email - User email
-     * @returns {Promise<Object>} Access check result with exists, paid, canAccess
+     * @returns {Promise<Object>} Access check result with exists, paid, canAccess, isFirstConversationComplete
      */
     async checkEmailAccess(email) {
         try {
@@ -205,7 +211,8 @@ class VercelStorageService {
                 return {
                     exists: false,
                     paid: false,
-                    canAccess: true
+                    canAccess: true,
+                    isFirstConversationComplete: false
                 };
             }
             
@@ -214,7 +221,8 @@ class VercelStorageService {
                 return {
                     exists: true,
                     paid: true,
-                    canAccess: true
+                    canAccess: true,
+                    isFirstConversationComplete: user.is_first_conversation_complete === true
                 };
             }
             
@@ -222,7 +230,8 @@ class VercelStorageService {
             return {
                 exists: true,
                 paid: false,
-                canAccess: false
+                canAccess: false,
+                isFirstConversationComplete: user.is_first_conversation_complete === true
             };
         } catch (error) {
             logger.error(`❌ Failed to check email access: ${error.message}`);

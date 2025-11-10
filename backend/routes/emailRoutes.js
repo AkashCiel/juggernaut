@@ -63,7 +63,8 @@ router.post('/validate-email-access',
                 data: {
                     canAccess: accessCheck.canAccess,
                     exists: accessCheck.exists,
-                    paid: accessCheck.paid
+                    paid: accessCheck.paid,
+                    isFirstConversationComplete: accessCheck.isFirstConversationComplete
                 }
             });
         } catch (error) {
@@ -75,6 +76,7 @@ router.post('/validate-email-access',
                     canAccess: true,
                     exists: false,
                     paid: false,
+                    isFirstConversationComplete: false,
                     error: 'Database check failed, allowing access'
                 }
             });

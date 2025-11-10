@@ -90,6 +90,7 @@ router.post('/message',
                         userId: userId,
                         email: email,
                         chatHistory: result.chatHistory,
+                        isFirstConversationComplete: result.conversationComplete === true,
                         createdAt: now,
                         lastUpdated: now
                     });

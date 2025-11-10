@@ -105,6 +105,11 @@ class ChatClient {
         this.conversationComplete = false;
         this.isCurationTriggered = false; // Track if curation has been triggered
         this.userEmail = this.getUserEmail();
+        this.isPaid = null; // Track paid status (null = unknown, true/false = known)
+        this.isFirstConversationComplete = false; // Track if first conversation is complete
+        
+        // Disabled message constant
+        this.DISABLED_MESSAGE = 'Please check your inbox for your news feed. To use this service further, visit the pricing page (link in your news feed email).';
         
         this.initializeElements();
         this.setupAutoExpandInput();
@@ -137,6 +142,13 @@ class ChatClient {
         this.sendButton = document.getElementById('sendButton');
         this.status = document.getElementById('status');
         this.chatInputContainer = document.querySelector('.chat-input-container');
+        
+        // Create disabled message element
+        this.disabledMessageElement = document.createElement('div');
+        this.disabledMessageElement.className = 'chat-disabled-message';
+        this.disabledMessageElement.textContent = this.DISABLED_MESSAGE;
+        this.disabledMessageElement.style.display = 'none';
+        this.chatInputContainer.insertBefore(this.disabledMessageElement, this.chatInputContainer.firstChild);
     }
 
     // Setup auto-expand input functionality
@@ -260,6 +272,11 @@ class ChatClient {
                 }];
                 this.addMessage(result.data.welcomeMessage, 'bot');
                 this.hideStatus();
+                
+                // Check if conversation was already complete and load chat history if needed
+                if (this.userEmail) {
+                    await this.checkUserStatusAndLoadHistory();
+                }
             } else {
                 this.showStatus('Failed to start chat session', 'error');
             }
@@ -330,7 +347,14 @@ class ChatClient {
             this.hideTypingIndicator();
             this.addMessage('Network error. Please try again.', 'bot');
         } finally {
-            this.setInputState(true);
+            // Only re-enable input if conversation is not complete or user is paid
+            const isComplete = this.conversationComplete || this.isFirstConversationComplete;
+            if (!isComplete || this.isPaid === true) {
+                this.setInputState(true);
+            } else {
+                // Keep disabled if conversation complete and not paid
+                this.setInputState(false);
+            }
         }
     }
 
@@ -384,6 +408,22 @@ class ChatClient {
             enabled = false;
         }
         
+        // Check if conversation is complete (either from current session or from database)
+        const isComplete = this.conversationComplete || this.isFirstConversationComplete;
+        
+        // If conversation is complete and user is not paid, always keep disabled
+        if (isComplete && this.isPaid === false) {
+            enabled = false;
+            this.showDisabledMessage();
+        } else if (isComplete && this.isPaid === true) {
+            // If conversation is complete but user is paid, enable input
+            enabled = true;
+            this.hideDisabledMessage();
+        } else {
+            // Hide disabled message if conversation is not complete
+            this.hideDisabledMessage();
+        }
+        
         this.chatInput.disabled = !enabled;
         this.sendButton.disabled = !enabled;
         
@@ -420,10 +460,17 @@ class ChatClient {
             return;
         }
 
+        // Mark conversation as complete and disable input immediately
+        this.conversationComplete = true;
+        this.isFirstConversationComplete = true; // Also set this flag for consistency
+        this.setInputState(false);
+
+        // Check paid status using existing endpoint
+        await this.checkUserPaidStatus();
+
         // Show status that curation is starting
         this.showStatus('🎯 Curating your personalized news feed...', 'info');
         this.isCurationTriggered = true; // Mark curation as triggered
-        this.setInputState(false); // Disable input during curation (permanently)
 
         try {
             console.log('🚀 Calling curate-feed API...', { email: this.userEmail });
@@ -443,7 +490,7 @@ class ChatClient {
 
             if (result.success) {
                 this.showStatus(`✅ Your curation job has started. You'll receive an email when it's ready.`, 'success');
-                this.addMessage(`Got it. I’ve kicked off your personalized news feed. You’ll receive it by email in 5 - 10 minutes. Check your spam folder if you don't see it.`, 'bot');
+                this.addMessage(`Got it. I've kicked off your personalized news feed. You'll receive it by email in 5 - 10 minutes. Check your spam folder if you don't see it.`, 'bot');
             } else {
                 console.error('Curation failed:', result);
                 this.showStatus('⚠️ Failed to curate news feed. Please try again.', 'error');
@@ -454,9 +501,143 @@ class ChatClient {
             this.showStatus('⚠️ Network error during curation. Please try again.', 'error');
             this.addMessage('Sorry, there was a network error. Please try again.', 'bot');
         } finally {
-            // Keep input disabled permanently since curation is triggered
-            this.isCurationTriggered = true;
+            // Keep input disabled if not paid, otherwise respect paid status
+            this.updateInputDisabledState();
+        }
+    }
+
+    // Check user status and load chat history if conversation was already complete
+    async checkUserStatusAndLoadHistory() {
+        if (!this.userEmail) {
+            console.warn('Cannot check user status: no email');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${this.apiUrl}/api/validate-email-access`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: this.userEmail })
+            });
+
+            const result = await response.json();
+
+            if (result.success && result.data) {
+                this.isPaid = result.data.paid === true;
+                this.isFirstConversationComplete = result.data.isFirstConversationComplete === true;
+                
+                // If conversation was already complete, load chat history
+                if (this.isFirstConversationComplete) {
+                    this.conversationComplete = true;
+                    await this.loadChatHistory();
+                }
+                
+                this.updateInputDisabledState();
+            } else {
+                console.error('Failed to check user status:', result);
+                // Fail-safe: assume not paid and conversation not complete if check fails
+                this.isPaid = false;
+                this.isFirstConversationComplete = false;
+                this.updateInputDisabledState();
+            }
+        } catch (error) {
+            console.error('Error checking user status:', error);
+            // Fail-safe: assume not paid and conversation not complete if check fails
+            this.isPaid = false;
+            this.isFirstConversationComplete = false;
+            this.updateInputDisabledState();
+        }
+    }
+
+    // Load chat history from backend
+    async loadChatHistory() {
+        if (!this.userEmail) {
+            return;
+        }
+
+        try {
+            // Get chat history from user data (we'll need to add an endpoint or use existing one)
+            // For now, we'll check if we can get it from the user object
+            // Since we don't have a dedicated endpoint, we'll skip loading history for now
+            // The conversationComplete flag is enough to disable the input
+            console.log('Conversation was already complete, chat history should be loaded from database');
+        } catch (error) {
+            console.error('Error loading chat history:', error);
+        }
+    }
+
+    // Check user paid status using existing endpoint (for when conversation completes)
+    async checkUserPaidStatus() {
+        if (!this.userEmail) {
+            console.warn('Cannot check paid status: no email');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${this.apiUrl}/api/validate-email-access`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: this.userEmail })
+            });
+
+            const result = await response.json();
+
+            if (result.success && result.data) {
+                this.isPaid = result.data.paid === true;
+                this.isFirstConversationComplete = result.data.isFirstConversationComplete === true;
+                this.updateInputDisabledState();
+            } else {
+                console.error('Failed to check paid status:', result);
+                // Fail-safe: assume not paid if check fails
+                this.isPaid = false;
+                this.updateInputDisabledState();
+            }
+        } catch (error) {
+            console.error('Error checking paid status:', error);
+            // Fail-safe: assume not paid if check fails
+            this.isPaid = false;
+            this.updateInputDisabledState();
+        }
+    }
+
+    // Update input disabled state based on conversation complete and paid status
+    updateInputDisabledState() {
+        // Check if conversation is complete (either from current session or from database)
+        const isComplete = this.conversationComplete || this.isFirstConversationComplete;
+        
+        if (isComplete && this.isPaid === false) {
+            // Conversation complete but not paid - disable input and show message
             this.setInputState(false);
+            this.showDisabledMessage();
+        } else if (isComplete && this.isPaid === true) {
+            // Conversation complete and paid - enable input
+            this.setInputState(true);
+            this.hideDisabledMessage();
+        } else if (isComplete && this.isPaid === null) {
+            // Conversation complete but paid status unknown - disable input (fail-safe)
+            this.setInputState(false);
+            this.showDisabledMessage();
+        } else {
+            // Conversation not complete - hide disabled message
+            this.hideDisabledMessage();
+        }
+    }
+
+    // Show disabled message
+    showDisabledMessage() {
+        if (this.disabledMessageElement) {
+            this.disabledMessageElement.style.display = 'block';
+        }
+    }
+
+    // Hide disabled message
+    hideDisabledMessage() {
+        if (this.disabledMessageElement) {
+            this.disabledMessageElement.style.display = 'none';
         }
     }
 

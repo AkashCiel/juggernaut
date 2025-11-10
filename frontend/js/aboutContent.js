@@ -11,8 +11,8 @@ export const aboutContent = {
         "But what we need is highly focused information",
         "I built this product to solve this problem",
         "You can talk to the app and decide what you want to see in your news feed",
-        "I would recommend to not rush this conversation. Take your time",
-        "The more details you provide, the more specific and personally relevant your news feed will be",
+        "TIP: with highly precise input, you get extremely relevant but shorter feed",
+        "with relatively generic inputs, you get moderately relevant but longer feed",
         "This app will never seek investment or sponsorship, ensuring freedom from bias"
     ],
     // Full philosophy text for the About button modal (generated dynamically from introSections)
