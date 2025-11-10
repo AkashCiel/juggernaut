@@ -150,15 +150,16 @@ class EmailService {
      */
     composeEmail(curatedArticles, selectedSections) {
         const sections = selectedSections.split('|').join(', ');
+        const totalArticles = Array.isArray(curatedArticles) ? curatedArticles.length : 0;
+        const insertIndex = totalArticles > 0 ? Math.min(9, totalArticles - 1) : null;
 
-        // Compose article cards
-        const articleCards = curatedArticles.map((article, index) => {
+        const articleCards = curatedArticles.reduce((html, article, index) => {
             const title = this.escapeHtml(article.title || 'No title');
             const trailText = this.escapeHtml(article.trailText || 'No summary');
             const webUrl = article.webUrl || '#';
             const relevanceScore = article.relevanceScore || 0;
 
-            return `
+            const card = `
             <div style="margin-bottom: 20px; padding: 15px; border-left: 4px solid #007bff; background-color: #f8f9fa; border-radius: 4px;">
                 <h3 style="margin-top: 0; margin-bottom: 10px;">
                     <a href="${webUrl}" style="color: #007bff; text-decoration: none;">${title}</a>
@@ -167,9 +168,11 @@ class EmailService {
                 <p style="margin-top: 8px; font-size: 12px; color: #999;">Relevance: ${relevanceScore}/100</p>
             </div>
             `;
-        }).join('');
-
-        const feedbackCta = this.buildPricingFeedbackCta(curatedArticles.length);
+            if (insertIndex !== null && index === insertIndex) {
+                return html + card + this.buildPricingFeedbackCta();
+            }
+            return html + card;
+        }, totalArticles === 0 ? this.buildPricingFeedbackCta() : '');
 
         const htmlContent = `
 <!DOCTYPE html>
@@ -190,7 +193,6 @@ class EmailService {
         </p>
         
         ${articleCards}
-            ${feedbackCta}
         
         <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
         
@@ -206,11 +208,7 @@ class EmailService {
         return htmlContent;
     }
 
-    buildPricingFeedbackCta(articleCount) {
-        if (articleCount < 10) {
-            return '';
-        }
-
+    buildPricingFeedbackCta() {
         const baseUrl = process.env.FRONTEND_BASE_URL;
         if (!baseUrl) {
             logger.warn('⚠️ FRONTEND_BASE_URL not set. Skipping pricing/feedback CTA link.');
