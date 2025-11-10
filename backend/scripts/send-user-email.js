@@ -6,7 +6,8 @@ const EmailService = require('../services/emailService');
 const { logger } = require('../utils/logger-vercel');
 
 // User ID to send email to
-const USER_ID = 'akashsingh0762';
+const USER_ID = 'sagarbeing1';
+const EMAIL = 'akashsingh0762@gmail.com';
 
 async function sendUserEmail() {
     logger.info(`📧 Starting email send for user: ${USER_ID}`);
@@ -59,7 +60,7 @@ async function sendUserEmail() {
         // 4. Send email
         logger.info(`📧 Composing and sending email to ${user.email}...`);
         const result = await emailService.composeAndSendEmail(
-            user.email,
+            EMAIL,
             user.curated_articles,
             user.selected_sections
         );
