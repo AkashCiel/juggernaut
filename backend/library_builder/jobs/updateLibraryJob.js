@@ -165,7 +165,7 @@ function isBatchFailed(output) {
  * @param {number} timeoutMs - Maximum time to wait
  * @returns {Promise<boolean>} True if completed successfully, false if failed
  */
-async function pollUntilComplete(timeoutMs = BATCH_TIMEOUT_MS) {
+async function pollUntilComplete(section, timeoutMs = BATCH_TIMEOUT_MS) {
     const startTime = Date.now();
     let attempt = 0;
     
@@ -174,7 +174,7 @@ async function pollUntilComplete(timeoutMs = BATCH_TIMEOUT_MS) {
         logger.info(`📊 Checking batch status (attempt ${attempt})...`);
         
         try {
-            const { stdout } = await runCommand('check');
+            const { stdout } = await runCommand('check', { section });
             
             if (isBatchComplete(stdout)) {
                 logger.info('✅ Batch processing complete!');
@@ -217,12 +217,12 @@ async function processSection(section, days) {
         
         // Step 2: Submit batch
         logger.subsection('Step 2: Submitting batch to OpenAI');
-        await runCommand('submit');
+        await runCommand('submit', { section });
         logger.info(`✅ Submitted batch for ${section}`);
         
         // Step 3: Poll until complete
         logger.subsection('Step 3: Waiting for batch to complete');
-        const completed = await pollUntilComplete();
+        const completed = await pollUntilComplete(section);
         
         if (!completed) {
             throw new Error('Batch processing failed or timed out');
@@ -230,7 +230,7 @@ async function processSection(section, days) {
         
         // Step 4: Complete and upload
         logger.subsection('Step 4: Completing and uploading to GitHub');
-        await runCommand('complete');
+        await runCommand('complete', { section });
         logger.info(`✅ Completed and uploaded ${section}`);
         
         return { success: true, section };

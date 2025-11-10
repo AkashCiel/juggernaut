@@ -11,7 +11,11 @@ async function fetch(options) {
     
     logger.section(`FETCH: ${section} section (last ${days} days)`);
     
-    const stateManager = new StateManager();
+    if (!section) {
+        throw new Error('Section is required to fetch articles');
+    }
+
+    const stateManager = new StateManager({ section });
     
     // Check if there's already a fetched/submitted batch
     if (stateManager.hasState()) {
@@ -20,7 +24,7 @@ async function fetch(options) {
             status: existingState.status,
             section: existingState.section
         });
-        throw new Error(`Batch already exists (status: ${existingState.status}). Clear state first to re-fetch.`);
+        throw new Error(`Batch already exists for section "${section}" (status: ${existingState.status}). Clear state first to re-fetch.`);
     }
     
     try {

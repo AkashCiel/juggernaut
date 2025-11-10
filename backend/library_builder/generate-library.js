@@ -60,9 +60,9 @@ Usage:
 
 Commands:
   fetch      Fetch articles and create batch file (without submitting)
-  submit     Submit fetched batch to OpenAI
-  check      Check batch processing status
-  complete   Download results and build library
+  submit     Submit fetched batch to OpenAI (requires --section)
+  check      Check batch processing status (requires --section)
+  complete   Download results and build library (requires --section)
 
 Fetch Options:
   --section <name>    Guardian section name (required)
@@ -70,9 +70,9 @@ Fetch Options:
 
 Examples:
   node generate-library.js fetch --section technology --days 2
-  node generate-library.js submit
-  node generate-library.js check
-  node generate-library.js complete
+  node generate-library.js submit --section technology
+  node generate-library.js check --section technology
+  node generate-library.js complete --section technology
 
 Log File:
   ${logFilePath}
@@ -107,15 +107,30 @@ async function main() {
                 break;
                 
             case 'submit':
-                result = await submit();
+                if (!options.section) {
+                    logger.error('--section is required for submit command');
+                    printUsage();
+                    process.exit(1);
+                }
+                result = await submit({ section: options.section });
                 break;
                 
             case 'check':
-                result = await check();
+                if (!options.section) {
+                    logger.error('--section is required for check command');
+                    printUsage();
+                    process.exit(1);
+                }
+                result = await check({ section: options.section });
                 break;
                 
             case 'complete':
-                result = await complete();
+                if (!options.section) {
+                    logger.error('--section is required for complete command');
+                    printUsage();
+                    process.exit(1);
+                }
+                result = await complete({ section: options.section });
                 break;
                 
             default:

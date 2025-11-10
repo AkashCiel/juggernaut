@@ -5,16 +5,33 @@ const BatchSubmitter = require('../services/batchSubmitter');
 /**
  * Submit Command - Submit fetched batch to OpenAI
  */
-async function submit() {
+async function submit(options = {}) {
     logger.section('SUBMIT: Upload batch to OpenAI');
     
-    const stateManager = new StateManager();
+    const { section } = options;
+    
+    if (!section) {
+        throw new Error('Section is required to submit a batch');
+    }
+    
+    const stateManager = new StateManager({ section });
     
     // Load state
     const state = stateManager.loadState();
     if (!state) {
         logger.error('No fetched batch found');
         throw new Error('No batch found. Run fetch command first.');
+    }
+
+    if (state.section && state.section !== section) {
+        logger.error('State section mismatch', { expected: section, found: state.section });
+        throw new Error(`Batch state belongs to "${state.section}" but "${section}" was requested.`);
+    }
+
+    // Ensure section is recorded in state for legacy files
+    if (!state.section) {
+        state.section = section;
+        stateManager.updateState({ section });
     }
     
     // Validate state

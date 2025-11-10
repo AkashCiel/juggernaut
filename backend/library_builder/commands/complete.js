@@ -12,16 +12,32 @@ const DiscordService = require('../../services/discordService');
  * Complete Command - Download results, build library, upload to GitHub
  * Includes automatic retry logic for failed articles
  */
-async function complete() {
+async function complete(options = {}) {
     logger.section('COMPLETE: Download Results & Build Library');
     
-    const stateManager = new StateManager();
+    const { section } = options;
+    
+    if (!section) {
+        throw new Error('Section is required to complete a batch');
+    }
+    
+    const stateManager = new StateManager({ section });
     
     // Load state
     const state = stateManager.loadState();
     if (!state) {
         logger.error('No batch in progress');
         throw new Error('No batch found. Run submit command first.');
+    }
+
+    if (state.section && state.section !== section) {
+        logger.error('State section mismatch', { expected: section, found: state.section });
+        throw new Error(`Batch state belongs to "${state.section}" but "${section}" was requested.`);
+    }
+
+    if (!state.section) {
+        stateManager.updateState({ section });
+        state.section = section;
     }
     
     try {

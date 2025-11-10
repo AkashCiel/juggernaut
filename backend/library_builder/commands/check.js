@@ -5,16 +5,32 @@ const BatchMonitor = require('../services/batchMonitor');
 /**
  * Check Command - Check batch processing status
  */
-async function check() {
+async function check(options = {}) {
     logger.section('CHECK: Batch Status');
     
-    const stateManager = new StateManager();
+    const { section } = options;
+    
+    if (!section) {
+        throw new Error('Section is required to check batch status');
+    }
+    
+    const stateManager = new StateManager({ section });
     
     // Load state
     const state = stateManager.loadState();
     if (!state) {
         logger.error('No batch in progress');
         throw new Error('No batch found. Run fetch and submit commands first.');
+    }
+
+    if (state.section && state.section !== section) {
+        logger.error('State section mismatch', { expected: section, found: state.section });
+        throw new Error(`Batch state belongs to "${state.section}" but "${section}" was requested.`);
+    }
+
+    if (!state.section) {
+        stateManager.updateState({ section });
+        state.section = section;
     }
     
     // Validate state
