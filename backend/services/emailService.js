@@ -250,7 +250,7 @@ class EmailService {
             };
         }
 
-        if (!email || !curatedArticles || !selectedSections) {
+        if (!email || !curatedArticles || curatedArticles.length === 0 || !selectedSections) {
             logger.error('❌ Missing required parameters for email');
             return {
                 success: false,
