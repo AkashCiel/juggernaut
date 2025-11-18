@@ -6,7 +6,8 @@ const LibraryBuilder = require('../services/libraryBuilder');
 const GithubUploader = require('../services/githubUploader');
 const BatchFormatter = require('../services/batchFormatter');
 const BatchSubmitter = require('../services/batchSubmitter');
-const DiscordService = require('../../services/discordService');
+
+const SUMMARY_MARKER = '__LIBRARY_COMPLETE_SUMMARY__';
 
 /**
  * Complete Command - Download results, build library, upload to GitHub
@@ -168,17 +169,10 @@ async function complete(options = {}) {
         logger.info('✅ Uploaded to GitHub');
         logger.info(`   URL: ${uploadResult.fileUrl}`);
         
-        if (uploadResult.mergeInfo) {
-            logger.info(`   Merge: +${uploadResult.mergeInfo.new_articles} new, ~${uploadResult.mergeInfo.updated_articles} updated`);
-            logger.info(`   Total: ${uploadResult.mergeInfo.total_count} articles (was ${uploadResult.mergeInfo.previous_count})`);
-            
-            // Send Discord notification
-            await sendDiscordNotification(
-                state.section,
-                uploadResult.mergeInfo.new_articles,
-                uploadResult.mergeInfo.updated_articles
-            );
-        }
+            if (uploadResult.mergeInfo) {
+                logger.info(`   Merge: +${uploadResult.mergeInfo.new_articles} new, ~${uploadResult.mergeInfo.updated_articles} updated`);
+                logger.info(`   Total: ${uploadResult.mergeInfo.total_count} articles (was ${uploadResult.mergeInfo.previous_count})`);
+            }
         
         // Step 7: Clear state
         logger.subsection('Step 6: Cleaning up');
@@ -202,6 +196,13 @@ async function complete(options = {}) {
         logger.info('');
         logger.info('Library is now available in juggernaut-reports repository!');
         
+        const summaryPayload = {
+            section: state.section,
+            newArticles: uploadResult.mergeInfo?.new_articles ?? 0,
+            updatedArticles: uploadResult.mergeInfo?.updated_articles ?? 0
+        };
+        console.log(`${SUMMARY_MARKER}${JSON.stringify(summaryPayload)}`);
+
         return {
             success: true,
             library,
@@ -212,36 +213,6 @@ async function complete(options = {}) {
     } catch (error) {
         logger.error('Complete failed', { error: error.message });
         throw error;
-    }
-}
-
-/**
- * Send Discord notification for section update
- * @param {string} sectionName - Section name
- * @param {number} newArticles - Number of new articles
- * @param {number} updatedArticles - Number of updated articles
- */
-async function sendDiscordNotification(sectionName, newArticles, updatedArticles) {
-    const webhookUrl = process.env.DISCORD_WEBHOOK_URL_LIBRARY_UPDATES;
-    
-    if (!webhookUrl) {
-        // Discord not configured, skip silently
-        return;
-    }
-    
-    try {
-        const discord = new DiscordService(webhookUrl);
-        const message = `Section **${sectionName}** updated on GitHub`;
-        const data = {
-            'New articles': newArticles || 0,
-            'Updated articles': updatedArticles || 0
-        };
-        
-        await discord.sendSuccess(message, data);
-        logger.info(`📢 Discord notification sent for section: ${sectionName}`);
-    } catch (error) {
-        // Don't fail the complete command if Discord notification fails
-        logger.warn(`⚠️ Failed to send Discord notification: ${error.message}`);
     }
 }
 
