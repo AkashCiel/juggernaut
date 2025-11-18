@@ -34,7 +34,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           FRONTEND_BASE_URL: ${{ secrets.FRONTEND_BASE_URL }}
           NODE_ENV: production
-          DISCORD_WEBHOOK_URL_CURATION: ${{ secrets.DISCORD_WEBHOOK_URL_CURATION }}
+          DISCORD_WEBHOOK_URL_CURATION: ${{ secrets.DISCORD_WEBHOOK_FEED_CURATION }}
           PRIMARY_FEED_WEBHOOK_URL: ${{ secrets.PRIMARY_FEED_WEBHOOK_URL }}
         run: |
           node scripts/run-regular-feed-batch.js

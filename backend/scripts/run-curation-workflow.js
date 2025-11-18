@@ -39,7 +39,7 @@ function buildDefaultCutoffs(sections, windowDays = DEFAULT_GENERATED_AT_WINDOW_
 }
 
 async function sendDiscordAlert(message, context = {}) {
-    const webhook = process.env.DISCORD_WEBHOOK_URL_CURATION;
+    const webhook = process.env.DISCORD_WEBHOOK_FEED_CURATION;
     if (!webhook) {
         return;
     }
