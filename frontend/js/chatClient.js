@@ -107,9 +107,11 @@ class ChatClient {
         this.userEmail = this.getUserEmail();
         this.isPaid = null; // Track paid status (null = unknown, true/false = known)
         this.isFirstConversationComplete = false; // Track if first conversation is complete
+        this.isReturningUser = false;
         
         // Disabled message constant
-        this.DISABLED_MESSAGE = 'Please check your inbox for your news feed. To use this service further, visit the pricing page (link in your news feed email).';
+        this.RETURNING_USER_MESSAGE = 'I have already registered your interests. If you have paid, you will regularly receive your news feed. You don\'t need to do anything. I will roll out modifying interests via chat soon.';
+        this.DISABLED_MESSAGE = this.RETURNING_USER_MESSAGE;
         
         this.initializeElements();
         this.setupAutoExpandInput();
@@ -525,6 +527,11 @@ class ChatClient {
             const result = await response.json();
 
             if (result.success && result.data) {
+                if (result.data.exists) {
+                    this.handleReturningUserBlock();
+                    return;
+                }
+
                 this.isPaid = result.data.paid === true;
                 this.isFirstConversationComplete = result.data.isFirstConversationComplete === true;
                 

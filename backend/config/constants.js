@@ -88,7 +88,10 @@ Do not include any explanations or additional text outside the JSON object.
     PRICING_FEEDBACK_PATH: '/pricing-feedback.html',
     
     // Primary email for free news feed subscription
-    PRIMARY_EMAIL: 'agialignmentproblem@gmail.com'
+    PRIMARY_EMAIL: 'agialignmentproblem@gmail.com',
+
+    // Default cutoff window (days) for first feed generation
+    DEFAULT_GENERATED_AT_WINDOW_DAYS: 45
 };
 
 

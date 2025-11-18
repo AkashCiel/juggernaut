@@ -41,27 +41,27 @@ async function sendUserEmail() {
             process.exit(1);
         }
         
-        if (!user.curated_articles || !Array.isArray(user.curated_articles) || user.curated_articles.length === 0) {
-            logger.error('❌ User has no curated articles to send');
-            logger.info(`   curated_articles: ${user.curated_articles ? 'exists but empty' : 'missing'}`);
-            process.exit(1);
-        }
-        
         if (!user.selected_sections) {
             logger.error('❌ User has no selected sections');
+            process.exit(1);
+        }
+
+        const latestFeed = await vercelStorageService.getLatestCuratedFeed(USER_ID);
+        if (!latestFeed || !Array.isArray(latestFeed.curated_articles) || latestFeed.curated_articles.length === 0) {
+            logger.error('❌ User has no curated articles to send');
             process.exit(1);
         }
         
         logger.info(`✅ User data validated:`);
         logger.info(`   Email: ${user.email}`);
-        logger.info(`   Curated articles: ${user.curated_articles.length}`);
+        logger.info(`   Curated articles: ${latestFeed.curated_articles.length}`);
         logger.info(`   Selected sections: ${user.selected_sections}`);
         
         // 4. Send email
         logger.info(`📧 Composing and sending email to ${user.email}...`);
         const result = await emailService.composeAndSendEmail(
             EMAIL,
-            user.curated_articles,
+            latestFeed.curated_articles,
             user.selected_sections
         );
         
