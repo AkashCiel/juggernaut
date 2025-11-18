@@ -1,0 +1,41 @@
+name: Curate Regular Feeds
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  curate-regular:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci --no-audit --no-fund
+
+      - name: Run regular feed batch
+        working-directory: backend
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
+          MAILGUN_DOMAIN: ${{ secrets.MAILGUN_DOMAIN }}
+          GITHUB_TOKEN_REPORTS: ${{ secrets.GIT_TOKEN }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          FRONTEND_BASE_URL: ${{ secrets.FRONTEND_BASE_URL }}
+          NODE_ENV: production
+          DISCORD_WEBHOOK_FEED_CURATION: ${{ secrets.DISCORD_WEBHOOK_FEED_CURATION }}
+          PRIMARY_FEED_WEBHOOK_URL: ${{ secrets.PRIMARY_FEED_WEBHOOK_URL }}
+        run: |
+          node scripts/run-regular-feed-batch.js
+

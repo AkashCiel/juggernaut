@@ -46,14 +46,8 @@ class EmailCollection {
             const canAccess = await this.checkEmailAccess(email);
             
             if (!canAccess) {
-                // Show blocking modal for unpaid repeat users
                 this.setLoading(false);
-                if (window.emailBlockModal) {
-                    window.emailBlockModal.show(email);
-                } else {
-                    // Fallback if modal not loaded
-                    this.showError('Access restricted. Please check your email for your personalised news feed.');
-                }
+                this.showError('I have already registered your interests. If you have paid, you will regularly receive your news feed. You don\'t need to do anything. I will roll out modifying interests via chat soon.');
                 return;
             }
             

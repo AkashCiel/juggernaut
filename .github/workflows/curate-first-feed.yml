@@ -1,4 +1,4 @@
-name: Curate Feed
+name: Curate First Feed
 
 on:
   workflow_dispatch:
@@ -61,17 +61,12 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           FRONTEND_BASE_URL: ${{ secrets.FRONTEND_BASE_URL }}
           NODE_ENV: production
+          DISCORD_WEBHOOK_FEED_CURATION: ${{ secrets.DISCORD_WEBHOOK_FEED_CURATION }}
+          PRIMARY_FEED_WEBHOOK_URL: ${{ secrets.PRIMARY_FEED_WEBHOOK_URL }}
         run: |
           node scripts/run-curation-workflow.js \
             --email "${{ steps.inputs.outputs.email }}" \
             --userInterests "${{ steps.inputs.outputs.userInterests }}" \
+            --isNewUser true \
             --debug "${{ steps.inputs.outputs.debug }}"
-
-      - name: Upload run summary
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: curate-feed-summary
-          path: backend/curation-summary.json
-
 

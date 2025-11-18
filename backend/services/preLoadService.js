@@ -1,6 +1,7 @@
 const https = require('https');
 const { logger } = require('../utils/logger-vercel');
 const { MAX_ARTICLES_FOR_CURATION } = require('../config/constants');
+const DEFAULT_EPOCH = '1970-01-01T00:00:00.000Z';
 
 class PreLoadService {
     constructor() {
@@ -194,37 +195,71 @@ class PreLoadService {
         return this.articleLibraries.get(section) || null;
     }
 
+    getArticleGeneratedAt(article) {
+        return (
+            article.generatedAt ||
+            article.generated_at ||
+            article.publishedDate ||
+            article.published_at ||
+            null
+        );
+    }
+
     /**
      * Prepare data for curation by filtering to selected sections and applying article limit
      * Drops articles from non-selected sections from memory
      * @param {string} selectedSections - Pipe-separated list of section names (e.g., "technology|business")
+     * @param {Object} generatedAtCutoffs - Map of section -> ISO datetime string
      * @returns {Object} Prepared article data with filtered articles (max MAX_ARTICLES_FOR_CURATION)
      */
-    prepare_data_for_curation(selectedSections) {
+    prepare_data_for_curation(selectedSections, generatedAtCutoffs = {}) {
         const selectedSectionsArray = selectedSections.split('|').map(s => s.trim()).filter(Boolean);
+        const cutoffDateMap = {};
+        selectedSectionsArray.forEach(section => {
+            const rawValue = generatedAtCutoffs[section];
+            const parsed = rawValue ? new Date(rawValue) : new Date(DEFAULT_EPOCH);
+            cutoffDateMap[section] = Number.isNaN(parsed.getTime()) ? new Date(DEFAULT_EPOCH) : parsed;
+        });
         
         logger.info(`🔍 Preparing data for curation. Selected sections: ${selectedSectionsArray.join(', ')}`);
 
         // Collect articles from selected sections
         const articlesBySection = {};
+        const sectionLastGeneratedMap = {};
         let totalArticles = 0;
 
         for (const section of selectedSectionsArray) {
             const library = this.articleLibraries.get(section);
             if (library && library.articles && Array.isArray(library.articles)) {
-                // Sort articles by publishedDate (most recent first)
-                const sortedArticles = [...library.articles].sort((a, b) => {
-                    const dateA = new Date(a.publishedDate || 0);
-                    const dateB = new Date(b.publishedDate || 0);
-                    return dateB - dateA; // Most recent first
-                });
-                
+                const filtered = library.articles
+                    .filter(article => {
+                        const generatedAt = this.getArticleGeneratedAt(article);
+                        if (!generatedAt) return true;
+                        const generatedDate = new Date(generatedAt);
+                        const cutoffDate = cutoffDateMap[section] || new Date(DEFAULT_EPOCH);
+                        return generatedDate > cutoffDate;
+                    })
+                    .sort((a, b) => {
+                        const dateA = new Date(this.getArticleGeneratedAt(a) || 0);
+                        const dateB = new Date(this.getArticleGeneratedAt(b) || 0);
+                        return dateB - dateA;
+                    });
+
+                if (filtered.length > 0) {
+                    const latestGenerated = this.getArticleGeneratedAt(filtered[0]);
+                    sectionLastGeneratedMap[section] = latestGenerated || cutoffDateMap[section].toISOString();
+                } else {
+                    sectionLastGeneratedMap[section] = cutoffDateMap[section].toISOString();
+                }
+
+                const sortedArticles = filtered;
                 articlesBySection[section] = sortedArticles;
                 totalArticles += sortedArticles.length;
-                logger.info(`📰 Section '${section}': ${sortedArticles.length} articles available`);
+                logger.info(`📰 Section '${section}': ${sortedArticles.length} articles available after cutoff filtering`);
             } else {
                 logger.warn(`⚠️ No article library found for section '${section}'`);
                 articlesBySection[section] = [];
+                sectionLastGeneratedMap[section] = cutoffDateMap[section].toISOString();
             }
         }
 
@@ -284,6 +319,10 @@ class PreLoadService {
             logger.info(`🗑️ Dropped article library for section '${section}' from memory`);
         }
 
+        if (filteredArticles.length === 0) {
+            throw new Error('No articles available after applying generatedAt cutoffs.');
+        }
+
         logger.info(`✅ Prepared ${filteredArticles.length} articles for curation from ${selectedSectionsArray.length} sections`);
 
         // Calculate selected counts per section for logging
@@ -301,7 +340,8 @@ class PreLoadService {
             sectionsData: selectedSectionsArray.map(section => ({
                 section,
                 articleCount: articlesBySection[section] ? articlesBySection[section].length : 0,
-                selectedCount: sectionSelectedCounts[section] || 0
+                selectedCount: sectionSelectedCounts[section] || 0,
+                lastGeneratedAt: sectionLastGeneratedMap[section] || cutoffDateMap[section].toISOString()
             }))
         };
     }
