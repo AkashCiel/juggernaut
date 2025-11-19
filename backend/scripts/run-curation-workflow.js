@@ -126,21 +126,20 @@ async function runCurationWorkflow({ email, userInterests, isNewUser = true, deb
     const newsDiscoveryService = new NewsDiscoveryService();
     const articleCuratorService = new ArticleCuratorService();
     const emailService = new EmailService();
-    const vercelStorageService = new VercelStorageService();
-
-    const summaries = await preLoadService.fetchSectionSummaries();
-    const availableSections = summaries?.sections ? Object.keys(summaries.sections) : ['world'];
-
-    let selectedSections = '';
-    let sectionsArray = [];
-    let cutoffMap = {};
-    let userId = generateUserId(email);
+    const vercelStorageService = new VercelStorageService();    
+    
     let effectiveUserInterests = userInterests;
     let existingUser = null;
     let isFirstFeed = isNewUser;
 
     if (isNewUser) {
         logger.info('🗺️ Mapping user interests to sections...');
+        let selectedSections = '';
+        let sectionsArray = [];
+        let cutoffMap = {};
+        userId = generateUserId(email);
+        const summaries = await preLoadService.fetchSectionSummaries();
+        const availableSections = summaries?.sections ? Object.keys(summaries.sections) : ['world'];
         selectedSections = await newsDiscoveryService.mapUserInterestsToSections(userInterests, availableSections);
         logger.info(`✅ Selected sections: ${selectedSections}`);
         sectionsArray = selectedSections.split('|').map(section => section.trim()).filter(Boolean);
