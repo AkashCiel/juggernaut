@@ -350,29 +350,10 @@ async function sendDiscordRunSummary(sectionResults) {
         }
     });
 
-    const payload = JSON.stringify({ content: lines.join('\n') });
-
-    const options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(payload)
-        }
-    };
-
-    await new Promise((resolve, reject) => {
-        const req = https.request(webhookUrl, options, res => {
-            res.on('data', () => {});
-            res.on('end', () => {
-                if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
-                    resolve();
-                } else {
-                    reject(new Error(`Discord webhook responded with ${res.statusCode}`));
-                }
-            });
-        });
-        req.on('error', reject);
-        req.write(payload);
-        req.end();
-    });
+    try {
+        await discord.sendInfo(lines.join('\n'));
+    } catch (error) {
+        logger.warn(`⚠️ Failed to send Discord summary: ${error.message}`);
+    }
 }
+
