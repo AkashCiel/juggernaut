@@ -21,7 +21,6 @@ const https = require('https');
 const path = require('path');
 const fs = require('fs');
 const { logger } = require('../utils/logger');
-const DiscordService = require('../../services/discordService');
 
 const execAsync = promisify(exec);
 
@@ -207,24 +206,6 @@ async function pollUntilComplete(section, timeoutMs = BATCH_TIMEOUT_MS) {
  * @param {number} days - Number of days to look back
  * @returns {Promise<{success: boolean, section: string, error?: string}>}
  */
-function extractSectionSummary(stdout) {
-    const marker = '__LIBRARY_COMPLETE_SUMMARY__';
-    if (!stdout) return null;
-    const lines = stdout.split('\n');
-    for (const line of lines) {
-        const idx = line.indexOf(marker);
-        if (idx !== -1) {
-            const jsonPart = line.slice(idx + marker.length);
-            try {
-                return JSON.parse(jsonPart);
-            } catch (error) {
-                logger.warn(`⚠️ Failed to parse section summary JSON: ${error.message}`);
-            }
-        }
-    }
-    return null;
-}
-
 async function processSection(section, days) {
     logger.section(`Processing Section: ${section}`);
     
@@ -249,16 +230,10 @@ async function processSection(section, days) {
         
         // Step 4: Complete and upload
         logger.subsection('Step 4: Completing and uploading to GitHub');
-        const { stdout } = await runCommand('complete', { section });
+        await runCommand('complete', { section });
         logger.info(`✅ Completed and uploaded ${section}`);
-        const summary = extractSectionSummary(stdout);
         
-        return {
-            success: true,
-            section,
-            newArticles: summary?.newArticles ?? 0,
-            updatedArticles: summary?.updatedArticles ?? 0
-        };
+        return { success: true, section };
         
     } catch (error) {
         logger.error(`❌ Failed to process section ${section}: ${error.message}`);
@@ -316,7 +291,7 @@ async function runJob(days = DEFAULT_DAYS) {
             }
         }
         
-        await sendDiscordSummary(results.sections);
+        await sendDiscordRunSummary(results.sections);
 
         // Summary
         logger.section('Job Summary');
@@ -359,28 +334,45 @@ if (require.main === module) {
 
 module.exports = { runJob, discoverSectionsFromGitHub, processSection };
 
-async function sendDiscordSummary(sectionResults) {
+async function sendDiscordRunSummary(sectionResults) {
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL_LIBRARY_UPDATES;
     if (!webhookUrl) {
         logger.info('ℹ️ Discord webhook not configured, skipping summary notification');
         return;
     }
 
-    const discord = new DiscordService(webhookUrl);
     const lines = ['Summary from today\'s library update run:\n'];
-
-    sectionResults.forEach((result, index) => {
+    sectionResults.forEach(result => {
         if (result.success) {
-            lines.push(`${index + 1}. ${result.section} – ${result.newArticles} new, ${result.updatedArticles} updated`);
+            lines.push(`Section ${result.section} - successful`);
         } else {
-            lines.push(`${index + 1}. ${result.section} – ❌ error: ${result.error}`);
+            lines.push(`Section ${result.section} - error, check the workflow for details`);
         }
     });
 
-    try {
-        await discord.sendInfo(lines.join('\n'));
-    } catch (error) {
-        logger.warn(`⚠️ Failed to send Discord summary: ${error.message}`);
-    }
-}
+    const payload = JSON.stringify({ content: lines.join('\n') });
 
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(payload)
+        }
+    };
+
+    await new Promise((resolve, reject) => {
+        const req = https.request(webhookUrl, options, res => {
+            res.on('data', () => {});
+            res.on('end', () => {
+                if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+                    resolve();
+                } else {
+                    reject(new Error(`Discord webhook responded with ${res.statusCode}`));
+                }
+            });
+        });
+        req.on('error', reject);
+        req.write(payload);
+        req.end();
+    });
+}
