@@ -52,6 +52,20 @@ async function sendDiscordAlert(message, context = {}) {
     }
 }
 
+async function sendDiscordSuccess(message, context = {}) {
+    const webhook = process.env.DISCORD_WEBHOOK_FEED_CURATION;
+    if (!webhook) {
+        return;
+    }
+
+    try {
+        const discord = new DiscordService(webhook);
+        await discord.sendSuccess(message, context);
+    } catch (error) {
+        logger.warn(`⚠️ Failed to send Discord success notification: ${error.message}`);
+    }
+}
+
 function writeSummaryFile(summary) {
     try {
         fs.writeFileSync(SUMMARY_PATH, JSON.stringify(summary, null, 2));
@@ -192,10 +206,6 @@ async function runCurationWorkflow({ email, userInterests, isNewUser = true, deb
     try {
         preparedArticleData = preLoadService.prepare_data_for_curation(selectedSections, cutoffMap);
     } catch (error) {
-        await sendDiscordAlert(`Curation preparation failed for ${email}`, {
-            email,
-            error: error.message
-        });
         throw error;
     }
 
@@ -209,8 +219,13 @@ async function runCurationWorkflow({ email, userInterests, isNewUser = true, deb
     const emailResult = await emailService.composeAndSendEmail(email, curatedArticles, selectedSections);
     if (!emailResult.success) {
         logger.warn(`⚠️ Email sending failed: ${emailResult.error}`);
+        await sendDiscordAlert(`Feed email sending failed for ${email}`, {
+            email,
+            error: emailResult.error
+        });
     } else {
         logger.info(`✅ Email sent successfully to: ${email}`);
+        await sendDiscordSuccess(`Feed email sent successfully`, { email });
     }
 
     const nowIso = new Date().toISOString();
