@@ -111,12 +111,15 @@ function postJson(urlString, payload) {
     });
 }
 
-async function notifyPrimaryEmailWebhook() {
+async function notifyPrimaryEmailWebhook(userId, createdAt) {
     const webhookUrl = process.env.PRIMARY_FEED_WEBHOOK_URL;
     if (!webhookUrl) return;
 
     try {
-        await postJson(webhookUrl, { message: 'latest feed curated' });
+        await postJson(webhookUrl, { 
+            user_id: userId,
+            created_at: createdAt
+        });
         logger.info('📣 Primary email webhook notified');
     } catch (error) {
         logger.warn(`⚠️ Failed to notify primary email webhook: ${error.message}`);
@@ -270,7 +273,7 @@ async function runCurationWorkflow({ email, userInterests, isNewUser = true, deb
     logger.info(`✅ User data saved to Vercel Postgres for: ${email}`);
 
     if (email === PRIMARY_EMAIL) {
-        await notifyPrimaryEmailWebhook();
+        await notifyPrimaryEmailWebhook(userId, nowIso);
     }
 
     const summary = {
