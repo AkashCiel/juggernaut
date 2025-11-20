@@ -227,6 +227,7 @@ async function runCurationWorkflow({ email, userInterests, isNewUser = true, deb
             title: article.title,
             webUrl: article.webUrl,
             trailText: article.trailText,
+            summary: article.summary,
             relevanceScore: article.relevanceScore,
             section: article.section || (article.id ? article.id.split('/')[0] : 'unknown'),
             publishedDate: article.publishedDate
