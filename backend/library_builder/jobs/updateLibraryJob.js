@@ -21,7 +21,7 @@ const https = require('https');
 const path = require('path');
 const fs = require('fs');
 const { logger } = require('../utils/logger');
-
+const DiscordService = require('../../services/discordService');
 const execAsync = promisify(exec);
 
 // Constants
@@ -340,6 +340,8 @@ async function sendDiscordRunSummary(sectionResults) {
         logger.info('ℹ️ Discord webhook not configured, skipping summary notification');
         return;
     }
+
+    const discord = new DiscordService(webhookUrl);
 
     const lines = ['Summary from today\'s library update run:\n'];
     sectionResults.forEach(result => {
